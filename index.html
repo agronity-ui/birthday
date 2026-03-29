@@ -356,6 +356,65 @@
             box-shadow: 5px 5px 0 rgba(0, 68, 221, 0.1);
         }
 
+        /* ==========================================================================
+           7. MUSIC PLAYER STYLES
+           ========================================================================== */
+        .music-player-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 55px;
+            height: 55px;
+            background-color: var(--paper-bg);
+            border: 2px dashed var(--electric-blue);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .music-player-btn:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+        .music-player-btn.playing {
+            border-style: solid;
+            animation: spin 4s linear infinite;
+        }
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+        .music-icon {
+            width: 24px;
+            height: 24px;
+            stroke: var(--electric-blue);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .music-tooltip {
+            position: fixed;
+            bottom: 45px;
+            right: 100px;
+            font-family: var(--font-hand);
+            font-size: 1.2rem;
+            color: var(--electric-blue);
+            background: var(--paper-bg);
+            padding: 5px 15px;
+            border: 1px solid rgba(0,68,221,0.2);
+            border-radius: 20px;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.05);
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            z-index: 999;
+        }
+        .music-tooltip.hidden {
+            opacity: 0;
+        }
+
     </style>
 </head>
 <body>
@@ -496,12 +555,27 @@
 
     </div>
 
+    <!-- AUDIO ELEMENT & PLAYER UI -->
+    <div id="music-tooltip" class="music-tooltip">Klik untuk putar musik 🎶</div>
+    <div id="music-toggle" class="music-player-btn">
+        <svg class="music-icon" viewBox="0 0 24 24">
+            <path d="M9 18V5l12-2v13"></path>
+            <circle cx="6" cy="18" r="3"></circle>
+            <circle cx="18" cy="16" r="3"></circle>
+        </svg>
+    </div>
+    
+    <!-- Audio Source: Chopin - Prelude in E Minor (Lagu klasik melankolis) -->
+    <audio id="bg-music" loop>
+        <source src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Frederic_Chopin_-_Prelude_in_E-minor%2C_Op._28%2C_No._4.ogg" type="audio/ogg">
+        Browser Anda tidak mendukung elemen audio.
+    </audio>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
             /* ----------------------------------------------------------------------
                1. DYNAMIC IMAGE CONFIGURATION
-               Ganti URL di bawah ini dengan foto asli Rifky/Agronity25.
                ---------------------------------------------------------------------- */
             const profilePic    = "https://image2url.com/r2/default/images/1774759985780-5acd8c2c-83a7-41d0-849e-ffca6e9b09b6.jpeg"; 
             const middlePic     = "https://image2url.com/r2/default/images/1774760029062-745d9ff6-65dd-422c-a5e7-6c9845b9efda.jpeg"; 
@@ -529,22 +603,17 @@
             const observer = new IntersectionObserver((entries, obs) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        // Tambahkan class is-visible untuk memicu CSS transition
                         entry.target.classList.add('is-visible');
-                        
-                        // Khusus elemen gambar tangan (SVG), biarkan digambar ulang tiap scroll jika mau, 
-                        // tapi disini kita buat tampil sekali saja agar elegan.
                         obs.unobserve(entry.target); 
                     }
                 });
             }, observerOptions);
 
-            // Observasi semua elemen yang punya efek animasi
             const animatedElements = document.querySelectorAll('.pop-el, .slide-el, .draw-el');
             animatedElements.forEach(el => observer.observe(el));
 
             /* ----------------------------------------------------------------------
-               3. PARALLAX SEDERHANA UNTUK POLAROID (MEMBERI EFEK MENGAMBANG)
+               3. PARALLAX SEDERHANA UNTUK POLAROID
                ---------------------------------------------------------------------- */
             const parallaxItems = document.querySelectorAll('.parallax-item');
             let ticking = false;
@@ -553,16 +622,13 @@
                 if (!ticking) {
                     window.requestAnimationFrame(() => {
                         const windowHeight = window.innerHeight;
-                        const scrollY = window.scrollY;
-
+                        
                         parallaxItems.forEach(item => {
                             const rect = item.getBoundingClientRect();
-                            // Jika elemen ada di dalam viewport
                             if(rect.top < windowHeight && rect.bottom > 0) {
                                 const distance = (rect.top - (windowHeight / 2));
-                                const yPos = -(distance * 0.05); // Faktor pelambatan
+                                const yPos = -(distance * 0.05); 
                                 
-                                // Ambil rotasi bawaan dari variabel CSS (--rot)
                                 const rot = item.style.getPropertyValue('--rot') || '0deg';
                                 item.style.transform = `translateY(${yPos}px) rotate(${rot})`;
                             }
@@ -572,6 +638,45 @@
                     ticking = true;
                 }
             });
+
+            /* ----------------------------------------------------------------------
+               4. MUSIC PLAYER LOGIC
+               ---------------------------------------------------------------------- */
+            const musicToggle = document.getElementById('music-toggle');
+            const bgMusic = document.getElementById('bg-music');
+            const musicTooltip = document.getElementById('music-tooltip');
+            let isPlaying = false;
+
+            // Fungsi untuk Play/Pause
+            const toggleMusic = () => {
+                if (isPlaying) {
+                    bgMusic.pause();
+                    musicToggle.classList.remove('playing');
+                } else {
+                    bgMusic.play().catch(e => console.log("Audio play failed:", e));
+                    musicToggle.classList.add('playing');
+                    musicTooltip.classList.add('hidden'); // Sembunyikan pesan setelah diputar
+                }
+                isPlaying = !isPlaying;
+            };
+
+            // Event listener klik tombol pemutar musik
+            musicToggle.addEventListener('click', toggleMusic);
+
+            // Coba putar otomatis saat user pertama kali mengklik area mana pun di layar
+            document.body.addEventListener('click', function playOnInteraction() {
+                if (!isPlaying) {
+                    bgMusic.play().then(() => {
+                        isPlaying = true;
+                        musicToggle.classList.add('playing');
+                        musicTooltip.classList.add('hidden');
+                    }).catch(err => {
+                        console.log("Autoplay dicegah oleh browser, tunggu user klik tombol play.");
+                    });
+                }
+                // Hapus event listener setelah interaksi pertama
+                document.body.removeEventListener('click', playOnInteraction);
+            }, { once: true });
 
         });
     </script>
