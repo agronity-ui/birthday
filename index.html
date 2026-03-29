@@ -7,18 +7,20 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Caveat:wght@500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Caveat:wght@500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <style>
         /* ==========================================================================
-           1. CSS VARIABLES & RESET
+           1. CSS VARIABLES & BASE
            ========================================================================== */
         :root {
-            --pure-white: #FFFFFF;
-            --electric-blue: #0050FF; /* Sky Blue / Electric Blue Agronity */
-            --soft-grey: #F8F9FA;
-            --text-dark: #1A1D20;
-            --text-gray: #6C757D;
+            --paper-bg: #FDFBF7; /* Warna kertas scrapbook yang hangat */
+            --paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            
+            --electric-blue: #0044DD; /* Sedikit didalami agar lebih elegan */
+            --ink-black: #1C1D21;
+            --text-gray: #5A5D64;
+            --tape-color: rgba(255, 255, 255, 0.5);
             
             --font-serif: 'Playfair Display', serif;
             --font-hand: 'Caveat', cursive;
@@ -31,337 +33,464 @@
             box-sizing: border-box;
         }
 
-        html, body {
-            overflow-x: hidden;
-            background-color: var(--pure-white);
+        body {
+            background-color: #EAE6DF; /* Warna "meja" di luar buku */
             font-family: var(--font-sans);
-            color: var(--text-dark);
+            color: var(--ink-black);
             line-height: 1.6;
-            scroll-behavior: smooth;
-        }
-
-        /* Paper Texture Overlay */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 9999;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
         /* ==========================================================================
-           2. TYPOGRAPHY & UTILITIES
+           2. LAYOUT & SCRAPBOOK CANVAS
            ========================================================================== */
-        h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 700; line-height: 1.2; }
-        
-        .handwriting {
-            font-family: var(--font-hand);
-            color: var(--electric-blue);
-            font-size: 2.5rem;
-            transform: rotate(-4deg);
-            display: inline-block;
+        .scrapbook-container {
+            width: 100%;
+            max-width: 540px;
+            margin: 0 auto;
+            background-color: var(--paper-bg);
+            background-image: var(--paper-texture);
+            position: relative;
+            box-shadow: 
+                0 0 40px rgba(0,0,0,0.05), 
+                20px 0 60px rgba(0,0,0,0.08), 
+                -20px 0 60px rgba(0,0,0,0.08);
+            overflow: hidden;
         }
 
-        .text-center { text-align: center; }
-        .text-blue { color: var(--electric-blue); }
-        .uppercase { text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; font-weight: 600; }
-
-        .container {
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
-            position: relative;
-            background: var(--pure-white);
-            box-shadow: 0 0 40px rgba(0,0,0,0.03);
+        /* Efek pinggiran kertas kotor/tua di kiri dan kanan */
+        .scrapbook-container::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.03);
+            pointer-events: none;
+            z-index: 100;
         }
 
         section {
             min-height: 100vh;
-            padding: 5rem 2rem;
+            padding: 6rem 2.5rem;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             position: relative;
-            border-bottom: 1px solid rgba(0, 80, 255, 0.1);
+            z-index: 10;
         }
 
         /* ==========================================================================
-           3. ANIMATIONS (FLOATING & FADE-IN)
+           3. TYPOGRAPHY & DECORATIONS
            ========================================================================== */
-        .float-el {
-            opacity: 0;
-            transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        .float-up { transform: translateY(40px); }
-        .float-left { transform: translateX(-40px); }
-        .float-right { transform: translateX(40px); }
+        h1, h2, h3 { font-family: var(--font-serif); font-weight: 700; line-height: 1.15; color: var(--ink-black); }
+        p { color: var(--text-gray); }
         
-        .float-el.is-visible {
-            opacity: 1;
-            transform: translate(0, 0);
+        .handwriting {
+            font-family: var(--font-hand);
+            color: var(--electric-blue);
+            font-size: 2.8rem;
+            transform: rotate(-3deg);
+            display: inline-block;
+            text-shadow: 1px 1px 0px rgba(0,68,221,0.1);
         }
 
-        /* Parallax Image Wrapper */
-        .img-wrapper {
+        .text-center { text-align: center; }
+        .text-blue { color: var(--electric-blue); }
+        .uppercase { 
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
+            font-size: 0.8rem; 
+            font-weight: 600; 
+            color: var(--text-gray);
+        }
+
+        /* SVG Scribbles */
+        .scribble {
+            position: absolute;
+            pointer-events: none;
+            z-index: 0;
+            stroke: var(--electric-blue);
+            stroke-width: 1.5;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 0.6;
+        }
+
+        /* ==========================================================================
+           4. POLAROID & IMAGES
+           ========================================================================== */
+        .polaroid {
+            background: #FFFFFF;
+            padding: 12px 12px 45px 12px;
+            box-shadow: 
+                0 4px 15px rgba(0,0,0,0.06), 
+                0 1px 3px rgba(0,0,0,0.04),
+                inset 0 0 0 1px rgba(0,0,0,0.02);
             position: relative;
             margin: 2rem 0;
-            padding: 12px;
-            background: var(--pure-white);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             z-index: 2;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
         }
         
-        .img-bw {
+        .polaroid:hover {
+            box-shadow: 
+                0 15px 35px rgba(0,0,0,0.12), 
+                0 5px 15px rgba(0,0,0,0.08);
+            z-index: 20;
+        }
+
+        .polaroid-img {
             width: 100%;
             height: auto;
             display: block;
-            filter: grayscale(100%) contrast(1.1);
-            transition: filter 0.5s ease;
+            filter: grayscale(100%) sepia(10%) contrast(1.1); /* Efek vintage B&W */
+            transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .img-wrapper:hover .img-bw { filter: grayscale(0%) contrast(1); }
+        .polaroid:hover .polaroid-img {
+            filter: grayscale(0%) sepia(0%) contrast(1.05);
+        }
 
-        /* Transparent Digital Tape */
+        /* Caption Foto */
+        .polaroid-caption {
+            position: absolute;
+            bottom: 12px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-family: var(--font-hand);
+            font-size: 1.4rem;
+            color: var(--ink-black);
+            opacity: 0.8;
+        }
+
+        /* Washi Tape */
         .tape {
             position: absolute;
-            width: 100px;
-            height: 30px;
-            background: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1), inset 0 0 10px rgba(255,255,255,0.5);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.4);
+            width: 110px;
+            height: 35px;
+            background-color: var(--tape-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
             z-index: 5;
+            border-left: 2px dashed rgba(255,255,255,0.4);
+            border-right: 2px dashed rgba(255,255,255,0.4);
+            /* Tekstur garis halus pada lakban */
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.2) 10px, rgba(255,255,255,0.2) 20px);
         }
-        .tape-1 { top: -15px; left: -20px; transform: rotate(-12deg); }
-        .tape-2 { bottom: -15px; right: -20px; transform: rotate(10deg); }
+        .tape-1 { top: -15px; left: -25px; transform: rotate(-12deg); }
+        .tape-2 { bottom: -15px; right: -25px; transform: rotate(10deg); }
+        .tape-center { top: -15px; left: 50%; transform: translateX(-50%) rotate(2deg); width: 130px; }
 
         /* ==========================================================================
-           4. SECTIONS STYLING
+           5. ANIMATIONS (SPRING & STAGGER)
            ========================================================================== */
-        
-        /* Sec 1: Intro */
-        #intro h1 { font-size: 2.5rem; margin-top: 1rem; margin-bottom: 2rem; }
-        
-        /* Sec 2: The Meaning */
-        #meaning p { font-size: 1.1rem; color: var(--text-gray); margin: 1.5rem 0; }
-        
-        /* Sec 3: Envelope Note */
-        .envelope-box {
-            background: var(--soft-grey);
-            border: 2px dashed var(--electric-blue);
-            padding: 2rem;
-            border-radius: 8px;
-            position: relative;
-            margin: 2rem 0;
+        /* Animasi Pop-in (seperti diletakkan ke buku) */
+        .pop-el {
+            opacity: 0;
+            transform: scale(0.85) translateY(30px) rotate(var(--rot, 0deg));
+            transition: all 0.9s cubic-bezier(0.34, 1.56, 0.64, 1); /* Efek pantulan/spring */
         }
-        .envelope-box::before {
-            content: '"';
-            position: absolute;
-            top: -20px; left: 20px;
-            font-family: var(--font-serif);
-            font-size: 4rem;
-            color: var(--electric-blue);
-            opacity: 0.3;
+        
+        .pop-el.is-visible {
+            opacity: 1;
+            transform: scale(1) translateY(0) rotate(var(--rot, 0deg));
         }
 
-        /* Sec 4: The Mark (Calendar) */
-        .calendar-display {
-            text-align: center;
-            margin: 2rem 0;
-            position: relative;
+        /* Animasi Slide-in halus */
+        .slide-el {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-        .cal-month { font-size: 1.2rem; font-weight: 600; letter-spacing: 3px; color: var(--text-gray); }
-        .cal-date { 
-            font-size: 6rem; 
-            font-family: var(--font-serif); 
-            color: var(--text-dark); 
-            line-height: 1;
-            position: relative;
-            display: inline-block;
+        .slide-el.is-visible {
+            opacity: 1;
+            transform: translateY(0);
         }
-        /* Hand-drawn circle SVG */
-        .circle-scribble {
+
+        /* Animasi Gambar Tangan (Scribbles) */
+        .draw-el path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            transition: stroke-dashoffset 2s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
+        }
+        .draw-el.is-visible path {
+            stroke-dashoffset: 0;
+        }
+
+        /* ==========================================================================
+           6. SECTIONS SPECIFIC
+           ========================================================================== */
+        
+        /* Intro */
+        #intro { padding-top: 8rem; }
+        #intro h1 { font-size: 2.8rem; margin: 1rem 0 2rem; position: relative; z-index: 2; }
+        
+        /* Envelope / Sticky Note */
+        .sticky-note {
+            background: #FFFCE0;
+            padding: 2.5rem 2rem;
+            box-shadow: 3px 5px 15px rgba(0,0,0,0.08);
+            position: relative;
+            margin: 3rem 0;
+            transform: rotate(2deg);
+        }
+        .sticky-note::before {
+            content: '';
             position: absolute;
-            top: 50%; left: 50%;
+            top: -10px; left: 50%;
+            transform: translateX(-50%);
+            width: 80px; height: 25px;
+            background: rgba(220, 50, 50, 0.6); /* Red Tape */
+            backdrop-filter: blur(2px);
+        }
+        .sticky-note p {
+            font-family: var(--font-hand);
+            font-size: 1.8rem;
+            color: var(--ink-black);
+            line-height: 1.4;
+        }
+
+        /* The Mark (Torn Calendar) */
+        .torn-calendar {
+            background: #fff;
+            width: 200px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            border-top: 15px solid var(--electric-blue);
+            position: relative;
+            margin: 3rem auto;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            background-image: linear-gradient(to bottom, transparent 95%, #f0f0f0 100%);
+        }
+        .cal-month { font-size: 1rem; font-weight: 700; letter-spacing: 2px; color: var(--electric-blue); margin-bottom: 0.5rem; }
+        .cal-date { font-size: 5.5rem; font-family: var(--font-serif); font-weight: 700; line-height: 1; }
+        .circle-highlight {
+            position: absolute;
+            top: 45%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 140%; height: 140%;
+            width: 130%; height: 130%;
             pointer-events: none;
         }
 
-        /* Sec 5: 4 Things */
-        .points-list { width: 100%; display: flex; flex-direction: column; gap: 1.5rem; margin-top: 2rem; }
-        .point-item {
+        /* 4 Things List */
+        .scrap-list {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-top: 3rem;
             position: relative;
-            padding-left: 2rem;
         }
-        .point-item h4 { color: var(--electric-blue); font-family: var(--font-sans); margin-bottom: 0.2rem; }
-        .point-item p { font-size: 0.95rem; color: var(--text-gray); }
-        .point-item::before {
-            content: '→';
+        .scrap-list::before {
+            content: '';
             position: absolute;
-            left: 0; top: 0;
-            color: var(--electric-blue);
+            left: 20px; top: 0; bottom: 0;
+            width: 2px;
+            background: repeating-linear-gradient(to bottom, var(--electric-blue) 0, var(--electric-blue) 5px, transparent 5px, transparent 15px);
+            opacity: 0.3;
+        }
+        .scrap-item {
+            position: relative;
+            padding-left: 3.5rem;
+        }
+        .scrap-item h4 { 
+            font-size: 1.2rem; 
+            margin-bottom: 0.3rem; 
             font-family: var(--font-serif);
-            font-weight: bold;
+            font-style: italic;
+        }
+        .scrap-item p { font-size: 0.95rem; }
+        .scrap-pin {
+            position: absolute;
+            left: 12px; top: 5px;
+            width: 16px; height: 16px;
+            background: #ff4757;
+            border-radius: 50%;
+            box-shadow: inset -2px -2px 4px rgba(0,0,0,0.3), 2px 2px 4px rgba(0,0,0,0.2);
         }
 
-        /* Sec 6: Gallery Collage */
+        /* Gallery Collage */
         .collage {
             position: relative;
             width: 100%;
-            height: 450px;
-            margin-top: 2rem;
+            height: 550px;
+            margin-top: 3rem;
         }
-        .collage .img-wrapper { position: absolute; width: 65%; }
-        .img-1 { top: 0; left: 0; transform: rotate(-4deg); }
-        .img-2 { top: 100px; right: 0; transform: rotate(5deg); z-index: 3;}
-        .img-3 { bottom: 0; left: 15%; transform: rotate(-2deg); z-index: 1;}
+        .collage .polaroid { position: absolute; width: 60%; margin: 0; }
+        .img-1 { top: 0; left: 0; --rot: -6deg; z-index: 2;}
+        .img-2 { top: 120px; right: 0; --rot: 8deg; z-index: 3;}
+        .img-3 { bottom: 0; left: 15%; --rot: -3deg; z-index: 4;}
 
-        /* Sec 7: Closing */
-        .btn-wa {
+        /* Button */
+        .btn-stamp {
             display: inline-block;
-            background-color: var(--electric-blue);
-            color: var(--pure-white);
-            padding: 1rem 2rem;
-            border-radius: 50px;
+            background-color: transparent;
+            color: var(--electric-blue);
+            padding: 1rem 2.5rem;
+            border: 2px dashed var(--electric-blue);
             text-decoration: none;
-            font-weight: 600;
-            letter-spacing: 1px;
-            margin-top: 2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-top: 3rem;
+            font-family: var(--font-sans);
             transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(0, 80, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
         }
-        .btn-wa:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 25px rgba(0, 80, 255, 0.3);
+        .btn-stamp::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: rgba(0, 68, 221, 0.1);
+            transition: all 0.4s ease;
+        }
+        .btn-stamp:hover::before { left: 0; }
+        .btn-stamp:hover {
+            transform: scale(1.05) rotate(-2deg);
+            box-shadow: 5px 5px 0 rgba(0, 68, 221, 0.1);
         }
 
-        /* Background Scribbles (SVG) */
-        .bg-scribble {
-            position: absolute;
-            z-index: 0;
-            opacity: 0.1;
-        }
-        .bg-scribble path {
-            stroke: var(--electric-blue);
-            stroke-width: 2;
-            fill: none;
-        }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="scrapbook-container">
 
+        <!-- SECTION 1: INTRO -->
         <section id="intro">
-            <p class="uppercase text-blue float-el float-up text-center">AGRONITY25 PRESENT</p>
-            <h1 class="text-center float-el float-up" style="transition-delay: 0.1s;">A Special Day for<br>Ahmad Rifky Jailani</h1>
-            
-            <div class="img-wrapper parallax-img" style="transform: rotate(2deg);">
-                <div class="tape tape-1"></div>
-                <img id="imgHero" src="" alt="Rifky" class="img-bw float-el float-left" style="transition-delay: 0.2s;">
-                <div class="tape tape-2"></div>
-            </div>
-
-            <span class="handwriting float-el float-up" style="transition-delay: 0.3s; margin-top: 1rem;">Happy Birthday!</span>
-        </section>
-
-        <section id="meaning">
-            <svg class="bg-scribble" style="top: 10%; right: -20px; width: 100px; height: 100px;" viewBox="0 0 100 100">
-                <path d="M10,50 Q40,10 90,50 T90,90" />
+            <!-- Ornamen Bintang SVG -->
+            <svg class="scribble draw-el" style="top: 15%; left: 10%; width: 40px; height: 40px;" viewBox="0 0 100 100">
+                <path d="M50,10 L60,40 L90,50 L60,60 L50,90 L40,60 L10,50 L40,40 Z" />
             </svg>
 
-            <h2 class="text-center float-el float-up">PERSAHABATAN ADALAH...</h2>
-            <p class="text-center float-el float-up" style="transition-delay: 0.1s;">Tentang cerita-cerita kecil yang kita lalui bersama di Agronity. Kehadiranmu selalu punya warna tersendiri.</p>
+            <span class="uppercase slide-el">Agronity25 Present</span>
+            <h1 class="text-center slide-el" style="transition-delay: 0.1s;">A Special Day for<br>Ahmad Rifky Jailani</h1>
             
-            <div class="img-wrapper parallax-img" style="transform: rotate(-3deg);">
-                <div class="tape tape-1" style="left: auto; right: -20px; transform: rotate(15deg);"></div>
-                <img id="imgMiddle" src="" alt="Activity" class="img-bw float-el float-right" style="transition-delay: 0.2s;">
+            <div class="polaroid pop-el parallax-item" style="--rot: 3deg; transition-delay: 0.2s;">
+                <div class="tape tape-1"></div>
+                <img id="imgHero" src="" alt="Rifky" class="polaroid-img">
+                <div class="tape tape-2"></div>
+                <div class="polaroid-caption">The Birthday Boy</div>
             </div>
 
-            <span class="handwriting float-el float-up" style="transition-delay: 0.3s;">You are appreciated.</span>
+            <span class="handwriting slide-el" style="transition-delay: 0.4s; margin-top: 1rem; font-size: 3.5rem;">Happy Birthday!</span>
         </section>
 
-        <section id="message">
-            <h3 class="uppercase text-blue text-center float-el float-up">A Small Note For You</h3>
+        <!-- SECTION 2: MEANING -->
+        <section id="meaning">
+            <svg class="scribble draw-el" style="top: -20px; right: 20px; width: 80px; height: 80px;" viewBox="0 0 100 100">
+                <path d="M10,50 Q40,0 90,50 T90,90" />
+            </svg>
+
+            <h2 class="text-center slide-el">PERSAHABATAN ADALAH...</h2>
+            <p class="text-center slide-el" style="transition-delay: 0.1s; margin: 1rem 0;">Tentang cerita-cerita kecil yang kita lalui bersama di Agronity. Kehadiranmu selalu punya warna tersendiri.</p>
             
-            <div class="envelope-box float-el float-up" style="transition-delay: 0.1s;">
-                <p class="text-center" style="font-family: var(--font-serif); font-size: 1.2rem; font-style: italic;">
+            <div class="polaroid pop-el parallax-item" style="--rot: -4deg; transition-delay: 0.2s;">
+                <div class="tape tape-center"></div>
+                <!-- SVG Paperclip simulasi -->
+                <svg style="position:absolute; top:-15px; right:20px; width:30px; height:50px; z-index:10; filter:drop-shadow(2px 2px 2px rgba(0,0,0,0.2));" viewBox="0 0 30 50">
+                    <path d="M15,40 L15,10 C15,5 20,5 20,10 L20,35 C20,42 10,42 10,35 L10,15" stroke="#777" stroke-width="3" fill="none" stroke-linecap="round"/>
+                </svg>
+                <img id="imgMiddle" src="" alt="Activity" class="polaroid-img">
+            </div>
+
+            <span class="handwriting slide-el" style="transition-delay: 0.3s; margin-top: 1.5rem;">You are appreciated.</span>
+        </section>
+
+        <!-- SECTION 3: STICKY NOTE -->
+        <section id="message" style="padding: 4rem 2.5rem;">
+            <h3 class="uppercase text-center slide-el">A Small Note For You</h3>
+            
+            <div class="sticky-note pop-el" style="--rot: 2deg; transition-delay: 0.1s;">
+                <p class="text-center">
                     "Selamat ulang tahun, Ky! Semoga tahun ini membawa banyak keberhasilan, kesehatan, dan kebahagiaan yang tidak ada habisnya."
                 </p>
             </div>
 
-            <span class="handwriting float-el float-up" style="transition-delay: 0.2s;">Keep shining!</span>
+            <span class="handwriting slide-el" style="transition-delay: 0.2s; transform: rotate(-5deg);">Keep shining! ✨</span>
         </section>
 
+        <!-- SECTION 4: THE MARK (CALENDAR) -->
         <section id="mark">
-            <div class="calendar-display float-el float-up">
+            <div class="torn-calendar pop-el" style="--rot: -2deg;">
                 <div class="cal-month">MARET 2026</div>
-                <div class="cal-date">
-                    27
-                    <svg class="circle-scribble" viewBox="0 0 100 100">
-                        <path d="M 50,5 C 80,10 95,40 85,75 C 75,95 30,100 10,70 C -5,45 20,10 50,15" stroke="var(--electric-blue)" stroke-width="2" fill="none" stroke-linecap="round"/>
-                    </svg>
-                </div>
+                <div class="cal-date">27</div>
+                <svg class="circle-highlight draw-el" viewBox="0 0 100 100">
+                    <path d="M 50,15 C 80,10 95,40 85,75 C 75,95 30,100 10,70 C -5,45 20,10 50,15" stroke="#ff4757" stroke-width="3" fill="none" stroke-linecap="round"/>
+                </svg>
             </div>
 
-            <p class="text-center float-el float-up" style="transition-delay: 0.1s; max-width: 80%;">Jumat yang istimewa. Hari di mana satu lagi babak baru dimulai.</p>
+            <p class="text-center slide-el" style="transition-delay: 0.2s; font-size: 1.1rem;">Jumat yang istimewa. Hari di mana satu lagi babak baru dimulai.</p>
         </section>
 
+        <!-- SECTION 5: 4 THINGS -->
         <section id="things">
-            <h2 class="text-center float-el float-up">4 Things About You</h2>
+            <h2 class="text-center slide-el">4 Things About You</h2>
             
-            <div class="points-list">
-                <div class="point-item float-el float-left" style="transition-delay: 0.1s;">
+            <div class="scrap-list">
+                <div class="scrap-item slide-el" style="transition-delay: 0.1s;">
+                    <div class="scrap-pin"></div>
                     <h4>The Vibe</h4>
                     <p>Selalu membawa suasana tenang di tengah hiruk-pikuk kuliah.</p>
                 </div>
-                <div class="point-item float-el float-left" style="transition-delay: 0.2s;">
+                <div class="scrap-item slide-el" style="transition-delay: 0.2s;">
+                    <div class="scrap-pin" style="background: #eccc68;"></div>
                     <h4>The Soul</h4>
                     <p>Teman diskusi yang asik dan solutif bagi anak-anak Agronity.</p>
                 </div>
-                <div class="point-item float-el float-left" style="transition-delay: 0.3s;">
+                <div class="scrap-item slide-el" style="transition-delay: 0.3s;">
+                    <div class="scrap-pin" style="background: #1e90ff;"></div>
                     <h4>The Spirit</h4>
                     <p>Semangat yang nggak pernah padam buat hal-hal baru.</p>
                 </div>
-                <div class="point-item float-el float-left" style="transition-delay: 0.4s;">
+                <div class="scrap-item slide-el" style="transition-delay: 0.4s;">
+                    <div class="scrap-pin" style="background: #2ed573;"></div>
                     <h4>The Wish</h4>
                     <p>Semoga impianmu satu per satu jadi nyata tahun ini!</p>
                 </div>
             </div>
         </section>
 
+        <!-- SECTION 6: COLLAGE -->
         <section id="memories">
-            <h2 class="text-center float-el float-up text-blue">Cheers to<br>Another Year!</h2>
-            <p class="text-center text-gray float-el float-up" style="transition-delay: 0.1s;">Terima kasih sudah menjadi bagian dari perjalanan Agronity25. Mari buat lebih banyak memori hebat.</p>
+            <h2 class="text-center slide-el">Cheers to<br>Another Year!</h2>
+            <p class="text-center slide-el" style="transition-delay: 0.1s; margin-top: 1rem;">Terima kasih sudah menjadi bagian dari perjalanan Agronity25. Mari buat lebih banyak memori hebat.</p>
 
             <div class="collage">
-                <div class="img-wrapper img-1 parallax-img float-el float-left" style="transition-delay: 0.2s;">
-                    <img id="imgGal1" src="" alt="Memory 1" class="img-bw">
+                <div class="polaroid img-1 pop-el" style="transition-delay: 0.2s;">
+                    <div class="tape tape-1"></div>
+                    <img id="imgGal1" src="" alt="Memory 1" class="polaroid-img">
                 </div>
-                <div class="img-wrapper img-2 parallax-img float-el float-right" style="transition-delay: 0.3s;">
-                    <img id="imgGal2" src="" alt="Memory 2" class="img-bw">
+                <div class="polaroid img-2 pop-el" style="transition-delay: 0.3s;">
+                    <div class="tape tape-2" style="top:-15px; bottom:auto;"></div>
+                    <img id="imgGal2" src="" alt="Memory 2" class="polaroid-img">
                 </div>
-                <div class="img-wrapper img-3 parallax-img float-el float-up" style="transition-delay: 0.4s;">
-                    <img id="imgGal3" src="" alt="Memory 3" class="img-bw">
+                <div class="polaroid img-3 pop-el" style="transition-delay: 0.4s;">
+                    <img id="imgGal3" src="" alt="Memory 3" class="polaroid-img">
                 </div>
             </div>
 
-            <span class="handwriting float-el float-up" style="transition-delay: 0.5s; margin-top: 1rem;">Memories stay forever.</span>
+            <span class="handwriting slide-el" style="transition-delay: 0.6s; margin-top: 2rem;">Memories stay forever.</span>
         </section>
 
-        <section id="closing">
-            <div class="img-wrapper parallax-img" style="transform: rotate(2deg);">
-                <div class="tape tape-1"></div>
-                <img id="imgClosing" src="" alt="Rifky Relaxing" class="img-bw float-el float-up">
+        <!-- SECTION 7: CLOSING -->
+        <section id="closing" style="padding-bottom: 8rem;">
+            <div class="polaroid pop-el parallax-item" style="--rot: 1deg;">
+                <div class="tape tape-center"></div>
+                <img id="imgClosing" src="" alt="Rifky Relaxing" class="polaroid-img">
             </div>
 
-            <h4 class="uppercase float-el float-up" style="margin-top: 2rem; transition-delay: 0.1s;">WITH LOVE,</h4>
-            <p class="handwriting float-el float-up" style="font-size: 2rem; transform: rotate(0); transition-delay: 0.2s;">Seluruh Keluarga Agronity25</p>
+            <h4 class="uppercase slide-el" style="margin-top: 3rem; transition-delay: 0.1s;">WITH LOVE,</h4>
+            <p class="handwriting slide-el" style="font-size: 2.5rem; transform: rotate(0); transition-delay: 0.2s; color: var(--ink-black);">Keluarga Agronity25</p>
 
-            <a href="https://wa.me/6285652023439?text=Happy%20Birthday%20Rifky!%20Wish%20you%20all%20the%20best%20dari%20Agronity25!" class="btn-wa float-el float-up" style="transition-delay: 0.3s;" target="_blank">
-                KIRIM UCAPAN KE WHATSAPP
+            <a href="https://wa.me/6285652023439?text=Happy%20Birthday%20Rifky!%20Wish%20you%20all%20the%20best%20dari%20Agronity25!" class="btn-stamp slide-el" style="transition-delay: 0.3s;" target="_blank">
+                KIRIM UCAPAN WHATSAPP
             </a>
         </section>
 
@@ -371,18 +500,16 @@
         document.addEventListener('DOMContentLoaded', () => {
             
             /* ----------------------------------------------------------------------
-               1. DYNAMIC IMAGE CONFIGURATION (TIPS TEKNIS URL)
-               Silakan ganti URL di dalam tanda kutip dengan link foto asli Anda.
-               Saat ini saya menggunakan foto Unsplash sebagai inspirasi.
+               1. DYNAMIC IMAGE CONFIGURATION
+               Ganti URL di bawah ini dengan foto asli Rifky/Agronity25.
                ---------------------------------------------------------------------- */
-            const profilePic    = "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&q=80"; // Close-up keren
-            const middlePic     = "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&q=80"; // Candid / kegiatan
-            const galPic1       = "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&q=80"; // Teman-teman 1
-            const galPic2       = "https://images.unsplash.com/photo-1541532713592-79a0317b6b77?w=400&q=80"; // Teman-teman 2
-            const galPic3       = "https://images.unsplash.com/photo-1523580494112-071d384e236c?w=400&q=80"; // Teman-teman 3
-            const closingPic    = "https://images.unsplash.com/photo-1493225457124-a1a2a5f5f9af?w=600&q=80"; // Foto santai/dari belakang
+            const profilePic    = "https://image2url.com/r2/default/images/1774759985780-5acd8c2c-83a7-41d0-849e-ffca6e9b09b6.jpeg"; 
+            const middlePic     = "https://image2url.com/r2/default/images/1774760029062-745d9ff6-65dd-422c-a5e7-6c9845b9efda.jpeg"; 
+            const galPic1       = "https://image2url.com/r2/default/images/1774760070441-861e53c5-0b3e-4c32-876b-951d79552cb1.jpeg"; 
+            const galPic2       = "https://image2url.com/r2/default/images/1774760136196-8927cce2-2c8d-472a-809e-a14e5bf643ec.jpeg"; 
+            const galPic3       = "https://image2url.com/r2/default/images/1774760166747-1b74882b-041b-4c84-8488-606c05090bec.jpeg"; 
+            const closingPic    = "https://image2url.com/r2/default/images/1774759985780-5acd8c2c-83a7-41d0-849e-ffca6e9b09b6.jpeg"; 
 
-            // Menerapkan URL ke dalam elemen HTML
             document.getElementById('imgHero').src = profilePic;
             document.getElementById('imgMiddle').src = middlePic;
             document.getElementById('imgGal1').src = galPic1;
@@ -390,58 +517,55 @@
             document.getElementById('imgGal3').src = galPic3;
             document.getElementById('imgClosing').src = closingPic;
 
-
             /* ----------------------------------------------------------------------
-               2. FLOATING ELEMENTS TRANSITION (FADE IN ON SCROLL)
+               2. INTERSECTION OBSERVER UNTUK ANIMASI STAGGER
                ---------------------------------------------------------------------- */
-            const floatElements = document.querySelectorAll('.float-el');
-            
             const observerOptions = {
                 root: null,
-                threshold: 0.15, // Memicu animasi saat 15% elemen terlihat
-                rootMargin: "0px 0px -30px 0px"
+                threshold: 0.15,
+                rootMargin: "0px 0px -50px 0px"
             };
 
-            const floatObserver = new IntersectionObserver((entries, observer) => {
+            const observer = new IntersectionObserver((entries, obs) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
+                        // Tambahkan class is-visible untuk memicu CSS transition
                         entry.target.classList.add('is-visible');
-                        observer.unobserve(entry.target); // Animasi hanya berjalan sekali
+                        
+                        // Khusus elemen gambar tangan (SVG), biarkan digambar ulang tiap scroll jika mau, 
+                        // tapi disini kita buat tampil sekali saja agar elegan.
+                        obs.unobserve(entry.target); 
                     }
                 });
             }, observerOptions);
 
-            floatElements.forEach(el => floatObserver.observe(el));
-
+            // Observasi semua elemen yang punya efek animasi
+            const animatedElements = document.querySelectorAll('.pop-el, .slide-el, .draw-el');
+            animatedElements.forEach(el => observer.observe(el));
 
             /* ----------------------------------------------------------------------
-               3. PARALLAX EFFECT UNTUK FOTO
-               Membuat foto bergerak sedikit lebih lambat dari scroll untuk efek premium.
+               3. PARALLAX SEDERHANA UNTUK POLAROID (MEMBERI EFEK MENGAMBANG)
                ---------------------------------------------------------------------- */
-            const parallaxImages = document.querySelectorAll('.parallax-img');
+            const parallaxItems = document.querySelectorAll('.parallax-item');
             let ticking = false;
 
             window.addEventListener('scroll', () => {
                 if (!ticking) {
                     window.requestAnimationFrame(() => {
-                        const scrolled = window.scrollY;
                         const windowHeight = window.innerHeight;
+                        const scrollY = window.scrollY;
 
-                        parallaxImages.forEach(img => {
-                            const rect = img.getBoundingClientRect();
-                            const imgCenterY = rect.top + (rect.height / 2);
-                            const screenCenterY = windowHeight / 2;
-                            
-                            // Hitung jarak elemen dari tengah layar
-                            const distance = imgCenterY - screenCenterY;
-                            // Faktor kecepatan parallax (semakin kecil semakin lambat pergerakannya)
-                            const yPos = -(distance * 0.1); 
-                            
-                            // Gabungkan transform Y dengan rotasi asli dari CSS inline
-                            const currentTransform = img.style.transform || '';
-                            const baseRotation = currentTransform.replace(/translateY\(.*?\)/g, '').trim();
-                            
-                            img.style.transform = `translateY(${yPos}px) ${baseRotation}`;
+                        parallaxItems.forEach(item => {
+                            const rect = item.getBoundingClientRect();
+                            // Jika elemen ada di dalam viewport
+                            if(rect.top < windowHeight && rect.bottom > 0) {
+                                const distance = (rect.top - (windowHeight / 2));
+                                const yPos = -(distance * 0.05); // Faktor pelambatan
+                                
+                                // Ambil rotasi bawaan dari variabel CSS (--rot)
+                                const rot = item.style.getPropertyValue('--rot') || '0deg';
+                                item.style.transform = `translateY(${yPos}px) rotate(${rot})`;
+                            }
                         });
                         ticking = false;
                     });
