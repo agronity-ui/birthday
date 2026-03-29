@@ -556,8 +556,8 @@
     </div>
 
     <!-- AUDIO ELEMENT & PLAYER UI -->
-    <div id="music-tooltip" class="music-tooltip">Klik untuk putar musik 🎶</div>
-    <div id="music-toggle" class="music-player-btn">
+    <div id="music-tooltip" class="music-tooltip hidden">Sedang memutar musik 🎶</div>
+    <div id="music-toggle" class="music-player-btn playing">
         <svg class="music-icon" viewBox="0 0 24 24">
             <path d="M9 18V5l12-2v13"></path>
             <circle cx="6" cy="18" r="3"></circle>
@@ -565,8 +565,8 @@
         </svg>
     </div>
     
-    <!-- Audio Source: Chopin - Prelude in E Minor (Lagu klasik melankolis) -->
-    <audio id="bg-music" loop>
+    <!-- Audio Source: Chopin - Prelude in E Minor (Lagu klasik melankolis) dengan atribut autoplay -->
+    <audio id="bg-music" loop autoplay>
         <source src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Frederic_Chopin_-_Prelude_in_E-minor%2C_Op._28%2C_No._4.ogg" type="audio/ogg">
         Browser Anda tidak mendukung elemen audio.
     </audio>
@@ -640,12 +640,25 @@
             });
 
             /* ----------------------------------------------------------------------
-               4. MUSIC PLAYER LOGIC
+               4. MUSIC PLAYER LOGIC (AUTOPLAY ENABLED)
                ---------------------------------------------------------------------- */
             const musicToggle = document.getElementById('music-toggle');
             const bgMusic = document.getElementById('bg-music');
             const musicTooltip = document.getElementById('music-tooltip');
             let isPlaying = false;
+
+            // Memulai pemutaran secara otomatis saat halaman dimuat
+            bgMusic.play().then(() => {
+                isPlaying = true;
+                musicToggle.classList.add('playing');
+                musicTooltip.classList.add('hidden');
+            }).catch(err => {
+                // Berjaga-jaga jika autoplay gagal walau sudah di-host (karena kebijakan ketat perangkat klien)
+                console.log("Autoplay dicegah oleh browser klien:", err);
+                musicToggle.classList.remove('playing');
+                musicTooltip.classList.remove('hidden');
+                musicTooltip.innerText = "Klik untuk putar musik 🎶";
+            });
 
             // Fungsi untuk Play/Pause
             const toggleMusic = () => {
@@ -655,28 +668,13 @@
                 } else {
                     bgMusic.play().catch(e => console.log("Audio play failed:", e));
                     musicToggle.classList.add('playing');
-                    musicTooltip.classList.add('hidden'); // Sembunyikan pesan setelah diputar
+                    musicTooltip.classList.add('hidden');
                 }
                 isPlaying = !isPlaying;
             };
 
             // Event listener klik tombol pemutar musik
             musicToggle.addEventListener('click', toggleMusic);
-
-            // Coba putar otomatis saat user pertama kali mengklik area mana pun di layar
-            document.body.addEventListener('click', function playOnInteraction() {
-                if (!isPlaying) {
-                    bgMusic.play().then(() => {
-                        isPlaying = true;
-                        musicToggle.classList.add('playing');
-                        musicTooltip.classList.add('hidden');
-                    }).catch(err => {
-                        console.log("Autoplay dicegah oleh browser, tunggu user klik tombol play.");
-                    });
-                }
-                // Hapus event listener setelah interaksi pertama
-                document.body.removeEventListener('click', playOnInteraction);
-            }, { once: true });
 
         });
     </script>
