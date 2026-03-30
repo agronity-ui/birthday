@@ -3,30 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agronity25 | A Special Day for Rifky</title>
+    <title>Senja Untuk Nayla | A Special Day</title>
     
+    <!-- Google Fonts for Epic & Aesthetic Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Caveat:wght@500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Caveat:wght@400;500;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <style>
         /* ==========================================================================
-           1. CSS VARIABLES & BASE
+           1. CSS VARIABLES & PALET WARNA SENJA (SUNSET PALETTE)
            ========================================================================== */
         :root {
-            --paper-bg: #FDFBF7; /* Warna kertas scrapbook yang hangat */
-            --paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            /* Warna Kertas Scrapbook */
+            --paper-bg: #FCF7F2; /* Cream hangat */
+            --paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.06'/%3E%3C/svg%3E");
             
-            --electric-blue: #0044DD; /* Sedikit didalami agar lebih elegan */
-            --ink-black: #1C1D21;
-            --text-gray: #5A5D64;
-            --tape-color: rgba(255, 255, 255, 0.5);
+            /* Palet Senja Sore (Twilight/Sunset) */
+            --sunset-dark: #2A1329;    /* Ungu gelap malam */
+            --sunset-plum: #522546;    /* Plum senja */
+            --sunset-crimson: #88304E; /* Merah marun senja */
+            --sunset-orange: #E23E57;  /* Oranye matahari terbenam */
+            --sunset-gold: #F0A500;    /* Emas matahari */
+            --sunset-peach: #FFD3B6;   /* Cahaya lembut */
             
+            /* Teks & Tinta */
+            --ink-black: #3A2618;      /* Coklat tua hangat, bukan hitam pekat */
+            --text-gray: #6B5B53;
+            --tape-color: rgba(255, 230, 200, 0.4);
+            
+            /* Tipografi */
             --font-serif: 'Playfair Display', serif;
             --font-hand: 'Caveat', cursive;
-            --font-sans: 'Inter', sans-serif;
+            --font-elegant: 'Great Vibes', cursive;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Montserrat', sans-serif;
         }
 
+        /* ==========================================================================
+           2. RESET & BASE STYLES
+           ========================================================================== */
         *, *::before, *::after {
             margin: 0;
             padding: 0;
@@ -34,44 +50,65 @@
         }
 
         body {
-            background-color: #EAE6DF; /* Warna "meja" di luar buku */
+            /* Background gradien senja yang epik di luar buku scrapbook */
+            background: linear-gradient(135deg, #1A0B2E 0%, #3B1842 25%, #7A2850 50%, #B8405E 75%, #EE7A5C 100%);
+            background-attachment: fixed;
             font-family: var(--font-sans);
             color: var(--ink-black);
-            line-height: 1.6;
+            line-height: 1.7;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        /* Canvas untuk efek kunang-kunang/cahaya senja */
+        #sunset-dust {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
         }
 
         /* ==========================================================================
-           2. LAYOUT & SCRAPBOOK CANVAS
+           3. LAYOUT & SCRAPBOOK CANVAS
            ========================================================================== */
+        .scrapbook-wrapper {
+            position: relative;
+            z-index: 10;
+            padding: 2rem 0;
+        }
+
         .scrapbook-container {
             width: 100%;
-            max-width: 540px;
+            max-width: 600px;
             margin: 0 auto;
             background-color: var(--paper-bg);
             background-image: var(--paper-texture);
             position: relative;
             box-shadow: 
-                0 0 40px rgba(0,0,0,0.05), 
-                20px 0 60px rgba(0,0,0,0.08), 
-                -20px 0 60px rgba(0,0,0,0.08);
+                0 0 50px rgba(0,0,0,0.3), 
+                20px 0 80px rgba(0,0,0,0.4), 
+                -20px 0 80px rgba(0,0,0,0.4);
             overflow: hidden;
+            border-radius: 4px;
         }
 
-        /* Efek pinggiran kertas kotor/tua di kiri dan kanan */
+        /* Bayangan dalam (Inner shadow) untuk efek buku tebal */
         .scrapbook-container::after {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.03);
+            box-shadow: inset 0 0 60px rgba(82, 37, 70, 0.15);
             pointer-events: none;
             z-index: 100;
         }
 
         section {
             min-height: 100vh;
-            padding: 6rem 2.5rem;
+            padding: 7rem 3.5rem;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -81,484 +118,730 @@
         }
 
         /* ==========================================================================
-           3. TYPOGRAPHY & DECORATIONS
+           4. TYPOGRAPHY & DECORATIONS (Aesthetic/Feminine)
            ========================================================================== */
-        h1, h2, h3 { font-family: var(--font-serif); font-weight: 700; line-height: 1.15; color: var(--ink-black); }
-        p { color: var(--text-gray); }
+        h1 { 
+            font-family: var(--font-title); 
+            font-weight: 700; 
+            font-size: 2.2rem;
+            line-height: 1.2; 
+            color: var(--sunset-plum);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
         
+        h2 { 
+            font-family: var(--font-serif); 
+            font-weight: 600; 
+            font-size: 1.8rem;
+            color: var(--sunset-crimson); 
+            font-style: italic;
+        }
+
+        p { 
+            color: var(--text-gray); 
+            font-size: 1.05rem;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+        
+        /* Tulisan Tegak Bersambung (Calligraphy) */
+        .calligraphy {
+            font-family: var(--font-elegant);
+            color: var(--sunset-orange);
+            font-size: 4.5rem;
+            line-height: 1;
+            font-weight: 400;
+            text-shadow: 2px 2px 4px rgba(226, 62, 87, 0.15);
+            transform: rotate(-3deg);
+            margin: 1rem 0;
+        }
+
         .handwriting {
             font-family: var(--font-hand);
-            color: var(--electric-blue);
-            font-size: 2.8rem;
-            transform: rotate(-3deg);
-            display: inline-block;
-            text-shadow: 1px 1px 0px rgba(0,68,221,0.1);
+            color: var(--sunset-plum);
+            font-size: 2.2rem;
+            transform: rotate(2deg);
         }
 
         .text-center { text-align: center; }
-        .text-blue { color: var(--electric-blue); }
-        .uppercase { 
+        
+        .uppercase-sub { 
             text-transform: uppercase; 
-            letter-spacing: 3px; 
-            font-size: 0.8rem; 
+            letter-spacing: 4px; 
+            font-size: 0.75rem; 
             font-weight: 600; 
-            color: var(--text-gray);
+            color: var(--sunset-gold);
+            font-family: var(--font-sans);
+            margin-bottom: 1rem;
         }
 
-        /* SVG Scribbles */
+        /* SVG Ornamen (Bunga, Daun, Kupu-kupu) */
+        .ornament {
+            position: absolute;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0.8;
+            fill: var(--sunset-gold);
+            filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.05));
+        }
+        
+        /* Coretan Estetik */
         .scribble {
             position: absolute;
             pointer-events: none;
             z-index: 0;
-            stroke: var(--electric-blue);
-            stroke-width: 1.5;
+            stroke: var(--sunset-peach);
+            stroke-width: 2;
             fill: none;
             stroke-linecap: round;
             stroke-linejoin: round;
-            opacity: 0.6;
+            opacity: 0.7;
         }
 
         /* ==========================================================================
-           4. POLAROID & IMAGES
+           5. POLAROID, FRAMES, & IMAGES
            ========================================================================== */
         .polaroid {
-            background: #FFFFFF;
-            padding: 12px 12px 45px 12px;
+            background: #FFFAF5; /* Kertas polaroid hangat */
+            padding: 15px 15px 55px 15px;
             box-shadow: 
-                0 4px 15px rgba(0,0,0,0.06), 
-                0 1px 3px rgba(0,0,0,0.04),
-                inset 0 0 0 1px rgba(0,0,0,0.02);
+                0 10px 25px rgba(42, 19, 41, 0.1), 
+                0 4px 10px rgba(42, 19, 41, 0.05),
+                inset 0 0 0 1px rgba(0,0,0,0.03);
             position: relative;
-            margin: 2rem 0;
+            margin: 2.5rem 0;
             z-index: 2;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            border-radius: 2px;
         }
         
         .polaroid:hover {
+            transform: scale(1.03) translateY(-10px) rotate(0deg) !important;
             box-shadow: 
-                0 15px 35px rgba(0,0,0,0.12), 
-                0 5px 15px rgba(0,0,0,0.08);
-            z-index: 20;
+                0 25px 40px rgba(42, 19, 41, 0.15), 
+                0 10px 20px rgba(42, 19, 41, 0.1);
+            z-index: 30;
+        }
+
+        .img-container {
+            width: 100%;
+            height: 320px; /* Fixed height for consistency */
+            overflow: hidden;
+            position: relative;
+            background: #EAEAEA;
         }
 
         .polaroid-img {
             width: 100%;
-            height: auto;
+            height: 100%;
+            object-fit: cover; /* Ensures images fill the frame beautifully */
             display: block;
-            filter: grayscale(100%) sepia(10%) contrast(1.1); /* Efek vintage B&W */
-            transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            /* Filter Senja: Sedikit sepia, hangat, kontras tinggi */
+            filter: sepia(30%) saturate(120%) contrast(1.1) brightness(0.95) hue-rotate(-5deg); 
+            transition: filter 0.8s ease, transform 0.8s ease;
         }
+        
         .polaroid:hover .polaroid-img {
-            filter: grayscale(0%) sepia(0%) contrast(1.05);
+            filter: sepia(0%) saturate(110%) contrast(1.05) brightness(1) hue-rotate(0deg);
+            transform: scale(1.05); /* Zoom in halus saat disentuh */
         }
 
         /* Caption Foto */
         .polaroid-caption {
             position: absolute;
-            bottom: 12px;
+            bottom: 15px;
             left: 0;
             width: 100%;
             text-align: center;
             font-family: var(--font-hand);
-            font-size: 1.4rem;
-            color: var(--ink-black);
-            opacity: 0.8;
+            font-size: 1.6rem;
+            color: var(--sunset-plum);
+            opacity: 0.9;
         }
 
-        /* Washi Tape */
+        /* Floral Washi Tape */
         .tape {
             position: absolute;
-            width: 110px;
-            height: 35px;
+            width: 130px;
+            height: 38px;
             background-color: var(--tape-color);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            backdrop-filter: blur(3px);
-            -webkit-backdrop-filter: blur(3px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             z-index: 5;
-            border-left: 2px dashed rgba(255,255,255,0.4);
-            border-right: 2px dashed rgba(255,255,255,0.4);
-            /* Tekstur garis halus pada lakban */
-            background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.2) 10px, rgba(255,255,255,0.2) 20px);
+            /* Pinggiran bergerigi layaknya sobekan lakban */
+            clip-path: polygon(0% 5%, 5% 0%, 10% 8%, 15% 0%, 20% 5%, 25% 0%, 30% 8%, 35% 0%, 40% 5%, 45% 0%, 50% 8%, 55% 0%, 60% 5%, 65% 0%, 70% 8%, 75% 0%, 80% 5%, 85% 0%, 90% 8%, 95% 0%, 100% 5%, 100% 95%, 95% 100%, 90% 92%, 85% 100%, 80% 95%, 75% 100%, 70% 92%, 65% 100%, 60% 95%, 55% 100%, 50% 92%, 45% 100%, 40% 95%, 35% 100%, 30% 92%, 25% 100%, 20% 95%, 15% 100%, 10% 92%, 5% 100%, 0% 95%);
+            /* Tekstur dan motif pada lakban */
+            background-image: 
+                radial-gradient(circle at 10px 10px, rgba(226, 62, 87, 0.1) 2px, transparent 2px),
+                radial-gradient(circle at 20px 20px, rgba(240, 165, 0, 0.1) 2px, transparent 2px);
+            background-size: 30px 30px;
         }
-        .tape-1 { top: -15px; left: -25px; transform: rotate(-12deg); }
-        .tape-2 { bottom: -15px; right: -25px; transform: rotate(10deg); }
-        .tape-center { top: -15px; left: 50%; transform: translateX(-50%) rotate(2deg); width: 130px; }
+        .tape-1 { top: -15px; left: -30px; transform: rotate(-15deg); }
+        .tape-2 { bottom: -18px; right: -25px; transform: rotate(12deg); }
+        .tape-center { top: -18px; left: 50%; transform: translateX(-50%) rotate(3deg); width: 150px; }
 
         /* ==========================================================================
-           5. ANIMATIONS (SPRING & STAGGER)
+           6. EPIC AESTHETIC ANIMATIONS (BLUR, SPRING, FADE)
            ========================================================================== */
-        /* Animasi Pop-in (seperti diletakkan ke buku) */
-        .pop-el {
-            opacity: 0;
-            transform: scale(0.85) translateY(30px) rotate(var(--rot, 0deg));
-            transition: all 0.9s cubic-bezier(0.34, 1.56, 0.64, 1); /* Efek pantulan/spring */
-        }
         
-        .pop-el.is-visible {
+        /* Blur-to-Focus Reveal */
+        .blur-reveal {
+            opacity: 0;
+            filter: blur(15px);
+            transform: translateY(40px) scale(0.95);
+            transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1); /* Epic smooth bezier */
+        }
+        .blur-reveal.is-visible {
+            opacity: 1;
+            filter: blur(0px);
+            transform: translateY(0) scale(1);
+        }
+
+        /* Pop-in dengan efek memantul halus */
+        .spring-pop {
+            opacity: 0;
+            transform: scale(0.8) translateY(50px) rotate(calc(var(--rot, 0deg) * 2));
+            transition: all 1.5s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy spring */
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.2));
+        }
+        .spring-pop.is-visible {
             opacity: 1;
             transform: scale(1) translateY(0) rotate(var(--rot, 0deg));
+            filter: drop-shadow(0 0px 0px rgba(0,0,0,0));
         }
 
-        /* Animasi Slide-in halus */
-        .slide-el {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        /* Animasi garis mengalir / drawing svg */
+        .draw-path path {
+            stroke-dasharray: 2000;
+            stroke-dashoffset: 2000;
+            transition: stroke-dashoffset 2.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
         }
-        .slide-el.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Animasi Gambar Tangan (Scribbles) */
-        .draw-el path {
-            stroke-dasharray: 1000;
-            stroke-dashoffset: 1000;
-            transition: stroke-dashoffset 2s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
-        }
-        .draw-el.is-visible path {
+        .draw-path.is-visible path {
             stroke-dashoffset: 0;
         }
 
+        /* Floating Animation (Animasi mengambang terus menerus) */
+        @keyframes float-gentle {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .floating {
+            animation: float-gentle 6s ease-in-out infinite;
+        }
+
+        /* Glowing Pulse */
+        @keyframes pulse-glow {
+            0% { filter: drop-shadow(0 0 5px rgba(240, 165, 0, 0.4)); }
+            50% { filter: drop-shadow(0 0 20px rgba(240, 165, 0, 0.8)); }
+            100% { filter: drop-shadow(0 0 5px rgba(240, 165, 0, 0.4)); }
+        }
+        .glowing {
+            animation: pulse-glow 3s infinite;
+        }
+
         /* ==========================================================================
-           6. SECTIONS SPECIFIC
+           7. SECTIONS STYLING
            ========================================================================== */
         
-        /* Intro */
-        #intro { padding-top: 8rem; }
-        #intro h1 { font-size: 2.8rem; margin: 1rem 0 2rem; position: relative; z-index: 2; }
+        /* Section 1: Intro */
+        #intro { padding-top: 9rem; }
+        .hero-title-container {
+            position: relative;
+            margin: 2rem 0 3rem;
+            width: 100%;
+        }
         
-        /* Envelope / Sticky Note */
-        .sticky-note {
-            background: #FFFCE0;
-            padding: 2.5rem 2rem;
-            box-shadow: 3px 5px 15px rgba(0,0,0,0.08);
+        /* Section 3: Surat / Sticky Note */
+        .love-letter {
+            background: #FFF1E6;
+            padding: 3.5rem 2.5rem;
+            box-shadow: 
+                5px 5px 25px rgba(136, 48, 78, 0.1),
+                inset 0 0 20px rgba(255,255,255,0.5);
             position: relative;
             margin: 3rem 0;
-            transform: rotate(2deg);
+            transform: rotate(1deg);
+            border-radius: 2px 15px 2px 15px; /* Sedikit melengkung di sudut */
+            border: 1px solid rgba(226, 62, 87, 0.1);
         }
-        .sticky-note::before {
+        .love-letter::before {
             content: '';
             position: absolute;
-            top: -10px; left: 50%;
-            transform: translateX(-50%);
-            width: 80px; height: 25px;
-            background: rgba(220, 50, 50, 0.6); /* Red Tape */
+            top: -15px; left: 50%;
+            transform: translateX(-50%) rotate(-2deg);
+            width: 100px; height: 35px;
+            background: rgba(226, 62, 87, 0.4); /* Pink/Red Tape */
             backdrop-filter: blur(2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .sticky-note p {
+        .love-letter p {
             font-family: var(--font-hand);
-            font-size: 1.8rem;
-            color: var(--ink-black);
-            line-height: 1.4;
-        }
-
-        /* The Mark (Torn Calendar) */
-        .torn-calendar {
-            background: #fff;
-            width: 200px;
-            padding: 1.5rem;
+            font-size: 1.9rem;
+            color: var(--sunset-plum);
+            line-height: 1.5;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-            border-top: 15px solid var(--electric-blue);
-            position: relative;
-            margin: 3rem auto;
-            border-bottom-left-radius: 5px;
-            border-bottom-right-radius: 5px;
-            background-image: linear-gradient(to bottom, transparent 95%, #f0f0f0 100%);
-        }
-        .cal-month { font-size: 1rem; font-weight: 700; letter-spacing: 2px; color: var(--electric-blue); margin-bottom: 0.5rem; }
-        .cal-date { font-size: 5.5rem; font-family: var(--font-serif); font-weight: 700; line-height: 1; }
-        .circle-highlight {
-            position: absolute;
-            top: 45%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 130%; height: 130%;
-            pointer-events: none;
         }
 
-        /* 4 Things List */
-        .scrap-list {
+        /* Section 4: Tanggal Estetik */
+        .aesthetic-date {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            margin: 4rem 0;
+        }
+        .date-number {
+            font-family: var(--font-elegant);
+            font-size: 8rem;
+            color: var(--sunset-orange);
+            line-height: 0.8;
+            text-shadow: 3px 3px 0px rgba(240, 165, 0, 0.2);
+            z-index: 2;
+        }
+        .date-month {
+            font-family: var(--font-title);
+            font-size: 1.5rem;
+            letter-spacing: 8px;
+            color: var(--sunset-plum);
+            text-transform: uppercase;
+            margin-top: 1rem;
+            z-index: 2;
+            background: var(--paper-bg);
+            padding: 0 10px;
+        }
+        .date-line {
+            position: absolute;
+            top: 50%;
+            left: -20%;
+            width: 140%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--sunset-crimson), transparent);
+            z-index: 1;
+        }
+
+        /* Section 5: 4 Hal Manis (List) */
+        .sweet-list {
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 2rem;
-            margin-top: 3rem;
+            gap: 2.5rem;
+            margin-top: 4rem;
             position: relative;
         }
-        .scrap-list::before {
+        .sweet-list::before {
             content: '';
             position: absolute;
-            left: 20px; top: 0; bottom: 0;
+            left: 24px; top: 10px; bottom: 10px;
             width: 2px;
-            background: repeating-linear-gradient(to bottom, var(--electric-blue) 0, var(--electric-blue) 5px, transparent 5px, transparent 15px);
-            opacity: 0.3;
+            background: repeating-linear-gradient(to bottom, var(--sunset-peach) 0, var(--sunset-peach) 8px, transparent 8px, transparent 16px);
         }
-        .scrap-item {
+        .sweet-item {
             position: relative;
-            padding-left: 3.5rem;
+            padding-left: 4.5rem;
         }
-        .scrap-item h4 { 
-            font-size: 1.2rem; 
-            margin-bottom: 0.3rem; 
-            font-family: var(--font-serif);
+        .sweet-item h4 { 
+            font-size: 1.3rem; 
+            margin-bottom: 0.4rem; 
+            font-family: var(--font-title);
+            color: var(--sunset-crimson);
+        }
+        .sweet-item p { 
+            font-size: 1rem; 
             font-style: italic;
         }
-        .scrap-item p { font-size: 0.95rem; }
-        .scrap-pin {
+        .sweet-pin {
             position: absolute;
-            left: 12px; top: 5px;
-            width: 16px; height: 16px;
-            background: #ff4757;
+            left: 12px; top: 2px;
+            width: 26px; height: 26px;
+            background: radial-gradient(circle at 30% 30%, #FFD3B6, #E23E57);
             border-radius: 50%;
-            box-shadow: inset -2px -2px 4px rgba(0,0,0,0.3), 2px 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 
+                inset -2px -2px 5px rgba(0,0,0,0.3), 
+                3px 3px 6px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* Kilauan di atas pin */
+        .sweet-pin::after {
+            content: '';
+            width: 6px; height: 6px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 4px; left: 4px;
+            opacity: 0.8;
+            filter: blur(1px);
         }
 
-        /* Gallery Collage */
-        .collage {
+        /* Section 6: Collage Gallery */
+        .gallery-collage {
             position: relative;
             width: 100%;
-            height: 550px;
-            margin-top: 3rem;
+            height: 600px;
+            margin-top: 4rem;
         }
-        .collage .polaroid { position: absolute; width: 60%; margin: 0; }
-        .img-1 { top: 0; left: 0; --rot: -6deg; z-index: 2;}
-        .img-2 { top: 120px; right: 0; --rot: 8deg; z-index: 3;}
-        .img-3 { bottom: 0; left: 15%; --rot: -3deg; z-index: 4;}
+        .gallery-collage .polaroid { position: absolute; width: 65%; margin: 0; }
+        .gal-1 { top: 0; left: 0; --rot: -8deg; z-index: 2;}
+        .gal-2 { top: 140px; right: -5%; --rot: 6deg; z-index: 3;}
+        .gal-3 { bottom: 0; left: 10%; --rot: -4deg; z-index: 4;}
 
-        /* Button */
-        .btn-stamp {
-            display: inline-block;
-            background-color: transparent;
-            color: var(--electric-blue);
-            padding: 1rem 2.5rem;
-            border: 2px dashed var(--electric-blue);
+        /* Tombol Estetik */
+        .btn-aesthetic {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, var(--sunset-plum), var(--sunset-crimson));
+            color: white;
+            padding: 1.2rem 3rem;
+            border-radius: 30px;
             text-decoration: none;
-            font-weight: 700;
-            letter-spacing: 2px;
-            margin-top: 3rem;
             font-family: var(--font-sans);
-            transition: all 0.3s ease;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-top: 4rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(136, 48, 78, 0.3);
+            border: 1px solid rgba(255,255,255,0.2);
             position: relative;
             overflow: hidden;
-            border-radius: 4px;
         }
-        .btn-stamp::before {
+        .btn-aesthetic::before {
             content: '';
             position: absolute;
             top: 0; left: -100%; width: 100%; height: 100%;
-            background: rgba(0, 68, 221, 0.1);
-            transition: all 0.4s ease;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: all 0.6s ease;
         }
-        .btn-stamp:hover::before { left: 0; }
-        .btn-stamp:hover {
-            transform: scale(1.05) rotate(-2deg);
-            box-shadow: 5px 5px 0 rgba(0, 68, 221, 0.1);
+        .btn-aesthetic:hover::before { left: 100%; }
+        .btn-aesthetic:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 25px rgba(136, 48, 78, 0.4);
+            color: var(--sunset-peach);
         }
 
         /* ==========================================================================
-           7. MUSIC PLAYER STYLES
+           8. MUSIC PLAYER & UI COMPONENTS
            ========================================================================== */
-        .music-player-btn {
+        .vinyl-player {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            width: 55px;
-            height: 55px;
-            background-color: var(--paper-bg);
-            border: 2px dashed var(--electric-blue);
+            width: 65px;
+            height: 65px;
+            background-color: #111;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
             z-index: 1000;
-            box-shadow: 3px 3px 10px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+            box-shadow: 
+                0 5px 15px rgba(0,0,0,0.4),
+                inset 0 0 0 4px var(--sunset-gold),
+                inset 0 0 0 10px #222;
+            transition: all 0.4s ease;
         }
-        .music-player-btn:hover {
-            transform: scale(1.1) rotate(5deg);
+        
+        .vinyl-player::after {
+            /* Titik tengah piringan hitam */
+            content: '';
+            width: 15px; height: 15px;
+            background: var(--sunset-crimson);
+            border-radius: 50%;
+            position: absolute;
         }
-        .music-player-btn.playing {
-            border-style: solid;
-            animation: spin 4s linear infinite;
+
+        .vinyl-player:hover { transform: scale(1.1); }
+        
+        .vinyl-player.playing {
+            animation: spin-vinyl 3s linear infinite;
+            box-shadow: 
+                0 5px 20px rgba(240, 165, 0, 0.5),
+                inset 0 0 0 4px var(--sunset-gold),
+                inset 0 0 0 10px #222;
         }
-        @keyframes spin {
+        
+        @keyframes spin-vinyl {
             100% { transform: rotate(360deg); }
         }
-        .music-icon {
-            width: 24px;
-            height: 24px;
-            stroke: var(--electric-blue);
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
+
         .music-tooltip {
             position: fixed;
-            bottom: 45px;
-            right: 100px;
+            bottom: 50px;
+            right: 110px;
             font-family: var(--font-hand);
-            font-size: 1.2rem;
-            color: var(--electric-blue);
-            background: var(--paper-bg);
-            padding: 5px 15px;
-            border: 1px solid rgba(0,68,221,0.2);
-            border-radius: 20px;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.05);
+            font-size: 1.3rem;
+            color: var(--sunset-peach);
+            background: rgba(42, 19, 41, 0.85);
+            backdrop-filter: blur(5px);
+            padding: 8px 20px;
+            border: 1px solid var(--sunset-crimson);
+            border-radius: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             pointer-events: none;
-            transition: opacity 0.5s ease;
+            transition: all 0.5s ease;
             z-index: 999;
         }
         .music-tooltip.hidden {
             opacity: 0;
+            transform: translateX(20px);
         }
+
+        /* Garis Batas Bawah / Divider */
+        .divider {
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--sunset-peach), transparent);
+            margin: 2rem auto;
+            opacity: 0.6;
+        }
+
+        /* ==========================================================================
+           9. SUNRISE TRANSITION (EPIC ZOOM)
+           ========================================================================== */
+        body.locked { 
+            overflow: hidden; 
+            height: 100vh; 
+        }
+        
+        #sun-overlay {
+            position: fixed; 
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(to bottom, #0F0518 0%, #2A1329 50%, #522546 100%);
+            z-index: 99999;
+            display: flex; justify-content: center; align-items: center;
+            transition: opacity 2s ease-in-out;
+        }
+        
+        .sun-orb {
+            position: absolute;
+            bottom: -150px; /* Mulai dari bawah layar layaknya matahari terbit */
+            width: 150px; height: 150px;
+            background: radial-gradient(circle, #FFFFFF 5%, #FFD3B6 30%, #F0A500 60%, #E23E57 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 100px 50px rgba(240, 165, 0, 0.6), 0 0 250px 100px rgba(226, 62, 87, 0.4);
+            transition: transform 3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .sun-orb.rise {
+            transform: translateY(-50vh); /* Naik ke tengah layar */
+        }
+        
+        .sun-orb.zoom {
+            transition: transform 2s cubic-bezier(0.7, 0, 0.1, 1);
+            transform: translateY(-50vh) scale(100); /* Zoom masif menutupi kamera/layar */
+        }
+        
+        .sun-text {
+            position: absolute;
+            font-family: var(--font-title);
+            color: #FFD3B6;
+            font-size: 2.5rem;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+            text-shadow: 0 0 20px rgba(240, 165, 0, 0.8);
+            z-index: 2;
+            text-align: center;
+        }
+        
+        .sun-text.show { opacity: 1; }
+        .sun-text.hide { opacity: 0; }
 
     </style>
 </head>
-<body>
+<body class="locked">
 
-    <div class="scrapbook-container">
+    <!-- OVERLAY TRANSISI MATAHARI TERBIT -->
+    <div id="sun-overlay">
+        <div class="sun-orb"></div>
+        <div class="sun-text">Menyambut<br>Hari Baru...</div>
+    </div>
 
-        <!-- SECTION 1: INTRO -->
-        <section id="intro">
-            <!-- Ornamen Bintang SVG -->
-            <svg class="scribble draw-el" style="top: 15%; left: 10%; width: 40px; height: 40px;" viewBox="0 0 100 100">
-                <path d="M50,10 L60,40 L90,50 L60,60 L50,90 L40,60 L10,50 L40,40 Z" />
-            </svg>
+    <!-- Latar Belakang Partikel Senja (Fireflies / Sunset Dust) -->
+    <canvas id="sunset-dust"></canvas>
 
-            <span class="uppercase slide-el">Agronity25 Present</span>
-            <h1 class="text-center slide-el" style="transition-delay: 0.1s;">A Special Day for<br>Ahmad Rifky Jailani</h1>
-            
-            <div class="polaroid pop-el parallax-item" style="--rot: 3deg; transition-delay: 0.2s;">
-                <div class="tape tape-1"></div>
-                <img id="imgHero" src="" alt="Rifky" class="polaroid-img">
-                <div class="tape tape-2"></div>
-                <div class="polaroid-caption">The Birthday Boy</div>
-            </div>
+    <div class="scrapbook-wrapper">
+        <div class="scrapbook-container">
 
-            <span class="handwriting slide-el" style="transition-delay: 0.4s; margin-top: 1rem; font-size: 3.5rem;">Happy Birthday!</span>
-        </section>
-
-        <!-- SECTION 2: MEANING -->
-        <section id="meaning">
-            <svg class="scribble draw-el" style="top: -20px; right: 20px; width: 80px; height: 80px;" viewBox="0 0 100 100">
-                <path d="M10,50 Q40,0 90,50 T90,90" />
-            </svg>
-
-            <h2 class="text-center slide-el">PERSAHABATAN ADALAH...</h2>
-            <p class="text-center slide-el" style="transition-delay: 0.1s; margin: 1rem 0;">Tentang cerita-cerita kecil yang kita lalui bersama di Agronity. Kehadiranmu selalu punya warna tersendiri.</p>
-            
-            <div class="polaroid pop-el parallax-item" style="--rot: -4deg; transition-delay: 0.2s;">
-                <div class="tape tape-center"></div>
-                <!-- SVG Paperclip simulasi -->
-                <svg style="position:absolute; top:-15px; right:20px; width:30px; height:50px; z-index:10; filter:drop-shadow(2px 2px 2px rgba(0,0,0,0.2));" viewBox="0 0 30 50">
-                    <path d="M15,40 L15,10 C15,5 20,5 20,10 L20,35 C20,42 10,42 10,35 L10,15" stroke="#777" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <!-- SECTION 1: INTRO (SAMBUTAN SENJA) -->
+            <section id="intro">
+                <!-- Ornamen Daun Kiri Atas -->
+                <svg class="ornament floating blur-reveal" style="top: 30px; left: 20px; width: 60px; height: 60px; transition-delay: 0.1s;" viewBox="0 0 24 24">
+                    <path d="M12,2 C12,2 14,6 18,6 C18,6 19,10 16,13 C13,16 12,22 12,22 C12,22 11,16 8,13 C5,10 6,6 6,6 C10,6 12,2 12,2 Z" opacity="0.5"/>
+                    <path d="M12,2 C12,2 10,6 6,6 C6,6 5,10 8,13 C11,16 12,22 12,22 C12,22 13,16 16,13 C19,10 18,6 18,6 C14,6 12,2 12,2 Z" opacity="0.3"/>
                 </svg>
-                <img id="imgMiddle" src="" alt="Activity" class="polaroid-img">
-            </div>
 
-            <span class="handwriting slide-el" style="transition-delay: 0.3s; margin-top: 1.5rem;">You are appreciated.</span>
-        </section>
-
-        <!-- SECTION 3: STICKY NOTE -->
-        <section id="message" style="padding: 4rem 2.5rem;">
-            <h3 class="uppercase text-center slide-el">A Small Note For You</h3>
-            
-            <div class="sticky-note pop-el" style="--rot: 2deg; transition-delay: 0.1s;">
-                <p class="text-center">
-                    "Selamat ulang tahun, Ky! Semoga tahun ini membawa banyak keberhasilan, kesehatan, dan kebahagiaan yang tidak ada habisnya."
-                </p>
-            </div>
-
-            <span class="handwriting slide-el" style="transition-delay: 0.2s; transform: rotate(-5deg);">Keep shining! ✨</span>
-        </section>
-
-        <!-- SECTION 4: THE MARK (CALENDAR) -->
-        <section id="mark">
-            <div class="torn-calendar pop-el" style="--rot: -2deg;">
-                <div class="cal-month">MARET 2026</div>
-                <div class="cal-date">27</div>
-                <svg class="circle-highlight draw-el" viewBox="0 0 100 100">
-                    <path d="M 50,15 C 80,10 95,40 85,75 C 75,95 30,100 10,70 C -5,45 20,10 50,15" stroke="#ff4757" stroke-width="3" fill="none" stroke-linecap="round"/>
-                </svg>
-            </div>
-
-            <p class="text-center slide-el" style="transition-delay: 0.2s; font-size: 1.1rem;">Jumat yang istimewa. Hari di mana satu lagi babak baru dimulai.</p>
-        </section>
-
-        <!-- SECTION 5: 4 THINGS -->
-        <section id="things">
-            <h2 class="text-center slide-el">4 Things About You</h2>
-            
-            <div class="scrap-list">
-                <div class="scrap-item slide-el" style="transition-delay: 0.1s;">
-                    <div class="scrap-pin"></div>
-                    <h4>The Vibe</h4>
-                    <p>Selalu membawa suasana tenang di tengah hiruk-pikuk kuliah.</p>
+                <span class="uppercase-sub blur-reveal" style="transition-delay: 0.2s;">Spesial Buat Teman Terbaik | Dari Agronity25</span>
+                
+                <div class="hero-title-container blur-reveal" style="transition-delay: 0.3s;">
+                    <h1 class="text-center">Happy Birthday</h1>
+                    <h1 class="calligraphy text-center">Nayla Cynthia</h1>
                 </div>
-                <div class="scrap-item slide-el" style="transition-delay: 0.2s;">
-                    <div class="scrap-pin" style="background: #eccc68;"></div>
-                    <h4>The Soul</h4>
-                    <p>Teman diskusi yang asik dan solutif bagi anak-anak Agronity.</p>
-                </div>
-                <div class="scrap-item slide-el" style="transition-delay: 0.3s;">
-                    <div class="scrap-pin" style="background: #1e90ff;"></div>
-                    <h4>The Spirit</h4>
-                    <p>Semangat yang nggak pernah padam buat hal-hal baru.</p>
-                </div>
-                <div class="scrap-item slide-el" style="transition-delay: 0.4s;">
-                    <div class="scrap-pin" style="background: #2ed573;"></div>
-                    <h4>The Wish</h4>
-                    <p>Semoga impianmu satu per satu jadi nyata tahun ini!</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- SECTION 6: COLLAGE -->
-        <section id="memories">
-            <h2 class="text-center slide-el">Cheers to<br>Another Year!</h2>
-            <p class="text-center slide-el" style="transition-delay: 0.1s; margin-top: 1rem;">Terima kasih sudah menjadi bagian dari perjalanan Agronity25. Mari buat lebih banyak memori hebat.</p>
-
-            <div class="collage">
-                <div class="polaroid img-1 pop-el" style="transition-delay: 0.2s;">
+                
+                <div class="polaroid spring-pop parallax-item" style="--rot: 2deg; transition-delay: 0.5s;">
                     <div class="tape tape-1"></div>
-                    <img id="imgGal1" src="" alt="Memory 1" class="polaroid-img">
+                    <div class="img-container">
+                        <!-- Menggunakan Link 1 -->
+                        <img id="imgHero" src="https://img.sanishtech.com/u/67176c2837400445697ac4b3279f82f9.jpg" alt="Nayla" class="polaroid-img" onerror="this.src='https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&q=80'">
+                    </div>
+                    <div class="tape tape-2"></div>
+                    <div class="polaroid-caption">Si Paling Senja</div>
                 </div>
-                <div class="polaroid img-2 pop-el" style="transition-delay: 0.3s;">
-                    <div class="tape tape-2" style="top:-15px; bottom:auto;"></div>
-                    <img id="imgGal2" src="" alt="Memory 2" class="polaroid-img">
+
+                <!-- Ornamen Kupu-kupu Glowing -->
+                <svg class="ornament glowing spring-pop" style="bottom: 120px; right: 40px; width: 40px; height: 40px; transition-delay: 0.8s; fill: var(--sunset-crimson);" viewBox="0 0 24 24">
+                    <path d="M12,15 C12,15 9,18 6,18 C3,18 2,15 2,12 C2,9 5,7 8,7 C10,7 12,10 12,10 C12,10 14,7 16,7 C19,7 22,9 22,12 C22,15 21,18 18,18 C15,18 12,15 12,15 Z"/>
+                    <path d="M12,15 L12,22" stroke="var(--sunset-crimson)" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+
+                <p class="text-center blur-reveal" style="transition-delay: 0.7s; margin-top: 2rem; font-style: italic;">"Sore ini spesial buat ngerayain hari lahir kamu. Tambah usia tambah bahagia ya, Nay!"</p>
+            </section>
+
+            <!-- SECTION 2: MAKNA SENJA -->
+            <section id="meaning">
+                <div class="divider"></div>
+                
+                <h2 class="text-center blur-reveal">ASIK KAYA SENJA...</h2>
+                <p class="text-center blur-reveal" style="transition-delay: 0.2s; margin: 1.5rem 0;">Sama kaya senja yang selalu ditunggu, kehadiran kamu pas ngumpul juga selalu bikin suasana makin seru. Tetep jadi Nayla yang asik dan humble ya!</p>
+                
+                <div class="polaroid spring-pop parallax-item" style="--rot: -3deg; transition-delay: 0.4s; margin-top: 1rem;">
+                    <div class="tape tape-center"></div>
+                    <div class="img-container">
+                        <!-- Menggunakan Link 2 -->
+                        <img id="imgMiddle" src="https://img.sanishtech.com/u/3bf222610a391a97bad9daad4bafb726.jpg" alt="Senja" class="polaroid-img" onerror="this.src='https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&q=80'">
+                    </div>
                 </div>
-                <div class="polaroid img-3 pop-el" style="transition-delay: 0.4s;">
-                    <img id="imgGal3" src="" alt="Memory 3" class="polaroid-img">
+
+                <span class="handwriting blur-reveal" style="transition-delay: 0.6s; margin-top: 2rem;">Bestie for real.</span>
+                <div class="divider" style="margin-top: 3rem;"></div>
+            </section>
+
+            <!-- SECTION 3: PESAN UNTUK NAYLA -->
+            <section id="message" style="padding: 4rem 2.5rem;">
+                <span class="uppercase-sub blur-reveal">Wishes Dari Kita</span>
+                
+                <div class="love-letter spring-pop" style="--rot: 1deg; transition-delay: 0.2s;">
+                    <!-- Ornamen Bintang di sudut surat -->
+                    <svg class="ornament glowing" style="top: 10px; right: 10px; width: 20px; height: 20px;" viewBox="0 0 24 24">
+                        <path d="M12,2 L15,9 L22,9 L16,14 L18,21 L12,17 L6,21 L8,14 L2,9 L9,9 Z" fill="var(--sunset-gold)"/>
+                    </svg>
+                    
+                    <p>
+                        "Happy level up, Nayla! Semoga tahun ini makin sukses, tugas kuliah aman, makin glowing, dan semua yang kamu targetin bisa kecapai. Ditunggu traktirannya nih!"
+                    </p>
                 </div>
-            </div>
 
-            <span class="handwriting slide-el" style="transition-delay: 0.6s; margin-top: 2rem;">Memories stay forever.</span>
-        </section>
+                <span class="calligraphy blur-reveal" style="font-size: 3rem; transition-delay: 0.4s; transform: rotate(-5deg); margin-top: -1rem;">Stay Awesome ✨</span>
+            </section>
 
-        <!-- SECTION 7: CLOSING -->
-        <section id="closing" style="padding-bottom: 8rem;">
-            <div class="polaroid pop-el parallax-item" style="--rot: 1deg;">
-                <div class="tape tape-center"></div>
-                <img id="imgClosing" src="" alt="Rifky Relaxing" class="polaroid-img">
-            </div>
+            <!-- SECTION 4: TANGGAL ESTETIK -->
+            <section id="mark">
+                <div class="aesthetic-date blur-reveal">
+                    <div class="date-line"></div>
+                    <!-- Garis Lingkaran Animasi SVG -->
+                    <svg class="scribble draw-path" style="width: 180px; height: 180px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.3;" viewBox="0 0 100 100">
+                        <path d="M 50,10 C 70,10 90,30 90,50 C 90,75 65,90 40,85 C 15,80 10,50 20,30 C 30,15 40,10 50,10" stroke="var(--sunset-orange)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                    </svg>
+                    
+                    <span class="date-number">30</span>
+                    <span class="date-month">MARET</span>
+                </div>
 
-            <h4 class="uppercase slide-el" style="margin-top: 3rem; transition-delay: 0.1s;">WITH LOVE,</h4>
-            <p class="handwriting slide-el" style="font-size: 2.5rem; transform: rotate(0); transition-delay: 0.2s; color: var(--ink-black);">Keluarga Agronity25</p>
+                <p class="text-center blur-reveal" style="transition-delay: 0.3s; font-size: 1.15rem; color: var(--sunset-plum);">Hari di mana temen kita yang satu ini resmi nambah umur!</p>
+            </section>
 
-            <a href="https://wa.me/6285652023439?text=Happy%20Birthday%20Rifky!%20Wish%20you%20all%20the%20best%20dari%20Agronity25!" class="btn-stamp slide-el" style="transition-delay: 0.3s;" target="_blank">
-                KIRIM UCAPAN WHATSAPP
-            </a>
-        </section>
+            <!-- SECTION 5: 4 HAL MANIS -->
+            <section id="things">
+                <h2 class="text-center blur-reveal" style="font-size: 2rem;">4 HAL SERU TENTANG KAMU</h2>
+                
+                <div class="sweet-list">
+                    <div class="sweet-item blur-reveal" style="transition-delay: 0.1s;">
+                        <div class="sweet-pin"></div>
+                        <h4>Vibe Positif</h4>
+                        <p>Selalu bawa energi positif yang bikin tongkrongan jadi hidup.</p>
+                    </div>
+                    <div class="sweet-item blur-reveal" style="transition-delay: 0.3s;">
+                        <div class="sweet-pin" style="background: radial-gradient(circle at 30% 30%, #FFD3B6, #F0A500);"></div>
+                        <h4>Teman Curhat</h4>
+                        <p>Pendengar yang baik kalau kita lagi butuh tempat cerita atau keluh kesah.</p>
+                    </div>
+                    <div class="sweet-item blur-reveal" style="transition-delay: 0.5s;">
+                        <div class="sweet-pin" style="background: radial-gradient(circle at 30% 30%, #FFD3B6, #88304E);"></div>
+                        <h4>Tawa Nular</h4>
+                        <p>Kalau udah ketawa, pasti yang lain ikut ketawa padahal kadang gak lucu-lucu amat.</p>
+                    </div>
+                    <div class="sweet-item blur-reveal" style="transition-delay: 0.7s;">
+                        <div class="sweet-pin" style="background: radial-gradient(circle at 30% 30%, #FFD3B6, #522546);"></div>
+                        <h4>Support System</h4>
+                        <p>Selalu ada buat ngedukung dan bantu temen-temennya dari belakang.</p>
+                    </div>
+                </div>
+            </section>
 
+            <!-- SECTION 6: COLLAGE GALLERY -->
+            <section id="memories">
+                <div class="divider"></div>
+                <h2 class="text-center blur-reveal" style="font-size: 2.2rem; line-height: 1.1;">MEMORI BARENG<br>TEMAN-TEMAN</h2>
+                <p class="text-center blur-reveal" style="transition-delay: 0.2s; margin-top: 1rem;">Kumpulan momen random dan seru yang udah kita lewatin bareng. Bakal nambah terus nih!</p>
+
+                <div class="gallery-collage">
+                    <div class="polaroid gal-1 spring-pop" style="transition-delay: 0.3s;">
+                        <div class="tape tape-1"></div>
+                        <div class="img-container">
+                            <!-- Menggunakan Link 3 -->
+                            <img id="imgGal1" src="https://img.sanishtech.com/u/e4d3b076337482dacd9682100c078a37.jpg" alt="Memori 1" class="polaroid-img" onerror="this.src='https://images.unsplash.com/photo-1523580494112-071d384e236c?w=400&q=80'">
+                        </div>
+                    </div>
+                    <div class="polaroid gal-2 spring-pop" style="transition-delay: 0.5s;">
+                        <div class="tape tape-2" style="top:-15px; bottom:auto;"></div>
+                        <div class="img-container">
+                            <!-- Kembali menggunakan Link 1 untuk variasi -->
+                            <img id="imgGal2" src="https://img.sanishtech.com/u/67176c2837400445697ac4b3279f82f9.jpg" alt="Memori 2" class="polaroid-img" onerror="this.src='https://images.unsplash.com/photo-1541532713592-79a0317b6b77?w=400&q=80'">
+                        </div>
+                    </div>
+                    <div class="polaroid gal-3 spring-pop" style="transition-delay: 0.7s;">
+                        <div class="img-container">
+                            <!-- Kembali menggunakan Link 2 -->
+                            <img id="imgGal3" src="https://img.sanishtech.com/u/3bf222610a391a97bad9daad4bafb726.jpg" alt="Memori 3" class="polaroid-img" onerror="this.src='https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&q=80'">
+                        </div>
+                        <div class="polaroid-caption" style="font-size: 1.2rem;">Moments</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 7: CLOSING -->
+            <section id="closing" style="padding-bottom: 8rem; text-align: center;">
+                <div class="polaroid spring-pop parallax-item" style="--rot: 1.5deg; margin-bottom: 3rem;">
+                    <div class="tape tape-center"></div>
+                    <div class="img-container" style="height: 350px;">
+                        <!-- Menggunakan Link 3 sebagai penutup -->
+                        <img id="imgClosing" src="https://img.sanishtech.com/u/e4d3b076337482dacd9682100c078a37.jpg" alt="Nayla Beautiful" class="polaroid-img" onerror="this.src='https://images.unsplash.com/photo-1493225457124-a1a2a5f5f9af?w=600&q=80'">
+                    </div>
+                </div>
+
+                <span class="uppercase-sub blur-reveal">Sekali Lagi, Happy Birthday!</span>
+                <h1 class="calligraphy blur-reveal" style="font-size: 3.5rem; transition-delay: 0.2s; color: var(--sunset-crimson);">Dari Agronity25,</h1>
+                <p class="handwriting blur-reveal" style="font-size: 2.2rem; transform: rotate(0); transition-delay: 0.4s; color: var(--ink-black); margin-top: -1rem;">Buat Nayla Cynthia Renanata</p>
+
+                <!-- Tombol WhatsApp Diperbarui -->
+                <a href="https://wa.me/6283131126390?text=HBD%20Nayla!%20Wish%20you%20all%20the%20best%20ya,%20jangan%20lupa%20makan-makan!%20%F0%9F%8E%89" class="btn-aesthetic blur-reveal" style="transition-delay: 0.6s;" target="_blank">
+                    KIRIM UCAPAN HBD
+                </a>
+            </section>
+
+        </div>
     </div>
 
     <!-- AUDIO ELEMENT & PLAYER UI -->
-    <div id="music-tooltip" class="music-tooltip hidden">Sedang memutar musik 🎶</div>
-    <div id="music-toggle" class="music-player-btn playing">
-        <svg class="music-icon" viewBox="0 0 24 24">
+    <div id="music-tooltip" class="music-tooltip hidden">Melodi Senja Sedang Diputar 🎶</div>
+    <div id="music-toggle" class="vinyl-player playing">
+        <!-- Ikon nada musik di dalam vinyl -->
+        <svg style="width: 20px; height: 20px; fill: white; z-index: 10; position: absolute; opacity: 0.8;" viewBox="0 0 24 24">
             <path d="M9 18V5l12-2v13"></path>
             <circle cx="6" cy="18" r="3"></circle>
             <circle cx="18" cy="16" r="3"></circle>
@@ -574,47 +857,161 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
-            /* ----------------------------------------------------------------------
-               1. DYNAMIC IMAGE CONFIGURATION
-               ---------------------------------------------------------------------- */
-            const profilePic    = "https://image2url.com/r2/default/images/1774759985780-5acd8c2c-83a7-41d0-849e-ffca6e9b09b6.jpeg"; 
-            const middlePic     = "https://image2url.com/r2/default/images/1774760029062-745d9ff6-65dd-422c-a5e7-6c9845b9efda.jpeg"; 
-            const galPic1       = "https://image2url.com/r2/default/images/1774760070441-861e53c5-0b3e-4c32-876b-951d79552cb1.jpeg"; 
-            const galPic2       = "https://image2url.com/r2/default/images/1774760136196-8927cce2-2c8d-472a-809e-a14e5bf643ec.jpeg"; 
-            const galPic3       = "https://image2url.com/r2/default/images/1774760166747-1b74882b-041b-4c84-8488-606c05090bec.jpeg"; 
-            const closingPic    = "https://image2url.com/r2/default/images/1774759985780-5acd8c2c-83a7-41d0-849e-ffca6e9b09b6.jpeg"; 
+            /* ==========================================================================
+               1. ENGINE PARTIKEL SENJA (FIREFLIES & SUNSET DUST)
+               Menambahkan efek magis interaktif pada latar belakang.
+               ========================================================================== */
+            const canvas = document.getElementById('sunset-dust');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
 
-            document.getElementById('imgHero').src = profilePic;
-            document.getElementById('imgMiddle').src = middlePic;
-            document.getElementById('imgGal1').src = galPic1;
-            document.getElementById('imgGal2').src = galPic2;
-            document.getElementById('imgGal3').src = galPic3;
-            document.getElementById('imgClosing').src = closingPic;
+            function resizeCanvas() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
 
-            /* ----------------------------------------------------------------------
-               2. INTERSECTION OBSERVER UNTUK ANIMASI STAGGER
-               ---------------------------------------------------------------------- */
-            const observerOptions = {
-                root: null,
-                threshold: 0.15,
-                rootMargin: "0px 0px -50px 0px"
-            };
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.size = Math.random() * 2.5 + 0.5;
+                    this.speedX = Math.random() * 1 - 0.5;
+                    this.speedY = Math.random() * -1 - 0.5; // Bergerak perlahan ke atas
+                    
+                    // Warna partikel: perpaduan oranye, emas, dan sedikit pink senja
+                    const colors = [
+                        'rgba(240, 165, 0, opacity)',   // Emas
+                        'rgba(255, 211, 182, opacity)', // Peach
+                        'rgba(226, 62, 87, opacity)'    // Oranye/Pink
+                    ];
+                    this.baseColor = colors[Math.floor(Math.random() * colors.length)];
+                    this.opacity = Math.random() * 0.5 + 0.2;
+                    
+                    // Efek kelap-kelip (twinkle)
+                    this.twinkleSpeed = Math.random() * 0.02 + 0.01;
+                    this.twinkleDir = Math.random() > 0.5 ? 1 : -1;
+                }
 
-            const observer = new IntersectionObserver((entries, obs) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        obs.unobserve(entry.target); 
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+
+                    // Mengambang seperti ditiup angin lembut
+                    this.x += Math.sin(this.y * 0.02) * 0.3;
+
+                    // Kelap-kelip opacity
+                    this.opacity += this.twinkleSpeed * this.twinkleDir;
+                    if (this.opacity >= 0.8) this.twinkleDir = -1;
+                    if (this.opacity <= 0.1) this.twinkleDir = 1;
+
+                    // Reset posisi jika keluar layar
+                    if (this.y < -10) {
+                        this.y = height + 10;
+                        this.x = Math.random() * width;
                     }
-                });
-            }, observerOptions);
+                    if (this.x < -10) this.x = width + 10;
+                    if (this.x > width + 10) this.x = -10;
+                }
 
-            const animatedElements = document.querySelectorAll('.pop-el, .slide-el, .draw-el');
-            animatedElements.forEach(el => observer.observe(el));
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.baseColor.replace('opacity', this.opacity);
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = this.baseColor.replace('opacity', 1); // Efek glowing
+                    ctx.fill();
+                    ctx.shadowBlur = 0; // Reset shadow untuk performa
+                }
+            }
 
-            /* ----------------------------------------------------------------------
-               3. PARALLAX SEDERHANA UNTUK POLAROID
-               ---------------------------------------------------------------------- */
+            function initParticles() {
+                particles = [];
+                const particleCount = Math.min(window.innerWidth / 15, 100); // Responsif jumlah partikel
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push(new Particle());
+                }
+            }
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, width, height);
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+                }
+                requestAnimationFrame(animateParticles);
+            }
+
+            initParticles();
+            animateParticles();
+
+            /* ==========================================================================
+               2. LOGIKA TRANSISI MATAHARI TERBIT (EPIC SUNRISE ZOOM)
+               ========================================================================== */
+            const overlay = document.getElementById('sun-overlay');
+            const sun = document.querySelector('.sun-orb');
+            const text = document.querySelector('.sun-text');
+            
+            // 1. Matahari terbit dari bawah setelah 0.5 detik
+            setTimeout(() => {
+                sun.classList.add('rise');
+                text.classList.add('show');
+            }, 500);
+
+            // 2. Teks memudar bersiap untuk zoom
+            setTimeout(() => {
+                text.classList.remove('show');
+                text.classList.add('hide');
+            }, 3000);
+
+            // 3. Zoom matahari menutupi layar dengan cepat
+            setTimeout(() => {
+                sun.classList.add('zoom');
+            }, 3500);
+
+            // 4. Fade out overlay matahari, buka kunci scroll layar, dan picu animasi website
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                document.body.classList.remove('locked');
+                initScrollAnimations(); // Panggil animasi elemen scrapbook
+            }, 4500);
+
+            // 5. Hapus elemen overlay dari background sepenuhnya agar tidak menghalangi klik
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 6500);
+
+            /* ==========================================================================
+               3. INTERSECTION OBSERVER UNTUK ANIMASI STAGGER (EPIC REVEAL)
+               ========================================================================== */
+            function initScrollAnimations() {
+                const observerOptions = {
+                    root: null,
+                    threshold: 0.1,
+                    rootMargin: "0px 0px -80px 0px"
+                };
+
+                const observer = new IntersectionObserver((entries, obs) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            obs.unobserve(entry.target); 
+                        }
+                    });
+                }, observerOptions);
+
+                // Observasi semua elemen yang punya efek animasi
+                const animatedElements = document.querySelectorAll('.blur-reveal, .spring-pop, .draw-path');
+                animatedElements.forEach(el => observer.observe(el));
+            }
+
+            /* ==========================================================================
+               4. ADVANCED PARALLAX EFFECT UNTUK POLAROID
+               ========================================================================== */
             const parallaxItems = document.querySelectorAll('.parallax-item');
             let ticking = false;
 
@@ -626,8 +1023,9 @@
                         parallaxItems.forEach(item => {
                             const rect = item.getBoundingClientRect();
                             if(rect.top < windowHeight && rect.bottom > 0) {
+                                // Hitung jarak dari tengah layar
                                 const distance = (rect.top - (windowHeight / 2));
-                                const yPos = -(distance * 0.05); 
+                                const yPos = -(distance * 0.08); // Kecepatan parallax
                                 
                                 const rot = item.style.getPropertyValue('--rot') || '0deg';
                                 item.style.transform = `translateY(${yPos}px) rotate(${rot})`;
@@ -639,13 +1037,16 @@
                 }
             });
 
-            /* ----------------------------------------------------------------------
-               4. MUSIC PLAYER LOGIC (AUTOPLAY ENABLED)
-               ---------------------------------------------------------------------- */
+            /* ==========================================================================
+               4. MUSIC PLAYER LOGIC (VINYL STYLE)
+               ========================================================================== */
             const musicToggle = document.getElementById('music-toggle');
             const bgMusic = document.getElementById('bg-music');
             const musicTooltip = document.getElementById('music-tooltip');
             let isPlaying = false;
+
+            // Atur volume sedikit lebih pelan agar lebih estetik/nyaman
+            bgMusic.volume = 0.6;
 
             // Memulai pemutaran secara otomatis saat halaman dimuat
             bgMusic.play().then(() => {
@@ -653,11 +1054,10 @@
                 musicToggle.classList.add('playing');
                 musicTooltip.classList.add('hidden');
             }).catch(err => {
-                // Berjaga-jaga jika autoplay gagal walau sudah di-host (karena kebijakan ketat perangkat klien)
                 console.log("Autoplay dicegah oleh browser klien:", err);
                 musicToggle.classList.remove('playing');
                 musicTooltip.classList.remove('hidden');
-                musicTooltip.innerText = "Klik untuk putar musik 🎶";
+                musicTooltip.innerText = "Sentuh Vinyl Untuk Memutar Melodi 🎶";
             });
 
             // Fungsi untuk Play/Pause
@@ -673,7 +1073,6 @@
                 isPlaying = !isPlaying;
             };
 
-            // Event listener klik tombol pemutar musik
             musicToggle.addEventListener('click', toggleMusic);
 
         });
