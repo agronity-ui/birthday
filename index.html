@@ -57,9 +57,23 @@
         }
 
         /* ==========================================================================
-           3. EPIC CINEMATIC INTRO (LAYERED FLYTHROUGH)
+           3. EPIC CINEMATIC INTRO & START SCREEN
            ========================================================================== */
         body.locked { overflow: hidden; height: 100vh; }
+
+        /* Layar Mulai (Untuk Bypass Autoplay Policy Audio) */
+        #start-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #143625; z-index: 100000;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; transition: opacity 0.5s ease;
+        }
+        .start-btn {
+            font-family: var(--font-title); font-size: 2rem; color: #FFF;
+            letter-spacing: 5px; text-align: center;
+            animation: pulse-start 1.5s infinite alternate;
+        }
+        @keyframes pulse-start { 0% { opacity: 0.5; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.05); } }
         
         #cinematic-intro {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -309,6 +323,18 @@
 </head>
 <body class="locked">
 
+    <!-- AUDIO SFX (Sound Effects Engine) -->
+    <audio id="sfx-wind" src="https://actions.google.com/sounds/v1/weather/blowing_wind.ogg" preload="auto" loop></audio>
+    <audio id="sfx-water" src="https://actions.google.com/sounds/v1/water/small_stream_flowing.ogg" preload="auto" loop></audio>
+    <audio id="sfx-birds" src="https://actions.google.com/sounds/v1/animals/birds_in_forest.ogg" preload="auto"></audio>
+    <audio id="sfx-whoosh" src="https://actions.google.com/sounds/v1/impacts/fast_whoosh.ogg" preload="auto"></audio>
+    <audio id="sfx-flare" src="https://actions.google.com/sounds/v1/science_fiction/force_field_power_up.ogg" preload="auto"></audio>
+
+    <!-- START SCREEN (Bypass Autoplay Policy) -->
+    <div id="start-screen">
+        <div class="start-btn">TAP UNTUK MEMULAI<br><span style="font-size: 1rem; opacity: 0.8;">(Nyalakan Suara 🔊)</span></div>
+    </div>
+
     <!-- TRUE 3D CINEMATIC INTRO -->
     <div id="cinematic-intro">
         <!-- Sun -->
@@ -316,14 +342,11 @@
         
         <!-- Mountain -->
         <div class="intro-mountain" id="c-mountain">
-            <!-- Premium Clean Mountain SVG (No Filters, No Lag) -->
             <svg class="mtn-svg" viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax meet">
                 <path d="M-100,600 L250,250 L600,600 Z" fill="#1b402e" opacity="0.8"/>
                 <path d="M400,600 L900,150 L1440,600 Z" fill="#143625" opacity="0.6"/>
-                <!-- Main Peak -->
                 <path d="M150,600 L720,50 L1290,600 Z" fill="#3A7D5C"/>
                 <path d="M720,50 L720,600 L1290,600 Z" fill="#215A42" opacity="0.8"/>
-                <!-- Snow -->
                 <path d="M720,50 L630,220 L680,260 L720,200 L760,260 L810,220 Z" fill="#FFFFFF"/>
                 <path d="M720,50 L720,200 L760,260 L810,220 Z" fill="#E8F4E8"/>
             </svg>
@@ -512,15 +535,16 @@
         </div>
     </div>
 
-    <!-- AUDIO ELEMENT -->
+    <!-- AUDIO PLAYER & UI -->
     <div id="music-tooltip" class="music-tooltip hidden">Melodi Alam Sedang Diputar 🎶</div>
-    <div id="music-toggle" class="vinyl-player playing">
+    <div id="music-toggle" class="vinyl-player">
         <svg style="width: 20px; height: 20px; fill: white; z-index: 10; position: absolute;" viewBox="0 0 24 24">
             <path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle>
         </svg>
     </div>
     
-    <audio id="bg-music" loop autoplay>
+    <!-- Background Music -->
+    <audio id="bg-music" loop>
         <source src="https://image2url.com/r2/default/audio/1774761920277-d342019f-c196-4c82-a840-7f80bc625172.mp3" type="audio/mpeg">
     </audio>
 
@@ -528,7 +552,46 @@
         document.addEventListener('DOMContentLoaded', () => {
             
             /* ==========================================================================
-               1. TRUE CINEMATIC 3D-LIKE FLYTHROUGH WITH EPIC SUN ZOOM
+               0. SOUND EFFECTS ENGINE & START OVERLAY
+               ========================================================================== */
+            const sfxWind = document.getElementById('sfx-wind');
+            const sfxWater = document.getElementById('sfx-water');
+            const sfxBirds = document.getElementById('sfx-birds');
+            const sfxWhooshBase = document.getElementById('sfx-whoosh');
+            const sfxFlare = document.getElementById('sfx-flare');
+            const bgMusic = document.getElementById('bg-music');
+            
+            const startScreen = document.getElementById('start-screen');
+            const musicToggle = document.getElementById('music-toggle');
+            const musicTooltip = document.getElementById('music-tooltip');
+            let isPlaying = false;
+
+            // Fungsi untuk memutar suara transisi menukik
+            function playWhoosh() {
+                let w = sfxWhooshBase.cloneNode(); // Clone agar suara bisa bertumpuk
+                w.volume = 1.0;
+                w.play().catch(()=>{});
+            }
+
+            // Tombol "TAP UNTUK MEMULAI" Ditekan
+            startScreen.addEventListener('click', () => {
+                // Sembunyikan layar awal
+                startScreen.style.opacity = '0';
+                setTimeout(() => { startScreen.style.display = 'none'; }, 500);
+
+                // Mulai lagu utama
+                bgMusic.volume = 0.6;
+                bgMusic.play().catch(()=>{});
+                isPlaying = true;
+                musicToggle.classList.add('playing');
+                
+                // Panggil Intro Epik
+                runIntroTimeline();
+            });
+
+
+            /* ==========================================================================
+               1. TRUE CINEMATIC 3D-LIKE FLYTHROUGH WITH EPIC SUN ZOOM & SFX
                ========================================================================== */
             const overlay = document.getElementById('cinematic-intro');
             const sun = document.getElementById('c-sun');
@@ -543,79 +606,99 @@
                 document.getElementById('tx5'), document.getElementById('tx6')
             ];
 
-            // T=0s: Mulai
-            setTimeout(() => { tx[0].classList.add('show'); }, 500);
+            function runIntroTimeline() {
+                // T=0s: Mulai (Suara Angin & Air Sungai Latar Belakang)
+                sfxWind.volume = 1.0; sfxWind.play().catch(()=>{});
+                sfxWater.volume = 1.0; sfxWater.play().catch(()=>{});
+                setTimeout(() => { tx[0].classList.add('show'); }, 500);
 
-            // T=3.5s: Kamera Menengadah ke Gunung
-            setTimeout(() => {
-                tx[0].classList.remove('show');
-                grass.style.transform = "translateY(100vh)"; // Rumput turun (out of frame)
-                mtn.style.transform = "scale(1.2) translateY(5vh)";
-                sun.style.transform = "translate(-50%, -60%) scale(1.1)";
-                setTimeout(() => { tx[1].classList.add('show'); }, 800);
-            }, 3500);
-
-            // T=7s: Mendekati Puncak Gunung
-            setTimeout(() => {
-                tx[1].classList.remove('show');
-                mtn.style.transform = "scale(2.5) translateY(20vh)";
-                sun.style.transform = "translate(-50%, -70%) scale(1.3)";
-                setTimeout(() => { tx[2].classList.add('show'); }, 800);
-            }, 7000);
-
-            // T=10.5s: Terbang Melewati Puncak (Gunung menghilang ke bawah)
-            setTimeout(() => {
-                tx[2].classList.remove('show');
-                mtn.style.transform = "scale(5) translateY(100vh)"; // Lewat
-                mtn.style.opacity = "0"; // Mulus menghilang
-                sun.style.transform = "translate(-50%, -80%) scale(1.5)";
-                setTimeout(() => { tx[3].classList.add('show'); }, 800);
-            }, 10500);
-
-            // T=14s: Burung Masuk
-            setTimeout(() => {
-                tx[3].classList.remove('show');
-                birds.style.opacity = "1";
-                birds.style.transform = "translateX(-150vw) translateY(-10vh) scale(1.5)"; // Terbang menyilang
-                setTimeout(() => { tx[4].classList.add('show'); }, 800);
-            }, 14000);
-
-            // T=17.5s: Menatap Hangatnya Mentari (Matahari memusat ke layar dan membesar)
-            setTimeout(() => {
-                tx[4].classList.remove('show');
-                
-                // Set transition baru untuk pergerakan ke tengah
-                sun.style.transition = "all 3.5s cubic-bezier(0.25, 1, 0.5, 1)";
-                sun.style.transform = "translate(-50%, -50%) scale(3)"; // Matahari ke tengah dan membesar
-                sun.style.boxShadow = "0 0 200px 100px rgba(249, 192, 63, 0.9), 0 0 400px 200px rgba(249, 192, 63, 0.6)"; // Efek glow epic
-                
-                setTimeout(() => { tx[5].classList.add('show'); }, 800);
-            }, 17500);
-
-            // T=21s: Tembus Matahari (Epic Zoom & Flare/Whiteout)
-            setTimeout(() => {
-                tx[5].classList.remove('show');
-                
-                // Zoom Ekstrem
-                sun.style.transition = "transform 2s cubic-bezier(0.7, 0, 0.1, 1), opacity 1s";
-                sun.style.transform = "translate(-50%, -50%) scale(60)"; // Meledak menutupi layar
-                
-                // Picu efek Flash Putih untuk menyamarkan transisi ke Scrapbook
+                // T=3.5s: Kamera Menengadah ke Gunung (SFX Whoosh)
                 setTimeout(() => {
-                    whiteout.style.opacity = "1"; 
-                    whiteout.style.backgroundColor = "#F8FBF8"; // Warna disamakan dengan kertas scrapbook
+                    playWhoosh();
+                    tx[0].classList.remove('show');
+                    grass.style.transform = "translateY(100vh)"; 
+                    mtn.style.transform = "scale(1.2) translateY(5vh)";
+                    sun.style.transform = "translate(-50%, -60%) scale(1.1)";
+                    setTimeout(() => { tx[1].classList.add('show'); }, 800);
+                }, 3500);
+
+                // T=7s: Mendekati Puncak Gunung (SFX Whoosh)
+                setTimeout(() => {
+                    playWhoosh();
+                    tx[1].classList.remove('show');
+                    mtn.style.transform = "scale(2.5) translateY(20vh)";
+                    sun.style.transform = "translate(-50%, -70%) scale(1.3)";
+                    setTimeout(() => { tx[2].classList.add('show'); }, 800);
+                }, 7000);
+
+                // T=10.5s: Terbang Melewati Puncak (SFX Whoosh)
+                setTimeout(() => {
+                    playWhoosh();
+                    tx[2].classList.remove('show');
+                    mtn.style.transform = "scale(5) translateY(100vh)"; 
+                    mtn.style.opacity = "0"; 
+                    sun.style.transform = "translate(-50%, -80%) scale(1.5)";
+                    setTimeout(() => { tx[3].classList.add('show'); }, 800);
+                }, 10500);
+
+                // T=14s: Burung Masuk (SFX Kicauan Burung)
+                setTimeout(() => {
+                    sfxBirds.volume = 1.0; sfxBirds.play().catch(()=>{});
+                    tx[3].classList.remove('show');
+                    birds.style.opacity = "1";
+                    birds.style.transform = "translateX(-150vw) translateY(-10vh) scale(1.5)"; 
+                    setTimeout(() => { tx[4].classList.add('show'); }, 800);
+                }, 14000);
+
+                // T=17.5s: Menatap Mentari (SFX Flare/Energi Magis)
+                setTimeout(() => {
+                    sfxFlare.volume = 1.0; sfxFlare.play().catch(()=>{});
+                    tx[4].classList.remove('show');
                     
-                    // Akhiri Intro & Buka Scrapbook
+                    sun.style.transition = "all 3.5s cubic-bezier(0.25, 1, 0.5, 1)";
+                    sun.style.transform = "translate(-50%, -50%) scale(3)"; 
+                    sun.style.boxShadow = "0 0 200px 100px rgba(249, 192, 63, 0.9), 0 0 400px 200px rgba(249, 192, 63, 0.6)"; 
+                    
+                    setTimeout(() => { tx[5].classList.add('show'); }, 800);
+                }, 17500);
+
+                // T=21s: Tembus Matahari (Boom SFX & Fade Out Latar)
+                setTimeout(() => {
+                    playWhoosh();
+                    tx[5].classList.remove('show');
+                    
+                    // Zoom Ekstrem
+                    sun.style.transition = "transform 2s cubic-bezier(0.7, 0, 0.1, 1), opacity 1s";
+                    sun.style.transform = "translate(-50%, -50%) scale(60)"; 
+                    
+                    // Hilangkan perlahan suara ambient
+                    let fadeOut = setInterval(() => {
+                        if(sfxWind.volume > 0.1) sfxWind.volume -= 0.1;
+                        if(sfxWater.volume > 0.1) sfxWater.volume -= 0.1;
+                        if(sfxBirds.volume > 0.1) sfxBirds.volume -= 0.1;
+                        else {
+                            clearInterval(fadeOut);
+                            sfxWind.pause(); sfxWater.pause(); sfxBirds.pause();
+                        }
+                    }, 100);
+
+                    // Picu efek Flash Putih
                     setTimeout(() => {
-                        overlay.style.opacity = "0";
-                        document.body.classList.remove('locked');
-                        initScrollAnimations();
-                        setTimeout(() => { overlay.style.display = "none"; }, 1500);
-                    }, 1000);
+                        whiteout.style.opacity = "1"; 
+                        whiteout.style.backgroundColor = "#F8FBF8"; 
+                        
+                        // Buka Scrapbook
+                        setTimeout(() => {
+                            overlay.style.opacity = "0";
+                            document.body.classList.remove('locked');
+                            initScrollAnimations();
+                            setTimeout(() => { overlay.style.display = "none"; }, 1500);
+                        }, 1000);
 
-                }, 800);
+                    }, 800);
 
-            }, 21000);
+                }, 21000);
+            }
 
 
             /* ==========================================================================
@@ -625,7 +708,6 @@
             const calGrid = document.getElementById('cal-grid');
             const dateFinal = document.getElementById('date-final');
 
-            // Generate Angka
             for (let i = 1; i <= 31; i++) {
                 const span = document.createElement('span');
                 span.className = 'cal-num'; span.innerText = i;
@@ -637,21 +719,15 @@
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         obs.unobserve(entry.target);
-                        
-                        // 1. Munculkan Grid
                         calGrid.style.opacity = "1";
                         calGrid.style.transform = "scale(1)";
                         
                         setTimeout(() => {
-                            // 2. Highlight angka 7
                             const target = document.getElementById('target-date-7');
                             target.classList.add('highlight');
                             
                             setTimeout(() => {
-                                // 3. Grid menghilang secara halus
                                 calGrid.classList.add('hidden');
-                                
-                                // 4. Hasil akhir ("7 MARET") muncul di posisinya (Smooth Morph)
                                 dateFinal.classList.add('show');
                             }, 800);
 
@@ -659,12 +735,11 @@
                     }
                 });
             }, { threshold: 0.6 });
-
             calObs.observe(calContainer);
 
 
             /* ==========================================================================
-               3. BOKEH DUST PARTICLES (Out of focus nature floating)
+               3. BOKEH DUST PARTICLES
                ========================================================================== */
             const canvas = document.getElementById('nature-dust');
             const ctx = canvas.getContext('2d');
@@ -680,12 +755,12 @@
                 constructor() {
                     this.x = Math.random() * w; this.y = Math.random() * h;
                     this.size = Math.random() * 8 + 2; 
-                    this.speedY = Math.random() * -0.5 - 0.2; // Melayang perlahan ke atas
+                    this.speedY = Math.random() * -0.5 - 0.2; 
                     this.opacity = Math.random() * 0.3 + 0.1;
                 }
                 update() {
                     this.y += this.speedY;
-                    this.x += Math.sin(this.y * 0.02) * 0.5; // Ayunan halus
+                    this.x += Math.sin(this.y * 0.02) * 0.5; 
                     if (this.y < -20) { this.y = h + 20; this.x = Math.random() * w; }
                 }
                 draw() {
@@ -742,23 +817,17 @@
             });
 
             /* ==========================================================================
-               5. AUDIO PLAYER
+               5. AUDIO TOGGLE BUTTON LOGIC
                ========================================================================== */
-            const musicToggle = document.getElementById('music-toggle');
-            const bgMusic = document.getElementById('bg-music');
-            const musicTooltip = document.getElementById('music-tooltip');
-            let isPlaying = false;
-            
-            bgMusic.volume = 0.6;
-            bgMusic.play().then(() => {
-                isPlaying = true; musicToggle.classList.add('playing'); musicTooltip.classList.add('hidden');
-            }).catch(() => {
-                musicToggle.classList.remove('playing'); musicTooltip.classList.remove('hidden');
-            });
-
             musicToggle.addEventListener('click', () => {
-                if (isPlaying) { bgMusic.pause(); musicToggle.classList.remove('playing'); } 
-                else { bgMusic.play(); musicToggle.classList.add('playing'); musicTooltip.classList.add('hidden'); }
+                if (isPlaying) { 
+                    bgMusic.pause(); 
+                    musicToggle.classList.remove('playing'); 
+                } else { 
+                    bgMusic.play(); 
+                    musicToggle.classList.add('playing'); 
+                    musicTooltip.classList.add('hidden'); 
+                }
                 isPlaying = !isPlaying;
             });
 
