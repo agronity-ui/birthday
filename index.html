@@ -644,7 +644,7 @@
             z-index: 99999;
             overflow: hidden;
             display: flex; justify-content: center; align-items: center;
-            transition: opacity 2s ease-in-out;
+            transition: background-color 1.5s ease, opacity 2s ease-in-out;
         }
 
         .camera-container {
@@ -670,15 +670,56 @@
         }
         .scene-text.show { opacity: 1; }
         
+        /* -- GRASS WIND ANIMATION ENGINE -- */
         .layer-grass {
-            position: absolute; bottom: -10%; left: -10vw; width: 120vw; height: 40vh;
-            background: linear-gradient(180deg, #52B788 0%, #2D6A4F 100%);
-            border-top-left-radius: 50% 20%; border-top-right-radius: 50% 20%;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+            position: absolute; bottom: -10vh; left: -10vw; width: 120vw; height: 50vh;
             transition: opacity 2s ease, transform 3s ease;
             z-index: 3;
+            display: flex; align-items: flex-end; justify-content: center;
         }
         
+        /* Multiple Hills that wave */
+        .hill-layer {
+            position: absolute; bottom: 0; width: 200vw; height: 100%;
+            background-repeat: repeat-x;
+            background-size: 50vw 100%;
+            animation: wave-hill linear infinite;
+        }
+        .hill-back {
+            background-image: radial-gradient(ellipse at center 100%, #1B4332 50%, transparent 50%);
+            animation-duration: 25s; opacity: 0.8; height: 80%; bottom: 10%;
+        }
+        .hill-mid {
+            background-image: radial-gradient(ellipse at center 100%, #2D6A4F 60%, transparent 60%);
+            animation-duration: 18s; animation-direction: reverse; opacity: 0.9; height: 60%; bottom: 5%;
+        }
+        .hill-front {
+            background-image: radial-gradient(ellipse at center 100%, #40916C 70%, transparent 70%);
+            animation-duration: 12s; height: 40%;
+        }
+        @keyframes wave-hill {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50vw); }
+        }
+
+        /* Individual swaying grass blades container */
+        #grass-blades-container {
+            position: absolute; width: 100vw; height: 15vh; bottom: 0; left: 10vw;
+            pointer-events: none; overflow: hidden;
+        }
+        .blade {
+            position: absolute; bottom: -5px; width: 4px; 
+            background: linear-gradient(to top, #1B4332, #52B788);
+            border-radius: 50% 50% 0 0; 
+            transform-origin: bottom center;
+            animation: sway-blade ease-in-out infinite alternate;
+        }
+        @keyframes sway-blade {
+            0% { transform: rotate(-15deg) skewX(-10deg); }
+            100% { transform: rotate(20deg) skewX(15deg); }
+        }
+        
+        /* -- MOUNTAIN -- */
         .layer-mountain {
             position: absolute; bottom: 15vh; width: 100vw; height: 60vh;
             display: flex; justify-content: center; align-items: flex-end;
@@ -689,25 +730,51 @@
             width: 100%; height: 100%;
         }
 
+        /* -- BIRDS ANIMATION ENGINE -- */
         .layer-birds {
-            position: absolute; top: 30%; width: 100%; display: flex; justify-content: center;
-            opacity: 0; transition: opacity 2s ease; transform: scale(0.5);
+            position: absolute; top: 15%; left: 0; width: 100vw; height: 50vh;
+            opacity: 0; transition: opacity 2s ease; 
+            pointer-events: none; z-index: 4;
         }
-        .bird-svg { width: 80px; fill: #1B4332; margin: 0 20px; }
+        .bird-wrapper {
+            position: absolute;
+            animation: fly linear infinite;
+        }
+        .bird-svg {
+            width: 80px; fill: #1B4332;
+            transform-origin: center;
+            animation: flap 0.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+        }
+        @keyframes flap {
+            0% { transform: scaleY(1) translateY(0); }
+            100% { transform: scaleY(0.2) translateY(15px); }
+        }
+        @keyframes fly {
+            0% { transform: translateX(120vw) translateY(20vh) scale(0.8); }
+            100% { transform: translateX(-30vw) translateY(-10vh) scale(1.3); }
+        }
 
+        /* -- CLOUDS ENGINE -- */
         .layer-clouds {
             position: absolute; top: 20%; width: 100vw; height: 50vh;
             opacity: 0; transition: opacity 2s ease, transform 4s linear;
-            display: flex; justify-content: space-around;
+            display: flex; justify-content: center; align-items: center; z-index: 5;
         }
         .cloud-shape {
-            width: 200px; height: 80px; background: #FFF; border-radius: 50px; position: relative;
+            width: 300px; height: 100px; background: #FFF; border-radius: 50px; position: absolute;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
         .cloud-shape::before {
-            content: ''; position: absolute; top: -40px; left: 30px; width: 80px; height: 80px; background: #FFF; border-radius: 50%;
+            content: ''; position: absolute; top: -50px; left: 40px; width: 120px; height: 120px; background: #FFF; border-radius: 50%;
         }
         .cloud-shape::after {
-            content: ''; position: absolute; top: -60px; right: 40px; width: 100px; height: 100px; background: #FFF; border-radius: 50%;
+            content: ''; position: absolute; top: -80px; right: 50px; width: 150px; height: 150px; background: #FFF; border-radius: 50%;
+        }
+
+        /* Target Awan Spesifik Untuk Efek Masuk (Zoom-through) */
+        #cloud-center {
+            transform: scale(1.5);
+            z-index: 10;
         }
 
     </style>
@@ -719,42 +786,37 @@
         <div class="camera-container" id="camera">
             
             <div class="layer-clouds" id="l-clouds">
-                <div class="cloud-shape" style="transform: translateY(50px);"></div>
-                <div class="cloud-shape" style="transform: scale(1.5);"></div>
-                <div class="cloud-shape" style="transform: translateY(-30px);"></div>
+                <div class="cloud-shape" style="transform: translateX(-40vw) translateY(50px) scale(0.8);"></div>
+                <div class="cloud-shape" style="transform: translateX(40vw) translateY(-30px) scale(1.2);"></div>
+                <!-- Awan Utama yang akan ditembus -->
+                <div class="cloud-shape" id="cloud-center"></div>
             </div>
 
             <div class="layer-birds" id="l-birds">
-                <!-- Siluet Burung -->
-                <svg class="bird-svg" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
-                <svg class="bird-svg" style="transform: translateY(-20px) scale(0.8);" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
-                <svg class="bird-svg" style="transform: translateY(10px) scale(1.2);" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
+                <!-- Burung-burung akan digenerate melalui JavaScript -->
             </div>
 
             <div class="layer-mountain" id="l-mountain">
                 <svg class="mountain-svg" viewBox="0 0 1200 800" preserveAspectRatio="none">
-                    <!-- Latar belakang pegunungan (jauh) -->
                     <polygon points="0,800 200,350 450,800" fill="#1B4332" opacity="0.6"/>
                     <polygon points="750,800 1000,300 1200,800" fill="#1B4332" opacity="0.5"/>
-                    
-                    <!-- Gunung Tengah Kiri -->
                     <polygon points="-100,800 350,200 750,800" fill="#2D6A4F" opacity="0.9"/>
-                    <!-- Gunung Tengah Kanan -->
                     <polygon points="450,800 850,150 1300,800" fill="#1B4332" opacity="0.95"/>
-                    
-                    <!-- Gunung Utama (Paling Depan Tengah) -->
                     <polygon points="100,800 600,50 1100,800" fill="#40916C"/>
-                    <!-- Sisi Gelap Gunung Utama -->
                     <polygon points="600,50 600,800 1100,800" fill="#2D6A4F" opacity="0.6"/>
-                    
-                    <!-- Salju Gunung Utama -->
                     <polygon points="600,50 480,230 520,260 550,230 580,260 620,230 660,270 730,220" fill="#FFFFFF"/>
-                    <!-- Salju Sisi Gelap -->
                     <polygon points="600,50 600,245 620,230 660,270 730,220" fill="#EAEAEA"/>
                 </svg>
             </div>
 
-            <div class="layer-grass" id="l-grass"></div>
+            <div class="layer-grass" id="l-grass">
+                <!-- Layer Bukit Bergelombang -->
+                <div class="hill-layer hill-back"></div>
+                <div class="hill-layer hill-mid"></div>
+                <div class="hill-layer hill-front"></div>
+                <!-- Kontainer untuk ratusan helai rumput dinamis -->
+                <div id="grass-blades-container"></div>
+            </div>
             
         </div>
         
@@ -954,30 +1016,71 @@
         document.addEventListener('DOMContentLoaded', () => {
             
             /* ==========================================================================
-               1. EPIC NATURE INTRO SEQUENCE (6-SCENE ZOOM)
+               1. EPIC NATURE INTRO SEQUENCE (GRASS, BIRDS, CLOUDS ZOOM)
                ========================================================================== */
             const overlay = document.getElementById('epic-nature-overlay');
             const camera = document.getElementById('camera');
             
-            // Texts
+            // Texts & Layers
             const texts = [
                 document.getElementById('t1'), document.getElementById('t2'),
                 document.getElementById('t3'), document.getElementById('t4'),
                 document.getElementById('t5'), document.getElementById('t6')
             ];
-
-            // Layers
             const lGrass = document.getElementById('l-grass');
             const lMountain = document.getElementById('l-mountain');
             const lBirds = document.getElementById('l-birds');
             const lClouds = document.getElementById('l-clouds');
+            const cloudCenter = document.getElementById('cloud-center');
 
-            let isIntroSkipped = false;
             let introTimeouts = [];
 
+            // A. DYNAMIC GRASS GENERATION
+            // Menghasilkan ratusan helai rumput di latar depan untuk efek ditiup angin
+            const bladesContainer = document.getElementById('grass-blades-container');
+            const numBlades = Math.floor(window.innerWidth / 5); // Responsif jumlah rumput
+            for(let i = 0; i < numBlades; i++) {
+                let blade = document.createElement('div');
+                blade.className = 'blade';
+                blade.style.left = (Math.random() * 100) + 'vw';
+                blade.style.height = (Math.random() * 30 + 15) + 'px';
+                blade.style.animationDelay = (Math.random() * 2) + 's';
+                blade.style.animationDuration = (Math.random() * 1 + 2.5) + 's'; // 2.5s - 3.5s
+                blade.style.opacity = Math.random() * 0.5 + 0.5;
+                bladesContainer.appendChild(blade);
+            }
+
+            // B. DYNAMIC BIRDS GENERATION
+            // Menghasilkan burung dengan kecepatan kepakan & terbang yang realistis
+            for(let i = 0; i < 5; i++) {
+                let birdWrapper = document.createElement('div');
+                birdWrapper.className = 'bird-wrapper';
+                birdWrapper.style.animationDelay = (i * 1.5) + 's';
+                birdWrapper.style.animationDuration = (Math.random() * 5 + 10) + 's'; // Terbang 10s - 15s
+                birdWrapper.style.top = (Math.random() * 30) + 'vh';
+                
+                let birdSVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                birdSVG.setAttribute('viewBox', '0 0 24 24');
+                birdSVG.classList.add('bird-svg');
+                birdSVG.style.animationDelay = (Math.random() * 0.5) + 's'; // Kepakan berbeda
+                // Variasi ukuran
+                let scale = Math.random() * 0.8 + 0.6;
+                birdSVG.style.width = (60 * scale) + 'px';
+                
+                let path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', 'M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z');
+                
+                birdSVG.appendChild(path);
+                birdWrapper.appendChild(birdSVG);
+                lBirds.appendChild(birdWrapper);
+            }
+
+            // C. TIMELINE ANIMASI UTAMA (ZOOM-THROUGH)
             function runIntroTimeline() {
+                // Scene 1: Hamparan Rumput Goyang
                 introTimeouts.push(setTimeout(() => { texts[0].classList.add('show'); }, 500));
 
+                // Scene 2: Zoom Gunung
                 introTimeouts.push(setTimeout(() => {
                     texts[0].classList.remove('show');
                     camera.style.transform = "scale(1.8) translateY(15vh)"; 
@@ -985,12 +1088,14 @@
                     setTimeout(() => texts[1].classList.add('show'), 800);
                 }, 3500));
 
+                // Scene 3: Zoom Puncak
                 introTimeouts.push(setTimeout(() => {
                     texts[1].classList.remove('show');
                     camera.style.transform = "scale(4) translateY(35vh)"; 
                     setTimeout(() => texts[2].classList.add('show'), 800);
                 }, 7000));
 
+                // Scene 4: Langit Biru
                 introTimeouts.push(setTimeout(() => {
                     texts[2].classList.remove('show');
                     camera.style.transform = "scale(20) translateY(100vh)"; 
@@ -1005,92 +1110,85 @@
                     setTimeout(() => texts[3].classList.add('show'), 1500);
                 }, 10500));
 
+                // Scene 5: Burung Mengepak Sayap
                 introTimeouts.push(setTimeout(() => {
                     texts[3].classList.remove('show');
                     lBirds.style.opacity = "1";
-                    lBirds.style.transform = "scale(1.5) translateY(-10vh)";
                     setTimeout(() => texts[4].classList.add('show'), 800);
                 }, 14000));
 
+                // Scene 6: Awan Putih Masuk
                 introTimeouts.push(setTimeout(() => {
                     texts[4].classList.remove('show');
                     lBirds.style.opacity = "0";
                     lClouds.style.opacity = "1";
-                    lClouds.style.transform = "scale(2) translateX(10vw)"; 
                     setTimeout(() => texts[5].classList.add('show'), 800);
                 }, 17500));
 
+                // Scene 7: TRANSISI MAGIS - Zoom Menembus Awan Putih ke Scrapbook
                 introTimeouts.push(setTimeout(() => {
                     texts[5].classList.remove('show');
-                    lClouds.style.transition = "transform 1.5s ease, opacity 1s ease";
-                    lClouds.style.transform = "scale(20)"; 
-                    lClouds.style.opacity = "0";
                     
-                    setTimeout(() => { endIntro(); }, 1000);
+                    // Skalakan awan tengah menjadi sangat besar agar warna putih menutupi kamera
+                    cloudCenter.style.transition = "transform 2s cubic-bezier(0.7, 0, 0.1, 1)";
+                    cloudCenter.style.transform = "scale(80)"; 
+                    
+                    // Setelah kamera tertutup awan putih, samakan warna overlay dengan scrapbook
+                    setTimeout(() => {
+                        overlay.style.backgroundColor = "#F4F9F4"; // Putih awan berubah jadi kertas scrapbook
+                        
+                        // Pudarkan overlay putih untuk reveal isi buku
+                        setTimeout(() => { endIntro(); }, 500); 
+                    }, 1200);
+
                 }, 21000));
             }
 
             function endIntro() {
-                if(isIntroSkipped) return;
-                isIntroSkipped = true;
-                
-                introTimeouts.forEach(t => clearTimeout(t));
-
                 overlay.style.opacity = '0';
                 document.body.classList.remove('locked');
                 initScrollAnimations();
-                
                 setTimeout(() => { overlay.style.display = 'none'; }, 2000);
             }
 
+            // Start Epic Timeline
             runIntroTimeline();
 
 
             /* ==========================================================================
-               2. EPIC CALENDAR ZOOM TRANSITION (NEW)
+               2. EPIC CALENDAR ZOOM TRANSITION
                ========================================================================== */
             const calContainer = document.getElementById('calendar-anim-container');
             const calGrid = document.getElementById('cal-grid');
             const dateFinal = document.getElementById('date-final');
 
-            // 1. Generate kalender (tanggal 1 sampai 31)
             for (let i = 1; i <= 31; i++) {
                 const span = document.createElement('span');
                 span.classList.add('cal-num');
                 span.innerText = i;
-                if (i === 7) span.id = 'target-date-7'; // Beri ID khusus untuk target angka 7
+                if (i === 7) span.id = 'target-date-7';
                 calGrid.appendChild(span);
             }
 
-            // 2. Intersection Observer khusus animasi kalender
             const calObserver = new IntersectionObserver((entries, obs) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         obs.unobserve(entry.target);
-                        
-                        // Langkah 1: Munculkan tabel kalender perlahan
                         calGrid.classList.add('show');
                         
                         setTimeout(() => {
                             const target = document.getElementById('target-date-7');
-                            
-                            // Langkah 2: Buat angka 7 menyala
                             target.classList.add('highlight');
                             
-                            // Hitung secara akurat koordinat angka 7 untuk titik zoom
                             const gridRect = calGrid.getBoundingClientRect();
                             const targetRect = target.getBoundingClientRect();
                             const originX = targetRect.left - gridRect.left + (targetRect.width / 2);
                             const originY = targetRect.top - gridRect.top + (targetRect.height / 2);
                             calGrid.style.transformOrigin = `${originX}px ${originY}px`;
 
-                            // Langkah 3: Epic Zoom nembus angka 7
                             setTimeout(() => {
                                 calGrid.classList.add('zoom');
-                                
-                                // Langkah 4: Tampilkan hasil akhirnya ("7 MARET 2026")
                                 dateFinal.classList.add('show');
-
                             }, 1200);
 
                         }, 1000);
@@ -1124,10 +1222,7 @@
                     this.speedX = Math.random() * 2 + 0.5;
                     this.speedY = Math.random() * -0.5;
                     
-                    const colors = [
-                        'rgba(255, 255, 255, opacity)', 
-                        'rgba(176, 224, 230, opacity)'  
-                    ];
+                    const colors = ['rgba(255, 255, 255, opacity)', 'rgba(176, 224, 230, opacity)'];
                     this.baseColor = colors[Math.floor(Math.random() * colors.length)];
                     this.opacity = Math.random() * 0.4 + 0.1;
                 }
@@ -1173,7 +1268,6 @@
                     });
                 }, observerOptions);
 
-                // Kecualikan elemen calendar karena dihandle custom di atas
                 document.querySelectorAll('.blur-reveal, .spring-pop, .draw-path').forEach(el => observer.observe(el));
             }
 
