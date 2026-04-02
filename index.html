@@ -12,27 +12,22 @@
 
     <style>
         /* ==========================================================================
-           1. CSS VARIABLES & PALET WARNA ALAM (NATURE PALETTE)
+           1. CSS VARIABLES & PALET WARNA ALAM
            ========================================================================== */
         :root {
-            /* Warna Kertas Scrapbook */
-            --paper-bg: #F4F9F4; /* Putih sedikit kehijauan/sejuk */
-            --paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            --paper-bg: #F8FBF8; 
+            --paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
             
-            /* Palet Pegunungan & Langit */
-            --nature-sky: #4A90E2;      /* Langit biru */
-            --nature-cloud: #FFFFFF;    /* Awan putih */
-            --nature-mountain: #2D6A4F; /* Hijau gunung tua */
-            --nature-grass: #40916C;    /* Hijau rumput segar */
-            --nature-earth: #4A3728;    /* Coklat tanah */
-            --nature-sun: #F9A03F;      /* Cahaya mentari pagi */
+            --nature-sky: #4A90E2;      
+            --nature-cloud: #FFFFFF;    
+            --nature-mountain: #215A42; 
+            --nature-grass: #3A7D5C;    
+            --nature-sun: #F9C03F;      
             
-            /* Teks & Tinta */
-            --ink-black: #1B4332;       /* Hijau sangat gelap pengganti hitam */
-            --text-gray: #52796F;       /* Abu-abu kehijauan */
-            --tape-color: rgba(255, 255, 255, 0.6);
+            --ink-black: #143625;       
+            --text-gray: #4A6E5E;       
+            --tape-color: rgba(255, 255, 255, 0.7);
             
-            /* Tipografi */
             --font-serif: 'Playfair Display', serif;
             --font-hand: 'Caveat', cursive;
             --font-elegant: 'Great Vibes', cursive;
@@ -43,793 +38,335 @@
         /* ==========================================================================
            2. RESET & BASE STYLES
            ========================================================================== */
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            /* Background gradien langit siang yang sejuk di luar buku */
-            background: linear-gradient(180deg, #87CEEB 0%, #4A90E2 50%, #B0E0E6 100%);
+            background: linear-gradient(180deg, #6BB5DF 0%, #4A90E2 50%, #9DD6E3 100%);
             background-attachment: fixed;
             font-family: var(--font-sans);
             color: var(--ink-black);
             line-height: 1.7;
             overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
             min-height: 100vh;
         }
 
-        /* Canvas untuk efek awan tipis/angin yang berhembus */
+        /* Canvas untuk partikel halus */
         #nature-dust {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 1;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 1;
         }
 
         /* ==========================================================================
-           3. LAYOUT & SCRAPBOOK CANVAS
+           3. EPIC CINEMATIC INTRO (LAYERED FLYTHROUGH)
            ========================================================================== */
-        .scrapbook-wrapper {
-            position: relative;
-            z-index: 10;
-            padding: 2rem 0;
+        body.locked { overflow: hidden; height: 100vh; }
+        
+        #cinematic-intro {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(to bottom, #3A7BD5 0%, #3A6073 100%);
+            z-index: 99999; overflow: hidden;
+            transition: opacity 1.5s ease;
         }
+
+        /* Matahari Bercahaya */
+        .intro-sun {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 150px; height: 150px; border-radius: 50%; background: #FFF;
+            box-shadow: 0 0 100px 40px rgba(249, 192, 63, 0.8), 0 0 250px 100px rgba(249, 192, 63, 0.4);
+            transition: all 8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* Lapisan Gunung Epic */
+        .intro-mountain {
+            position: absolute; bottom: 0; left: 0; width: 100vw; height: 65vh;
+            display: flex; justify-content: center; align-items: flex-end;
+            transition: all 6s cubic-bezier(0.35, 0, 0.25, 1); transform-origin: bottom center;
+        }
+        .mtn-svg { width: 100%; min-width: 1200px; height: 100%; }
+
+        /* Lapisan Bukit Rumput */
+        .intro-grass {
+            position: absolute; bottom: -5vh; left: -5vw; width: 110vw; height: 35vh;
+            background: linear-gradient(180deg, #4A9E73 0%, #215A42 100%);
+            border-top-left-radius: 50% 30%; border-top-right-radius: 50% 30%;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+            transition: all 4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Burung Siluet */
+        .intro-birds {
+            position: absolute; top: 20%; left: 100vw; width: 300px; height: 100px;
+            display: flex; gap: 20px; opacity: 0;
+            transition: transform 7s linear, opacity 1s ease;
+        }
+        .bird-icon {
+            width: 40px; fill: #143625; opacity: 0.8;
+            animation: flap 0.5s ease-in-out infinite alternate;
+        }
+        .bird-icon:nth-child(2) { transform: translateY(-20px) scale(0.8); animation-delay: 0.2s; }
+        .bird-icon:nth-child(3) { transform: translateY(15px) scale(1.2); animation-delay: 0.4s; }
+        @keyframes flap { 0% { transform: scaleY(1); } 100% { transform: scaleY(0.3); } }
+
+        /* Awan Putih Lembut (Volumetric) */
+        .intro-clouds {
+            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; transform: scale(0.5); pointer-events: none;
+            transition: all 4s cubic-bezier(0.5, 0, 0.1, 1);
+        }
+        .fluffy-cloud {
+            width: 400px; height: 150px; background: #FFF; border-radius: 200px;
+            position: absolute; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.1));
+        }
+        .fluffy-cloud::before {
+            content:''; position:absolute; top:-80px; left:50px; width:180px; height:180px; background:#FFF; border-radius:50%;
+        }
+        .fluffy-cloud::after {
+            content:''; position:absolute; top:-110px; right:60px; width:220px; height:220px; background:#FFF; border-radius:50%;
+        }
+
+        /* Teks Cinematic */
+        .cine-text {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-family: var(--font-title); color: #FFF; font-size: 2.5rem; letter-spacing: 5px;
+            text-align: center; text-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            opacity: 0; transition: opacity 1.2s ease, transform 4s linear;
+        }
+        .cine-text.show { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+
+        .whiteout {
+            position: absolute; top:0; left:0; width: 100vw; height: 100vh;
+            background: var(--paper-bg); opacity: 0; z-index: 100; transition: opacity 1.5s ease; pointer-events: none;
+        }
+
+        /* ==========================================================================
+           4. LAYOUT & SCRAPBOOK CANVAS
+           ========================================================================== */
+        .scrapbook-wrapper { position: relative; z-index: 10; padding: 2rem 0; }
 
         .scrapbook-container {
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: var(--paper-bg);
-            background-image: var(--paper-texture);
-            position: relative;
-            box-shadow: 
-                0 0 50px rgba(0,0,0,0.2), 
-                20px 0 80px rgba(0,0,0,0.25), 
-                -20px 0 80px rgba(0,0,0,0.25);
+            width: 100%; max-width: 600px; margin: 0 auto;
+            background-color: var(--paper-bg); background-image: var(--paper-texture);
+            position: relative; border-radius: 4px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.15), 20px 0 80px rgba(0,0,0,0.2), -20px 0 80px rgba(0,0,0,0.2);
             overflow: hidden;
-            border-radius: 4px;
         }
-
         .scrapbook-container::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            box-shadow: inset 0 0 60px rgba(45, 106, 79, 0.1);
-            pointer-events: none;
-            z-index: 100;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            box-shadow: inset 0 0 80px rgba(33, 90, 66, 0.08); pointer-events: none; z-index: 100;
         }
 
         section {
-            min-height: 100vh;
-            padding: 7rem 3.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            z-index: 10;
+            min-height: 100vh; padding: 7rem 3.5rem;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; z-index: 10;
         }
 
         /* ==========================================================================
-           4. TYPOGRAPHY & DECORATIONS
+           5. TYPOGRAPHY & DECORATIONS
            ========================================================================== */
-        h1 { 
-            font-family: var(--font-title); 
-            font-weight: 700; 
-            font-size: 2.2rem;
-            line-height: 1.2; 
-            color: var(--nature-mountain);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
-        }
+        h1 { font-family: var(--font-title); font-weight: 700; font-size: 2.2rem; line-height: 1.2; color: var(--nature-mountain); text-shadow: 1px 1px 2px rgba(0,0,0,0.05); }
+        h2 { font-family: var(--font-serif); font-weight: 600; font-size: 1.8rem; color: var(--nature-grass); font-style: italic; }
+        p { color: var(--text-gray); font-size: 1.05rem; font-weight: 400; letter-spacing: 0.3px; }
         
-        h2 { 
-            font-family: var(--font-serif); 
-            font-weight: 600; 
-            font-size: 1.8rem;
-            color: var(--nature-grass); 
-            font-style: italic;
-        }
+        .calligraphy { font-family: var(--font-elegant); color: var(--nature-sky); font-size: 4.8rem; line-height: 1; font-weight: 400; text-shadow: 2px 2px 5px rgba(74, 144, 226, 0.2); transform: rotate(-3deg); margin: 0.5rem 0; }
+        .handwriting { font-family: var(--font-hand); color: var(--nature-mountain); font-size: 2.2rem; transform: rotate(2deg); }
+        .uppercase-sub { text-transform: uppercase; letter-spacing: 4px; font-size: 0.75rem; font-weight: 600; color: var(--nature-grass); font-family: var(--font-sans); margin-bottom: 1rem; }
 
-        p { 
-            color: var(--text-gray); 
-            font-size: 1.05rem;
-            font-weight: 400;
-            letter-spacing: 0.3px;
-        }
-        
-        .calligraphy {
-            font-family: var(--font-elegant);
-            color: var(--nature-sky);
-            font-size: 4.5rem;
-            line-height: 1;
-            font-weight: 400;
-            text-shadow: 2px 2px 4px rgba(74, 144, 226, 0.2);
-            transform: rotate(-3deg);
-            margin: 1rem 0;
-        }
-
-        .handwriting {
-            font-family: var(--font-hand);
-            color: var(--nature-mountain);
-            font-size: 2.2rem;
-            transform: rotate(2deg);
-        }
-
-        .text-center { text-align: center; }
-        
-        .uppercase-sub { 
-            text-transform: uppercase; 
-            letter-spacing: 4px; 
-            font-size: 0.75rem; 
-            font-weight: 600; 
-            color: var(--nature-grass);
-            font-family: var(--font-sans);
-            margin-bottom: 1rem;
-        }
-
-        /* Ornamen Daun / Burung */
-        .ornament {
-            position: absolute;
-            pointer-events: none;
-            z-index: 5;
-            opacity: 0.8;
-            fill: var(--nature-grass);
-            filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.05));
-        }
-        
-        .scribble {
-            position: absolute;
-            pointer-events: none;
-            z-index: 0;
-            stroke: var(--nature-sky);
-            stroke-width: 2;
-            fill: none;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            opacity: 0.7;
-        }
+        .ornament { position: absolute; pointer-events: none; z-index: 5; opacity: 0.8; fill: var(--nature-grass); filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.05)); }
 
         /* ==========================================================================
-           5. POLAROID & IMAGES
+           6. POLAROID & IMAGES
            ========================================================================== */
         .polaroid {
-            background: #FFFFFF; 
-            padding: 15px 15px 55px 15px;
-            box-shadow: 
-                0 10px 25px rgba(27, 67, 50, 0.1), 
-                0 4px 10px rgba(27, 67, 50, 0.05),
-                inset 0 0 0 1px rgba(0,0,0,0.03);
-            position: relative;
-            margin: 2.5rem 0;
-            z-index: 2;
-            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            border-radius: 2px;
+            background: #FFFFFF; padding: 15px 15px 55px 15px;
+            box-shadow: 0 15px 35px rgba(20, 54, 37, 0.1), 0 5px 15px rgba(20, 54, 37, 0.05), inset 0 0 0 1px rgba(0,0,0,0.02);
+            position: relative; margin: 2.5rem 0; z-index: 2; border-radius: 3px;
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        
         .polaroid:hover {
-            transform: scale(1.03) translateY(-10px) rotate(0deg) !important;
-            box-shadow: 
-                0 25px 40px rgba(27, 67, 50, 0.15), 
-                0 10px 20px rgba(27, 67, 50, 0.1);
-            z-index: 30;
+            transform: scale(1.04) translateY(-10px) rotate(0deg) !important;
+            box-shadow: 0 30px 50px rgba(20, 54, 37, 0.15), 0 15px 25px rgba(20, 54, 37, 0.1); z-index: 30;
         }
 
-        .img-container {
-            width: 100%;
-            height: 320px; 
-            overflow: hidden;
-            position: relative;
-            background: #EAEAEA;
-        }
-
+        .img-container { width: 100%; height: 320px; overflow: hidden; position: relative; background: #EAEAEA; }
         .polaroid-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; 
-            display: block;
-            filter: saturate(110%) contrast(1.05) brightness(1.05); 
-            transition: filter 0.8s ease, transform 0.8s ease;
+            width: 100%; height: 100%; object-fit: cover; display: block;
+            filter: saturate(115%) contrast(1.05); transition: filter 0.8s ease, transform 0.8s ease;
         }
-        
-        .polaroid:hover .polaroid-img {
-            filter: saturate(120%) contrast(1.1) brightness(1);
-            transform: scale(1.05); 
-        }
+        .polaroid:hover .polaroid-img { filter: saturate(125%) contrast(1.1); transform: scale(1.05); }
 
         .polaroid-caption {
-            position: absolute;
-            bottom: 15px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            font-family: var(--font-hand);
-            font-size: 1.6rem;
-            color: var(--nature-mountain);
-            opacity: 0.9;
+            position: absolute; bottom: 15px; left: 0; width: 100%; text-align: center;
+            font-family: var(--font-hand); font-size: 1.6rem; color: var(--nature-mountain); opacity: 0.9;
         }
 
-        /* Washi Tape Nuansa Alam */
         .tape {
-            position: absolute;
-            width: 130px;
-            height: 38px;
-            background-color: var(--tape-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            z-index: 5;
+            position: absolute; width: 130px; height: 38px; background-color: var(--tape-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08); backdrop-filter: blur(4px); z-index: 5;
             clip-path: polygon(0% 5%, 5% 0%, 10% 8%, 15% 0%, 20% 5%, 25% 0%, 30% 8%, 35% 0%, 40% 5%, 45% 0%, 50% 8%, 55% 0%, 60% 5%, 65% 0%, 70% 8%, 75% 0%, 80% 5%, 85% 0%, 90% 8%, 95% 0%, 100% 5%, 100% 95%, 95% 100%, 90% 92%, 85% 100%, 80% 95%, 75% 100%, 70% 92%, 65% 100%, 60% 95%, 55% 100%, 50% 92%, 45% 100%, 40% 95%, 35% 100%, 30% 92%, 25% 100%, 20% 95%, 15% 100%, 10% 92%, 5% 100%, 0% 95%);
-            background-image: 
-                linear-gradient(45deg, transparent 40%, rgba(64, 145, 108, 0.1) 40%, rgba(64, 145, 108, 0.1) 60%, transparent 60%);
-            background-size: 10px 10px;
+            background-image: linear-gradient(45deg, transparent 40%, rgba(64, 145, 108, 0.15) 40%, rgba(64, 145, 108, 0.15) 60%, transparent 60%);
+            background-size: 12px 12px;
         }
         .tape-1 { top: -15px; left: -30px; transform: rotate(-15deg); }
         .tape-2 { bottom: -18px; right: -25px; transform: rotate(12deg); }
         .tape-center { top: -18px; left: 50%; transform: translateX(-50%) rotate(3deg); width: 150px; }
 
         /* ==========================================================================
-           6. AESTHETIC ANIMATIONS (BLUR, SPRING, FADE)
+           7. CINEMATIC POP ANIMATION (SMOOTH 3D ENTRANCE)
            ========================================================================== */
-        .blur-reveal {
+        .cinematic-pop {
             opacity: 0;
-            filter: blur(15px);
-            transform: translateY(40px) scale(0.95);
-            transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: scale(0.85) translateY(50px) rotateX(15deg) rotateY(-10deg) rotateZ(calc(var(--rot, 0deg) * 1.5));
+            filter: drop-shadow(0 30px 40px rgba(0,0,0,0.15));
+            transition: all 1.4s cubic-bezier(0.16, 1, 0.3, 1); /* Sangat mulus dan elegan */
         }
-        .blur-reveal.is-visible {
+        .cinematic-pop.is-visible {
             opacity: 1;
-            filter: blur(0px);
-            transform: translateY(0) scale(1);
-        }
-
-        .spring-pop {
-            opacity: 0;
-            transform: scale(0.8) translateY(50px) rotate(calc(var(--rot, 0deg) * 2));
-            transition: all 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.2));
-        }
-        .spring-pop.is-visible {
-            opacity: 1;
-            transform: scale(1) translateY(0) rotate(var(--rot, 0deg));
+            transform: scale(1) translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(var(--rot, 0deg));
             filter: drop-shadow(0 0px 0px rgba(0,0,0,0));
         }
 
-        .draw-path path {
-            stroke-dasharray: 2000;
-            stroke-dashoffset: 2000;
-            transition: stroke-dashoffset 2.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
-        }
-        .draw-path.is-visible path {
-            stroke-dashoffset: 0;
-        }
-
-        @keyframes float-gentle {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(2deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
-        }
-        .floating {
-            animation: float-gentle 6s ease-in-out infinite;
-        }
+        .blur-reveal { opacity: 0; filter: blur(10px); transform: translateY(30px); transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1); }
+        .blur-reveal.is-visible { opacity: 1; filter: blur(0px); transform: translateY(0); }
 
         /* ==========================================================================
-           7. SECTIONS STYLING
+           8. SPECIFIC SECTIONS
            ========================================================================== */
         #intro { padding-top: 9rem; }
-        .hero-title-container {
-            position: relative;
-            margin: 2rem 0 3rem;
-            width: 100%;
-        }
         
         .love-letter {
-            background: #E8F4E8; /* Hijau sangat muda */
-            padding: 3.5rem 2.5rem;
-            box-shadow: 
-                5px 5px 25px rgba(45, 106, 79, 0.1),
-                inset 0 0 20px rgba(255,255,255,0.6);
-            position: relative;
-            margin: 3rem 0;
-            transform: rotate(1deg);
-            border-radius: 2px 15px 2px 15px;
-            border: 1px solid rgba(64, 145, 108, 0.1);
+            background: #E8F4E8; padding: 3.5rem 2.5rem;
+            box-shadow: 5px 5px 30px rgba(33, 90, 66, 0.08), inset 0 0 20px rgba(255,255,255,0.8);
+            position: relative; margin: 3rem 0; transform: rotate(1deg); border-radius: 4px 15px 4px 15px;
+            border: 1px solid rgba(58, 125, 92, 0.15);
         }
-        .love-letter::before {
-            content: '';
-            position: absolute;
-            top: -15px; left: 50%;
-            transform: translateX(-50%) rotate(-2deg);
-            width: 100px; height: 35px;
-            background: rgba(74, 144, 226, 0.4); /* Blue Tape */
-            backdrop-filter: blur(2px);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .love-letter p {
-            font-family: var(--font-hand);
-            font-size: 1.9rem;
-            color: var(--nature-mountain);
-            line-height: 1.5;
-            text-align: center;
-        }
+        .love-letter p { font-family: var(--font-hand); font-size: 1.9rem; color: var(--nature-mountain); line-height: 1.5; text-align: center; }
 
-        /* ==========================================================================
-           7.5 EPIC CALENDAR ZOOM STYLING
-           ========================================================================== */
+        /* --- EPIC CALENDAR TRANSITION REWORK --- */
         .aesthetic-date {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            margin: 4rem 0;
-            width: 100%;
-            height: 250px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: relative; margin: 4rem 0; width: 100%; height: 250px;
         }
-        .calendar-grid-overlay {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 12px;
-            position: absolute;
-            opacity: 0;
-            transform: scale(0.9);
-            transition: opacity 1s ease, transform 1s ease;
-            z-index: 5;
+        
+        .cal-grid-overlay {
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px;
+            position: absolute; z-index: 5; transition: opacity 0.8s ease, transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        .calendar-grid-overlay.show {
-            opacity: 1;
-            transform: scale(1);
-        }
-        .calendar-grid-overlay.zoom {
-            /* Smooth acceleration to massive scale */
-            transition: transform 2s cubic-bezier(0.7, 0, 0.1, 1), opacity 1.5s ease 0.5s;
-            transform: scale(30);
-            opacity: 0;
-        }
+        .cal-grid-overlay.hidden { opacity: 0; transform: scale(1.2); pointer-events: none; }
+        
         .cal-num {
-            font-family: var(--font-sans);
-            font-size: 1.1rem;
-            color: rgba(74, 144, 226, 0.3);
-            text-align: center;
+            font-family: var(--font-sans); font-size: 1.2rem; color: rgba(74, 144, 226, 0.4);
+            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
             transition: all 0.5s ease;
-            width: 35px; height: 35px;
-            display: flex; align-items: center; justify-content: center;
         }
         .cal-num.highlight {
-            color: var(--nature-grass);
-            font-weight: 700;
-            text-shadow: 0 0 10px rgba(64, 145, 108, 0.8);
-            transform: scale(1.6);
-            background: rgba(255,255,255,0.9);
-            border-radius: 50%;
-            box-shadow: 0 0 15px rgba(255,255,255,0.8);
-            z-index: 10;
+            color: var(--nature-grass); font-weight: 700; transform: scale(1.5);
+            background: #FFF; border-radius: 50%; box-shadow: 0 0 20px rgba(255,255,255,1); z-index: 10;
         }
-        
+
         .date-final-state {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            opacity: 0;
-            transform: scale(0.5);
-            /* Pops in right after the grid zooms out */
-            transition: all 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s;
-            z-index: 10;
+            position: relative; display: flex; flex-direction: column; align-items: center;
+            opacity: 0; transform: scale(0.8); transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s; z-index: 10;
         }
-        .date-final-state.show {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .date-number {
-            font-family: var(--font-elegant);
-            font-size: 8rem;
-            color: var(--nature-sky);
-            line-height: 0.8;
-            text-shadow: 3px 3px 0px rgba(74, 144, 226, 0.2);
-            z-index: 2;
-        }
-        .date-month {
-            font-family: var(--font-title);
-            font-size: 1.5rem;
-            letter-spacing: 8px;
-            color: var(--nature-mountain);
-            text-transform: uppercase;
-            margin-top: 1rem;
-            z-index: 2;
-            background: var(--paper-bg);
-            padding: 0 10px;
-        }
-        .date-line {
-            position: absolute;
-            top: 50%;
-            left: -20%;
-            width: 140%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--nature-grass), transparent);
-            z-index: 1;
-        }
+        .date-final-state.show { opacity: 1; transform: scale(1); }
         
-        /* Manual drawing animation for circle */
-        .draw-circle path {
-            stroke-dasharray: 2000;
-            stroke-dashoffset: 2000;
-            transition: stroke-dashoffset 2s cubic-bezier(0.4, 0, 0.2, 1) 0.6s;
-        }
-        .date-final-state.show .draw-circle path {
-            stroke-dashoffset: 0;
-        }
+        .date-number { font-family: var(--font-elegant); font-size: 8.5rem; color: var(--nature-sky); line-height: 0.8; text-shadow: 4px 4px 0px rgba(74, 144, 226, 0.15); z-index: 2; }
+        .date-month { font-family: var(--font-title); font-size: 1.6rem; letter-spacing: 8px; color: var(--nature-mountain); text-transform: uppercase; margin-top: 1rem; z-index: 2; background: var(--paper-bg); padding: 0 10px; }
+        .date-line { position: absolute; top: 50%; left: -20%; width: 140%; height: 1px; background: linear-gradient(90deg, transparent, var(--nature-grass), transparent); z-index: 1; }
 
-        /* List 4 Hal Manis */
-        .sweet-list {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 2.5rem;
-            margin-top: 4rem;
-            position: relative;
+        .draw-circle {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.3;
         }
-        .sweet-list::before {
-            content: '';
-            position: absolute;
-            left: 24px; top: 10px; bottom: 10px;
-            width: 2px;
-            background: repeating-linear-gradient(to bottom, var(--nature-sky) 0, var(--nature-sky) 8px, transparent 8px, transparent 16px);
-        }
-        .sweet-item {
-            position: relative;
-            padding-left: 4.5rem;
-        }
-        .sweet-item h4 { 
-            font-size: 1.3rem; 
-            margin-bottom: 0.4rem; 
-            font-family: var(--font-title);
-            color: var(--nature-mountain);
-        }
-        .sweet-item p { 
-            font-size: 1rem; 
-            font-style: italic;
-        }
-        .sweet-pin {
-            position: absolute;
-            left: 12px; top: 2px;
-            width: 26px; height: 26px;
-            background: radial-gradient(circle at 30% 30%, #B0E0E6, #4A90E2);
-            border-radius: 50%;
-            box-shadow: 
-                inset -2px -2px 5px rgba(0,0,0,0.3), 
-                3px 3px 6px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .sweet-pin::after {
-            content: '';
-            width: 6px; height: 6px;
-            background: white;
-            border-radius: 50%;
-            position: absolute;
-            top: 4px; left: 4px;
-            opacity: 0.8;
-            filter: blur(1px);
-        }
+        .draw-circle path { stroke-dasharray: 2000; stroke-dashoffset: 2000; transition: stroke-dashoffset 2s cubic-bezier(0.4, 0, 0.2, 1) 0.8s; }
+        .date-final-state.show .draw-circle path { stroke-dashoffset: 0; }
 
-        /* Gallery Collage */
-        .gallery-collage {
-            position: relative;
-            width: 100%;
-            height: 600px;
-            margin-top: 4rem;
-        }
+        /* List & Gallery */
+        .sweet-list { width: 100%; display: flex; flex-direction: column; gap: 2.5rem; margin-top: 4rem; position: relative; }
+        .sweet-item { position: relative; padding-left: 4.5rem; }
+        .sweet-item h4 { font-size: 1.3rem; margin-bottom: 0.4rem; font-family: var(--font-title); color: var(--nature-mountain); }
+        .sweet-pin { position: absolute; left: 12px; top: 2px; width: 26px; height: 26px; border-radius: 50%; box-shadow: inset -2px -2px 5px rgba(0,0,0,0.2), 3px 3px 6px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; }
+        
+        .gallery-collage { position: relative; width: 100%; height: 600px; margin-top: 4rem; }
         .gallery-collage .polaroid { position: absolute; width: 65%; margin: 0; }
-        .gal-1 { top: 0; left: 0; --rot: -8deg; z-index: 2;}
-        .gal-2 { top: 140px; right: -5%; --rot: 6deg; z-index: 3;}
-        .gal-3 { bottom: 0; left: 10%; --rot: -4deg; z-index: 4;}
+        .gal-1 { top: 0; left: 0; --rot: -6deg; z-index: 2;}
+        .gal-2 { top: 150px; right: -5%; --rot: 8deg; z-index: 3;}
+        .gal-3 { bottom: 0; left: 10%; --rot: -3deg; z-index: 4;}
 
-        /* Tombol */
         .btn-aesthetic {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(45deg, var(--nature-mountain), var(--nature-grass));
-            color: white;
-            padding: 1.2rem 3rem;
-            border-radius: 30px;
-            text-decoration: none;
-            font-family: var(--font-sans);
-            font-weight: 600;
-            letter-spacing: 2px;
-            margin-top: 4rem;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 20px rgba(45, 106, 79, 0.3);
-            border: 1px solid rgba(255,255,255,0.2);
-            position: relative;
-            overflow: hidden;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: linear-gradient(45deg, var(--nature-mountain), var(--nature-grass)); color: white;
+            padding: 1.2rem 3rem; border-radius: 30px; text-decoration: none; font-family: var(--font-sans); font-weight: 600; letter-spacing: 2px; margin-top: 4rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 20px rgba(33, 90, 66, 0.3); border: 1px solid rgba(255,255,255,0.2); overflow: hidden;
         }
-        .btn-aesthetic::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: all 0.6s ease;
-        }
-        .btn-aesthetic:hover::before { left: 100%; }
-        .btn-aesthetic:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 15px 25px rgba(45, 106, 79, 0.4);
-            color: #E8F4E8;
-        }
+        .btn-aesthetic:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 25px rgba(33, 90, 66, 0.4); color: #E8F4E8; }
 
-        .divider {
-            width: 80%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--nature-sky), transparent);
-            margin: 2rem auto;
-            opacity: 0.6;
-        }
+        .divider { width: 80%; height: 2px; background: linear-gradient(90deg, transparent, var(--nature-sky), transparent); margin: 3rem auto; opacity: 0.5; }
 
-        /* ==========================================================================
-           8. MUSIC PLAYER
-           ========================================================================== */
+        /* Music Player */
         .vinyl-player {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 65px;
-            height: 65px;
-            background-color: #222;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            z-index: 1000;
-            box-shadow: 
-                0 5px 15px rgba(0,0,0,0.4),
-                inset 0 0 0 4px var(--nature-grass),
-                inset 0 0 0 10px #333;
-            transition: all 0.4s ease;
+            position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; background-color: #222; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3), inset 0 0 0 4px var(--nature-grass), inset 0 0 0 10px #333; transition: all 0.4s ease;
         }
-        .vinyl-player::after {
-            content: '';
-            width: 15px; height: 15px;
-            background: var(--nature-sky);
-            border-radius: 50%;
-            position: absolute;
-        }
+        .vinyl-player::after { content: ''; width: 15px; height: 15px; background: var(--nature-sky); border-radius: 50%; position: absolute; }
         .vinyl-player:hover { transform: scale(1.1); }
-        .vinyl-player.playing {
-            animation: spin-vinyl 3s linear infinite;
-            box-shadow: 
-                0 5px 20px rgba(74, 144, 226, 0.5),
-                inset 0 0 0 4px var(--nature-sky),
-                inset 0 0 0 10px #333;
-        }
+        .vinyl-player.playing { animation: spin-vinyl 3s linear infinite; box-shadow: 0 5px 20px rgba(74, 144, 226, 0.5), inset 0 0 0 4px var(--nature-sky), inset 0 0 0 10px #333; }
         @keyframes spin-vinyl { 100% { transform: rotate(360deg); } }
-
-        .music-tooltip {
-            position: fixed;
-            bottom: 50px;
-            right: 110px;
-            font-family: var(--font-hand);
-            font-size: 1.3rem;
-            color: var(--nature-sky);
-            background: rgba(24, 58, 43, 0.85);
-            backdrop-filter: blur(5px);
-            padding: 8px 20px;
-            border: 1px solid var(--nature-grass);
-            border-radius: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            pointer-events: none;
-            transition: all 0.5s ease;
-            z-index: 999;
-        }
-        .music-tooltip.hidden { opacity: 0; transform: translateX(20px); }
-
-        /* ==========================================================================
-           9. EPIC EPIC 6-SCENE NATURE TRANSITION (ZOOM THROUGH)
-           ========================================================================== */
-        body.locked { overflow: hidden; height: 100vh; }
-        
-        #epic-nature-overlay {
-            position: fixed; 
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #87CEEB; /* Langit biru dasar */
-            z-index: 99999;
-            overflow: hidden;
-            display: flex; justify-content: center; align-items: center;
-            transition: background-color 1.5s ease, opacity 2s ease-in-out;
-        }
-
-        .camera-container {
-            position: absolute;
-            width: 100vw; height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-            transform-origin: center center;
-            transition: transform 3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
-        }
-
-        .scene-text {
-            position: absolute;
-            font-family: var(--font-title);
-            color: #FFFFFF;
-            font-size: 2.2rem;
-            letter-spacing: 4px;
-            text-align: center;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-            opacity: 0;
-            z-index: 100;
-            transition: opacity 1.5s ease;
-            pointer-events: none;
-        }
-        .scene-text.show { opacity: 1; }
-        
-        /* -- GRASS WIND ANIMATION ENGINE -- */
-        .layer-grass {
-            position: absolute; bottom: -10vh; left: -10vw; width: 120vw; height: 50vh;
-            transition: opacity 2s ease, transform 3s ease;
-            z-index: 3;
-            display: flex; align-items: flex-end; justify-content: center;
-        }
-        
-        /* Multiple Hills that wave */
-        .hill-layer {
-            position: absolute; bottom: 0; width: 200vw; height: 100%;
-            background-repeat: repeat-x;
-            background-size: 50vw 100%;
-            animation: wave-hill linear infinite;
-        }
-        .hill-back {
-            background-image: radial-gradient(ellipse at center 100%, #1B4332 50%, transparent 50%);
-            animation-duration: 25s; opacity: 0.8; height: 80%; bottom: 10%;
-        }
-        .hill-mid {
-            background-image: radial-gradient(ellipse at center 100%, #2D6A4F 60%, transparent 60%);
-            animation-duration: 18s; animation-direction: reverse; opacity: 0.9; height: 60%; bottom: 5%;
-        }
-        .hill-front {
-            background-image: radial-gradient(ellipse at center 100%, #40916C 70%, transparent 70%);
-            animation-duration: 12s; height: 40%;
-        }
-        @keyframes wave-hill {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50vw); }
-        }
-
-        /* Individual swaying grass blades container */
-        #grass-blades-container {
-            position: absolute; width: 100vw; height: 15vh; bottom: 0; left: 10vw;
-            pointer-events: none; overflow: hidden;
-        }
-        .blade {
-            position: absolute; bottom: -5px; width: 4px; 
-            background: linear-gradient(to top, #1B4332, #52B788);
-            border-radius: 50% 50% 0 0; 
-            transform-origin: bottom center;
-            animation: sway-blade ease-in-out infinite alternate;
-        }
-        @keyframes sway-blade {
-            0% { transform: rotate(-15deg) skewX(-10deg); }
-            100% { transform: rotate(20deg) skewX(15deg); }
-        }
-        
-        /* -- MOUNTAIN -- */
-        .layer-mountain {
-            position: absolute; bottom: 15vh; width: 100vw; height: 60vh;
-            display: flex; justify-content: center; align-items: flex-end;
-            transition: opacity 2s ease;
-            z-index: 2;
-        }
-        .mountain-svg {
-            width: 100%; height: 100%;
-        }
-
-        /* -- BIRDS ANIMATION ENGINE -- */
-        .layer-birds {
-            position: absolute; top: 15%; left: 0; width: 100vw; height: 50vh;
-            opacity: 0; transition: opacity 2s ease; 
-            pointer-events: none; z-index: 4;
-        }
-        .bird-wrapper {
-            position: absolute;
-            animation: fly linear infinite;
-        }
-        .bird-svg {
-            width: 80px; fill: #1B4332;
-            transform-origin: center;
-            animation: flap 0.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
-        }
-        @keyframes flap {
-            0% { transform: scaleY(1) translateY(0); }
-            100% { transform: scaleY(0.2) translateY(15px); }
-        }
-        @keyframes fly {
-            0% { transform: translateX(120vw) translateY(20vh) scale(0.8); }
-            100% { transform: translateX(-30vw) translateY(-10vh) scale(1.3); }
-        }
-
-        /* -- CLOUDS ENGINE -- */
-        .layer-clouds {
-            position: absolute; top: 20%; width: 100vw; height: 50vh;
-            opacity: 0; transition: opacity 2s ease, transform 4s linear;
-            display: flex; justify-content: center; align-items: center; z-index: 5;
-        }
-        .cloud-shape {
-            width: 300px; height: 100px; background: #FFF; border-radius: 50px; position: absolute;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
-        .cloud-shape::before {
-            content: ''; position: absolute; top: -50px; left: 40px; width: 120px; height: 120px; background: #FFF; border-radius: 50%;
-        }
-        .cloud-shape::after {
-            content: ''; position: absolute; top: -80px; right: 50px; width: 150px; height: 150px; background: #FFF; border-radius: 50%;
-        }
-
-        /* Target Awan Spesifik Untuk Efek Masuk (Zoom-through) */
-        #cloud-center {
-            transform: scale(1.5);
-            z-index: 10;
-        }
 
     </style>
 </head>
 <body class="locked">
 
-    <!-- EPIC INTRO SEQUENCE (6 SCENES ZOOM) -->
-    <div id="epic-nature-overlay">
-        <div class="camera-container" id="camera">
-            
-            <div class="layer-clouds" id="l-clouds">
-                <div class="cloud-shape" style="transform: translateX(-40vw) translateY(50px) scale(0.8);"></div>
-                <div class="cloud-shape" style="transform: translateX(40vw) translateY(-30px) scale(1.2);"></div>
-                <!-- Awan Utama yang akan ditembus -->
-                <div class="cloud-shape" id="cloud-center"></div>
-            </div>
-
-            <div class="layer-birds" id="l-birds">
-                <!-- Burung-burung akan digenerate melalui JavaScript -->
-            </div>
-
-            <div class="layer-mountain" id="l-mountain">
-                <svg class="mountain-svg" viewBox="0 0 1200 800" preserveAspectRatio="none">
-                    <polygon points="0,800 200,350 450,800" fill="#1B4332" opacity="0.6"/>
-                    <polygon points="750,800 1000,300 1200,800" fill="#1B4332" opacity="0.5"/>
-                    <polygon points="-100,800 350,200 750,800" fill="#2D6A4F" opacity="0.9"/>
-                    <polygon points="450,800 850,150 1300,800" fill="#1B4332" opacity="0.95"/>
-                    <polygon points="100,800 600,50 1100,800" fill="#40916C"/>
-                    <polygon points="600,50 600,800 1100,800" fill="#2D6A4F" opacity="0.6"/>
-                    <polygon points="600,50 480,230 520,260 550,230 580,260 620,230 660,270 730,220" fill="#FFFFFF"/>
-                    <polygon points="600,50 600,245 620,230 660,270 730,220" fill="#EAEAEA"/>
-                </svg>
-            </div>
-
-            <div class="layer-grass" id="l-grass">
-                <!-- Layer Bukit Bergelombang -->
-                <div class="hill-layer hill-back"></div>
-                <div class="hill-layer hill-mid"></div>
-                <div class="hill-layer hill-front"></div>
-                <!-- Kontainer untuk ratusan helai rumput dinamis -->
-                <div id="grass-blades-container"></div>
-            </div>
-            
-        </div>
+    <!-- TRUE 3D CINEMATIC INTRO -->
+    <div id="cinematic-intro">
+        <!-- Sun -->
+        <div class="intro-sun" id="c-sun"></div>
         
-        <!-- Teks Transisi -->
-        <div class="scene-text" id="t1">Di hamparan bumi yang luas...</div>
-        <div class="scene-text" id="t2">Berdiri sebuah harapan kokoh...</div>
-        <div class="scene-text" id="t3">Menuju puncak yang tinggi...</div>
-        <div class="scene-text" id="t4">Menembus langit biru...</div>
-        <div class="scene-text" id="t5">Bebas seperti burung...</div>
-        <div class="scene-text" id="t6">Dan selembut awan putih...</div>
+        <!-- Mountain -->
+        <div class="intro-mountain" id="c-mountain">
+            <!-- Premium Clean Mountain SVG (No Filters, No Lag) -->
+            <svg class="mtn-svg" viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax meet">
+                <path d="M-100,600 L250,250 L600,600 Z" fill="#1b402e" opacity="0.8"/>
+                <path d="M400,600 L900,150 L1440,600 Z" fill="#143625" opacity="0.6"/>
+                <!-- Main Peak -->
+                <path d="M150,600 L720,50 L1290,600 Z" fill="#3A7D5C"/>
+                <path d="M720,50 L720,600 L1290,600 Z" fill="#215A42" opacity="0.8"/>
+                <!-- Snow -->
+                <path d="M720,50 L630,220 L680,260 L720,200 L760,260 L810,220 Z" fill="#FFFFFF"/>
+                <path d="M720,50 L720,200 L760,260 L810,220 Z" fill="#E8F4E8"/>
+            </svg>
+        </div>
+
+        <!-- Grass/Hills -->
+        <div class="intro-grass" id="c-grass"></div>
+
+        <!-- Birds -->
+        <div class="intro-birds" id="c-birds">
+            <svg class="bird-icon" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
+            <svg class="bird-icon" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
+            <svg class="bird-icon" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
+        </div>
+
+        <!-- Fluffy Volumetric Clouds (No laggy filters) -->
+        <div class="intro-clouds" id="c-clouds">
+            <div class="fluffy-cloud" style="transform: translate(-30vw, 10vh) scale(0.8);"></div>
+            <div class="fluffy-cloud" style="transform: translate(20vw, -15vh) scale(1.3);"></div>
+            <div class="fluffy-cloud" style="transform: translate(-5vw, -5vh) scale(1.5);" id="main-cloud"></div>
+        </div>
+
+        <!-- Fade to White -->
+        <div class="whiteout" id="c-whiteout"></div>
+
+        <!-- Texts -->
+        <div class="cine-text" id="tx1">Di hamparan bumi yang luas...</div>
+        <div class="cine-text" id="tx2">Berdiri sebuah harapan kokoh...</div>
+        <div class="cine-text" id="tx3">Menuju puncak yang tinggi...</div>
+        <div class="cine-text" id="tx4">Menembus langit biru...</div>
+        <div class="cine-text" id="tx5">Bebas seperti burung...</div>
+        <div class="cine-text" id="tx6">Dan selembut awan putih...</div>
     </div>
 
-    <!-- Latar Belakang Partikel Awan/Angin -->
+    <!-- Partikel Bokeh Alam -->
     <canvas id="nature-dust"></canvas>
 
     <div class="scrapbook-wrapper">
@@ -837,8 +374,7 @@
 
             <!-- SECTION 1: INTRO -->
             <section id="intro">
-                <!-- Ornamen Daun Kiri Atas -->
-                <svg class="ornament floating blur-reveal" style="top: 30px; left: 20px; width: 60px; height: 60px; transition-delay: 0.1s;" viewBox="0 0 24 24">
+                <svg class="ornament blur-reveal" style="top: 30px; left: 20px; width: 60px; height: 60px; transition-delay: 0.1s;" viewBox="0 0 24 24">
                     <path d="M17,8 C8,10 5.9,16.17 3.82,21.34 L5.71,22 L6.66,19.7 C7.14,19.87 7.64,20 8,20 C19,20 22,3 22,3 C21,5 14,5.25 9,6.25 C10,5 12,4 16,4 C16,4 18,2 17,2 C17,2 12,2 8,5 C6,6.5 4.5,9 4.5,9 C4.5,9 7,7.5 10,7 C12.5,6.5 17,8 17,8 Z"/>
                 </svg>
 
@@ -849,7 +385,7 @@
                     <h1 class="calligraphy text-center">Maulidya Sari</h1>
                 </div>
                 
-                <div class="polaroid spring-pop parallax-item" style="--rot: 2deg; transition-delay: 0.5s;">
+                <div class="polaroid cinematic-pop parallax-item" style="--rot: 2deg; transition-delay: 0.5s;">
                     <div class="tape tape-1"></div>
                     <div class="img-container">
                         <img id="imgHero" src="https://image2url.com/r2/default/images/1775118495166-d20b9b56-ac04-4303-bec5-977f128d5c7b.jpg" alt="Maulidya" class="polaroid-img" onerror="this.src='https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&q=80'">
@@ -858,7 +394,7 @@
                     <div class="polaroid-caption">Puncak Kebahagiaan</div>
                 </div>
 
-                <p class="text-center blur-reveal" style="transition-delay: 0.7s; margin-top: 2rem; font-style: italic;">"Hari ini spesial buat ngerayain hari lahir kamu. Tambah usia, tambah tinggi harapannya ya, Maulidya!"</p>
+                <p class="text-center blur-reveal" style="transition-delay: 0.8s; margin-top: 2rem; font-style: italic;">"Hari ini spesial buat ngerayain hari lahir kamu. Tambah usia, tambah tinggi harapannya ya, Maulidya!"</p>
             </section>
 
             <!-- SECTION 2: MAKNA ALAM -->
@@ -868,7 +404,7 @@
                 <h2 class="text-center blur-reveal">SEJUK KAYA ANGIN GUNUNG...</h2>
                 <p class="text-center blur-reveal" style="transition-delay: 0.2s; margin: 1.5rem 0;">Sama kaya angin pegunungan yang bikin adem, kehadiran kamu selalu bawa ketenangan buat kita semua. Tetep jadi Maulidya yang humble dan asik ya!</p>
                 
-                <div class="polaroid spring-pop parallax-item" style="--rot: -3deg; transition-delay: 0.4s; margin-top: 1rem;">
+                <div class="polaroid cinematic-pop parallax-item" style="--rot: -3deg; transition-delay: 0.4s; margin-top: 1rem;">
                     <div class="tape tape-center"></div>
                     <div class="img-container">
                         <img id="imgMiddle" src="https://image2url.com/r2/default/images/1775118959381-67519bd5-3348-48ec-be53-939c831a5a4a.jpeg" alt="Alam" class="polaroid-img" onerror="this.src='https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80'">
@@ -883,11 +419,7 @@
             <section id="message" style="padding: 4rem 2.5rem;">
                 <span class="uppercase-sub blur-reveal">Wishes Dari Kita</span>
                 
-                <div class="love-letter spring-pop" style="--rot: 1deg; transition-delay: 0.2s;">
-                    <svg class="ornament" style="top: 10px; right: 10px; width: 30px; height: 30px; fill: var(--nature-sky);" viewBox="0 0 24 24">
-                        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.36 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/>
-                    </svg>
-                    
+                <div class="love-letter cinematic-pop" style="--rot: 1deg; transition-delay: 0.2s;">
                     <p>
                         "Happy level up, Maulidya! Semoga di umur yang baru ini kamu makin tinggi prestasinya kaya gunung, dan hatinya seluas langit biru. Ditunggu traktirannya!"
                     </p>
@@ -896,28 +428,25 @@
                 <span class="calligraphy blur-reveal" style="font-size: 3rem; transition-delay: 0.4s; transform: rotate(-5deg); margin-top: -1rem;">Stay Awesome ✨</span>
             </section>
 
-            <!-- SECTION 4: EPIC CALENDAR ZOOM -->
+            <!-- SECTION 4: EPIC DATE MORPH (7 APRIL 2026) -->
             <section id="mark">
                 <div class="aesthetic-date" id="calendar-anim-container">
                     
-                    <!-- 1. Grid Tanggal 1-31 -->
-                    <div class="calendar-grid-overlay" id="cal-grid">
-                        <!-- Disuntikkan lewat JavaScript -->
-                    </div>
+                    <!-- 1. Grid Awal -->
+                    <div class="cal-grid-overlay" id="cal-grid"></div>
 
-                    <!-- 2. Final Result 7 MARET 2026 -->
+                    <!-- 2. Final Result -->
                     <div class="date-final-state" id="date-final">
                         <div class="date-line"></div>
-                        <svg class="scribble draw-circle" style="width: 180px; height: 180px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.3;" viewBox="0 0 100 100">
+                        <svg class="draw-circle" style="width: 180px; height: 180px;" viewBox="0 0 100 100">
                             <path d="M 50,10 C 70,10 90,30 90,50 C 90,75 65,90 40,85 C 15,80 10,50 20,30 C 30,15 40,10 50,10" stroke="var(--nature-sky)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
                         </svg>
                         
-                        <span class="date-number" style="color: var(--nature-grass); text-shadow: 3px 3px 0px rgba(64, 145, 108, 0.2);">7</span>
-                        <span class="date-month">MARET 2026</span>
+                        <span class="date-number" style="color: var(--nature-grass); text-shadow: 3px 3px 0px rgba(64, 145, 108, 0.15);">7</span>
+                        <span class="date-month">APRIL 2026</span>
                     </div>
 
                 </div>
-
                 <p class="text-center blur-reveal" style="transition-delay: 0.3s; font-size: 1.15rem; color: var(--nature-mountain);">Hari di mana temen kita yang satu ini resmi nambah umur!</p>
             </section>
 
@@ -927,22 +456,22 @@
                 
                 <div class="sweet-list">
                     <div class="sweet-item blur-reveal" style="transition-delay: 0.1s;">
-                        <div class="sweet-pin"></div>
+                        <div class="sweet-pin" style="background: radial-gradient(circle at 30% 30%, #B0E0E6, #40916C);"></div>
                         <h4>Vibe Positif</h4>
                         <p>Selalu bawa energi segar kaya embun pagi yang bikin tongkrongan jadi asik.</p>
                     </div>
                     <div class="sweet-item blur-reveal" style="transition-delay: 0.3s;">
-                        <div class="sweet-pin" style="background: radial-gradient(circle at 30% 30%, #B0E0E6, #40916C);"></div>
+                        <div class="sweet-pin" style="background: radial-gradient(circle at 30% 30%, #B0E0E6, #4A90E2);"></div>
                         <h4>Teman Curhat</h4>
                         <p>Tempat cerita paling adem, selalu ngasih solusi yang nenangin hati.</p>
                     </div>
                     <div class="sweet-item blur-reveal" style="transition-delay: 0.5s;">
-                        <div class="sweet-pin" style="background: radial-gradient(circle at 30% 30%, #B0E0E6, #4A90E2);"></div>
+                        <div class="sweet-pin" style="background: radial-gradient(circle at 30% 30%, #B0E0E6, #F9C03F);"></div>
                         <h4>Tawa Lepas</h4>
-                        <p>Kalo udah ketawa, suasananya langsung cerah dan nular kaya langit biru siang hari.</p>
+                        <p>Kalo udah ketawa, suasananya cerah dan nular kaya matahari siang hari.</p>
                     </div>
                     <div class="sweet-item blur-reveal" style="transition-delay: 0.7s;">
-                        <div class="sweet-pin" style="background: radial-gradient(circle at 30% 30%, #B0E0E6, #1B4332);"></div>
+                        <div class="sweet-pin" style="background: radial-gradient(circle at 30% 30%, #B0E0E6, #143625);"></div>
                         <h4>Support System</h4>
                         <p>Selalu jadi sandaran yang kuat dan kokoh kaya gunung buat temen-temennya.</p>
                     </div>
@@ -956,21 +485,20 @@
                 <p class="text-center blur-reveal" style="transition-delay: 0.2s; margin-top: 1rem;">Perjalanan kita masih panjang, setinggi puncak yang mau kita capai bareng-bareng!</p>
 
                 <div class="gallery-collage">
-                    <div class="polaroid gal-1 spring-pop" style="transition-delay: 0.3s;">
+                    <div class="polaroid gal-1 cinematic-pop" style="transition-delay: 0.3s;">
                         <div class="tape tape-1"></div>
                         <div class="img-container">
                             <img id="imgGal1" src="https://image2url.com/r2/default/images/1775119004771-0484097d-dc2f-4f16-8cd6-9818136e60bf.jpeg" alt="Memori 1" class="polaroid-img">
                         </div>
                     </div>
-                    <div class="polaroid gal-2 spring-pop" style="transition-delay: 0.5s;">
+                    <div class="polaroid gal-2 cinematic-pop" style="transition-delay: 0.5s;">
                         <div class="tape tape-2" style="top:-15px; bottom:auto;"></div>
                         <div class="img-container">
                             <img id="imgGal2" src="https://image2url.com/r2/default/images/1775119103652-e34a2f84-70f0-47b1-bbe6-e3514c1df704.jpg" alt="Memori 2" class="polaroid-img">
                         </div>
                     </div>
-                    <div class="polaroid gal-3 spring-pop" style="transition-delay: 0.7s;">
+                    <div class="polaroid gal-3 cinematic-pop" style="transition-delay: 0.7s;">
                         <div class="img-container">
-                            <!-- Reusing image 1 for balance -->
                             <img id="imgGal3" src="https://image2url.com/r2/default/images/1775118495166-d20b9b56-ac04-4303-bec5-977f128d5c7b.jpg" alt="Memori 3" class="polaroid-img">
                         </div>
                         <div class="polaroid-caption" style="font-size: 1.2rem;">Moments</div>
@@ -980,10 +508,9 @@
 
             <!-- SECTION 7: CLOSING -->
             <section id="closing" style="padding-bottom: 8rem; text-align: center;">
-                <div class="polaroid spring-pop parallax-item" style="--rot: 1.5deg; margin-bottom: 3rem;">
+                <div class="polaroid cinematic-pop parallax-item" style="--rot: 1.5deg; margin-bottom: 3rem;">
                     <div class="tape tape-center"></div>
                     <div class="img-container" style="height: 350px;">
-                        <!-- Reusing image 2 for closing -->
                         <img id="imgClosing" src="https://image2url.com/r2/default/images/1775118959381-67519bd5-3348-48ec-be53-939c831a5a4a.jpeg" alt="Maulidya Nature" class="polaroid-img">
                     </div>
                 </div>
@@ -1000,10 +527,10 @@
         </div>
     </div>
 
-    <!-- AUDIO ELEMENT & PLAYER UI -->
+    <!-- AUDIO ELEMENT -->
     <div id="music-tooltip" class="music-tooltip hidden">Melodi Alam Sedang Diputar 🎶</div>
     <div id="music-toggle" class="vinyl-player playing">
-        <svg style="width: 20px; height: 20px; fill: white; z-index: 10; position: absolute; opacity: 0.8;" viewBox="0 0 24 24">
+        <svg style="width: 20px; height: 20px; fill: white; z-index: 10; position: absolute;" viewBox="0 0 24 24">
             <path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle>
         </svg>
     </div>
@@ -1016,249 +543,183 @@
         document.addEventListener('DOMContentLoaded', () => {
             
             /* ==========================================================================
-               1. EPIC NATURE INTRO SEQUENCE (GRASS, BIRDS, CLOUDS ZOOM)
+               1. TRUE CINEMATIC 3D-LIKE FLYTHROUGH (NO PIXELATION)
+               Logika pergerakan lapisan independen, bukan sekadar zoom kotak biasa.
                ========================================================================== */
-            const overlay = document.getElementById('epic-nature-overlay');
-            const camera = document.getElementById('camera');
+            const overlay = document.getElementById('cinematic-intro');
+            const sun = document.getElementById('c-sun');
+            const mtn = document.getElementById('c-mountain');
+            const grass = document.getElementById('c-grass');
+            const birds = document.getElementById('c-birds');
+            const clouds = document.getElementById('c-clouds');
+            const mainCloud = document.getElementById('main-cloud');
+            const whiteout = document.getElementById('c-whiteout');
             
-            // Texts & Layers
-            const texts = [
-                document.getElementById('t1'), document.getElementById('t2'),
-                document.getElementById('t3'), document.getElementById('t4'),
-                document.getElementById('t5'), document.getElementById('t6')
+            const tx = [
+                document.getElementById('tx1'), document.getElementById('tx2'),
+                document.getElementById('tx3'), document.getElementById('tx4'),
+                document.getElementById('tx5'), document.getElementById('tx6')
             ];
-            const lGrass = document.getElementById('l-grass');
-            const lMountain = document.getElementById('l-mountain');
-            const lBirds = document.getElementById('l-birds');
-            const lClouds = document.getElementById('l-clouds');
-            const cloudCenter = document.getElementById('cloud-center');
 
-            let introTimeouts = [];
+            // T=0s: Mulai
+            setTimeout(() => { tx[0].classList.add('show'); }, 500);
 
-            // A. DYNAMIC GRASS GENERATION
-            // Menghasilkan ratusan helai rumput di latar depan untuk efek ditiup angin
-            const bladesContainer = document.getElementById('grass-blades-container');
-            const numBlades = Math.floor(window.innerWidth / 5); // Responsif jumlah rumput
-            for(let i = 0; i < numBlades; i++) {
-                let blade = document.createElement('div');
-                blade.className = 'blade';
-                blade.style.left = (Math.random() * 100) + 'vw';
-                blade.style.height = (Math.random() * 30 + 15) + 'px';
-                blade.style.animationDelay = (Math.random() * 2) + 's';
-                blade.style.animationDuration = (Math.random() * 1 + 2.5) + 's'; // 2.5s - 3.5s
-                blade.style.opacity = Math.random() * 0.5 + 0.5;
-                bladesContainer.appendChild(blade);
-            }
+            // T=3.5s: Kamera Menengadah ke Gunung
+            setTimeout(() => {
+                tx[0].classList.remove('show');
+                grass.style.transform = "translateY(100vh)"; // Rumput turun (out of frame)
+                mtn.style.transform = "scale(1.2) translateY(5vh)";
+                sun.style.transform = "translate(-50%, -70%) scale(1.3)";
+                setTimeout(() => { tx[1].classList.add('show'); }, 800);
+            }, 3500);
 
-            // B. DYNAMIC BIRDS GENERATION
-            // Menghasilkan burung dengan kecepatan kepakan & terbang yang realistis
-            for(let i = 0; i < 5; i++) {
-                let birdWrapper = document.createElement('div');
-                birdWrapper.className = 'bird-wrapper';
-                birdWrapper.style.animationDelay = (i * 1.5) + 's';
-                birdWrapper.style.animationDuration = (Math.random() * 5 + 10) + 's'; // Terbang 10s - 15s
-                birdWrapper.style.top = (Math.random() * 30) + 'vh';
+            // T=7s: Mendekati Puncak Gunung
+            setTimeout(() => {
+                tx[1].classList.remove('show');
+                mtn.style.transform = "scale(2.5) translateY(20vh)";
+                sun.style.transform = "translate(-50%, -90%) scale(1.8)";
+                setTimeout(() => { tx[2].classList.add('show'); }, 800);
+            }, 7000);
+
+            // T=10.5s: Terbang Melewati Puncak (Gunung menghilang ke bawah)
+            setTimeout(() => {
+                tx[2].classList.remove('show');
+                mtn.style.transform = "scale(5) translateY(100vh)"; // Lewat
+                mtn.style.opacity = "0"; // Mulus menghilang
+                sun.style.transform = "translate(-50%, -100%) scale(2.5)";
+                sun.style.opacity = "0.5";
+                setTimeout(() => { tx[3].classList.add('show'); }, 800);
+            }, 10500);
+
+            // T=14s: Burung Masuk
+            setTimeout(() => {
+                tx[3].classList.remove('show');
+                birds.style.opacity = "1";
+                birds.style.transform = "translateX(-150vw) translateY(-10vh) scale(1.5)"; // Terbang menyilang
+                setTimeout(() => { tx[4].classList.add('show'); }, 800);
+            }, 14000);
+
+            // T=17.5s: Awan Masuk
+            setTimeout(() => {
+                tx[4].classList.remove('show');
+                clouds.style.opacity = "1";
+                clouds.style.transform = "scale(1.2)";
+                setTimeout(() => { tx[5].classList.add('show'); }, 800);
+            }, 17500);
+
+            // T=21s: Tembus Awan (Whiteout)
+            setTimeout(() => {
+                tx[5].classList.remove('show');
+                mainCloud.style.transition = "transform 2s cubic-bezier(0.7, 0, 0.1, 1)";
+                mainCloud.style.transform = "translate(-5vw, -5vh) scale(30)"; // Tembus awan tengah
                 
-                let birdSVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                birdSVG.setAttribute('viewBox', '0 0 24 24');
-                birdSVG.classList.add('bird-svg');
-                birdSVG.style.animationDelay = (Math.random() * 0.5) + 's'; // Kepakan berbeda
-                // Variasi ukuran
-                let scale = Math.random() * 0.8 + 0.6;
-                birdSVG.style.width = (60 * scale) + 'px';
-                
-                let path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                path.setAttribute('d', 'M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z');
-                
-                birdSVG.appendChild(path);
-                birdWrapper.appendChild(birdSVG);
-                lBirds.appendChild(birdWrapper);
-            }
-
-            // C. TIMELINE ANIMASI UTAMA (ZOOM-THROUGH)
-            function runIntroTimeline() {
-                // Scene 1: Hamparan Rumput Goyang
-                introTimeouts.push(setTimeout(() => { texts[0].classList.add('show'); }, 500));
-
-                // Scene 2: Zoom Gunung
-                introTimeouts.push(setTimeout(() => {
-                    texts[0].classList.remove('show');
-                    camera.style.transform = "scale(1.8) translateY(15vh)"; 
-                    lGrass.style.opacity = "0"; 
-                    setTimeout(() => texts[1].classList.add('show'), 800);
-                }, 3500));
-
-                // Scene 3: Zoom Puncak
-                introTimeouts.push(setTimeout(() => {
-                    texts[1].classList.remove('show');
-                    camera.style.transform = "scale(4) translateY(35vh)"; 
-                    setTimeout(() => texts[2].classList.add('show'), 800);
-                }, 7000));
-
-                // Scene 4: Langit Biru
-                introTimeouts.push(setTimeout(() => {
-                    texts[2].classList.remove('show');
-                    camera.style.transform = "scale(20) translateY(100vh)"; 
-                    lMountain.style.opacity = "0"; 
+                setTimeout(() => {
+                    whiteout.style.opacity = "1"; // Layar jadi putih mulus
                     
+                    // Akhiri Intro
                     setTimeout(() => {
-                        camera.style.transition = "none";
-                        camera.style.transform = "scale(1) translateY(0)";
-                        setTimeout(() => { camera.style.transition = "transform 3s cubic-bezier(0.45, 0.05, 0.55, 0.95)"; }, 50);
-                    }, 1500);
+                        overlay.style.opacity = "0";
+                        document.body.classList.remove('locked');
+                        initScrollAnimations();
+                        setTimeout(() => { overlay.style.display = "none"; }, 1500);
+                    }, 1000);
+                }, 1200);
 
-                    setTimeout(() => texts[3].classList.add('show'), 1500);
-                }, 10500));
-
-                // Scene 5: Burung Mengepak Sayap
-                introTimeouts.push(setTimeout(() => {
-                    texts[3].classList.remove('show');
-                    lBirds.style.opacity = "1";
-                    setTimeout(() => texts[4].classList.add('show'), 800);
-                }, 14000));
-
-                // Scene 6: Awan Putih Masuk
-                introTimeouts.push(setTimeout(() => {
-                    texts[4].classList.remove('show');
-                    lBirds.style.opacity = "0";
-                    lClouds.style.opacity = "1";
-                    setTimeout(() => texts[5].classList.add('show'), 800);
-                }, 17500));
-
-                // Scene 7: TRANSISI MAGIS - Zoom Menembus Awan Putih ke Scrapbook
-                introTimeouts.push(setTimeout(() => {
-                    texts[5].classList.remove('show');
-                    
-                    // Skalakan awan tengah menjadi sangat besar agar warna putih menutupi kamera
-                    cloudCenter.style.transition = "transform 2s cubic-bezier(0.7, 0, 0.1, 1)";
-                    cloudCenter.style.transform = "scale(80)"; 
-                    
-                    // Setelah kamera tertutup awan putih, samakan warna overlay dengan scrapbook
-                    setTimeout(() => {
-                        overlay.style.backgroundColor = "#F4F9F4"; // Putih awan berubah jadi kertas scrapbook
-                        
-                        // Pudarkan overlay putih untuk reveal isi buku
-                        setTimeout(() => { endIntro(); }, 500); 
-                    }, 1200);
-
-                }, 21000));
-            }
-
-            function endIntro() {
-                overlay.style.opacity = '0';
-                document.body.classList.remove('locked');
-                initScrollAnimations();
-                setTimeout(() => { overlay.style.display = 'none'; }, 2000);
-            }
-
-            // Start Epic Timeline
-            runIntroTimeline();
+            }, 21000);
 
 
             /* ==========================================================================
-               2. EPIC CALENDAR ZOOM TRANSITION
+               2. ELEGANT DATE MORPH (ANTI-LAG CALENDAR)
+               Bukan zoom paksa, melainkan cross-fade yang sangat mulus.
                ========================================================================== */
             const calContainer = document.getElementById('calendar-anim-container');
             const calGrid = document.getElementById('cal-grid');
             const dateFinal = document.getElementById('date-final');
 
+            // Generate Angka
             for (let i = 1; i <= 31; i++) {
                 const span = document.createElement('span');
-                span.classList.add('cal-num');
-                span.innerText = i;
+                span.className = 'cal-num'; span.innerText = i;
                 if (i === 7) span.id = 'target-date-7';
                 calGrid.appendChild(span);
             }
 
-            const calObserver = new IntersectionObserver((entries, obs) => {
+            const calObs = new IntersectionObserver((entries, obs) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         obs.unobserve(entry.target);
-                        calGrid.classList.add('show');
+                        
+                        // 1. Munculkan Grid
+                        calGrid.style.opacity = "1";
+                        calGrid.style.transform = "scale(1)";
                         
                         setTimeout(() => {
+                            // 2. Highlight angka 7
                             const target = document.getElementById('target-date-7');
                             target.classList.add('highlight');
                             
-                            const gridRect = calGrid.getBoundingClientRect();
-                            const targetRect = target.getBoundingClientRect();
-                            const originX = targetRect.left - gridRect.left + (targetRect.width / 2);
-                            const originY = targetRect.top - gridRect.top + (targetRect.height / 2);
-                            calGrid.style.transformOrigin = `${originX}px ${originY}px`;
-
                             setTimeout(() => {
-                                calGrid.classList.add('zoom');
+                                // 3. Grid menghilang secara halus
+                                calGrid.classList.add('hidden');
+                                
+                                // 4. Hasil akhir ("7 MARET") muncul di posisinya (Smooth Morph)
                                 dateFinal.classList.add('show');
-                            }, 1200);
+                            }, 800);
 
                         }, 1000);
                     }
                 });
-            }, { threshold: 0.5 });
+            }, { threshold: 0.6 });
 
-            calObserver.observe(calContainer);
+            calObs.observe(calContainer);
 
 
             /* ==========================================================================
-               3. ENGINE PARTIKEL (CLOUD DUST / ANGIN SEJUK)
+               3. BOKEH DUST PARTICLES (Out of focus nature floating)
                ========================================================================== */
             const canvas = document.getElementById('nature-dust');
             const ctx = canvas.getContext('2d');
-            let width, height;
-            let particles = [];
+            let w, h; let particles = [];
 
             function resizeCanvas() {
-                width = window.innerWidth; height = window.innerHeight;
-                canvas.width = width; canvas.height = height;
+                w = window.innerWidth; h = window.innerHeight;
+                canvas.width = w; canvas.height = h;
             }
-            window.addEventListener('resize', resizeCanvas);
-            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas); resizeCanvas();
 
             class Particle {
                 constructor() {
-                    this.x = Math.random() * width;
-                    this.y = Math.random() * height;
-                    this.size = Math.random() * 3 + 1;
-                    this.speedX = Math.random() * 2 + 0.5;
-                    this.speedY = Math.random() * -0.5;
-                    
-                    const colors = ['rgba(255, 255, 255, opacity)', 'rgba(176, 224, 230, opacity)'];
-                    this.baseColor = colors[Math.floor(Math.random() * colors.length)];
-                    this.opacity = Math.random() * 0.4 + 0.1;
+                    this.x = Math.random() * w; this.y = Math.random() * h;
+                    this.size = Math.random() * 8 + 2; 
+                    this.speedY = Math.random() * -0.5 - 0.2; // Melayang perlahan ke atas
+                    this.opacity = Math.random() * 0.3 + 0.1;
                 }
                 update() {
-                    this.x += this.speedX;
                     this.y += this.speedY;
-                    this.y += Math.sin(this.x * 0.01) * 0.5;
-
-                    if (this.x > width + 10) {
-                        this.x = -10;
-                        this.y = Math.random() * height;
-                    }
-                    if (this.y < -10) this.y = height + 10;
+                    this.x += Math.sin(this.y * 0.02) * 0.5; // Ayunan halus
+                    if (this.y < -20) { this.y = h + 20; this.x = Math.random() * w; }
                 }
                 draw() {
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fillStyle = this.baseColor.replace('opacity', this.opacity);
-                    ctx.fill();
+                    ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                    ctx.shadowBlur = 5; ctx.shadowColor = '#FFF';
+                    ctx.fill(); ctx.shadowBlur = 0;
                 }
             }
 
-            for (let i = 0; i < 60; i++) particles.push(new Particle());
-
+            for (let i = 0; i < 40; i++) particles.push(new Particle());
             function animateParticles() {
-                ctx.clearRect(0, 0, width, height);
+                ctx.clearRect(0, 0, w, h);
                 particles.forEach(p => { p.update(); p.draw(); });
                 requestAnimationFrame(animateParticles);
             }
             animateParticles();
 
             /* ==========================================================================
-               4. INTERSECTION OBSERVER UNTUK ANIMASI STAGGER 
+               4. SCROLL ANIMATIONS (STAGGER & PARALLAX)
                ========================================================================== */
             function initScrollAnimations() {
-                const observerOptions = { root: null, threshold: 0.1, rootMargin: "0px 0px -80px 0px" };
+                const obsOpt = { root: null, threshold: 0.15, rootMargin: "0px 0px -50px 0px" };
                 const observer = new IntersectionObserver((entries, obs) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
@@ -1266,24 +727,21 @@
                             obs.unobserve(entry.target); 
                         }
                     });
-                }, observerOptions);
+                }, obsOpt);
 
-                document.querySelectorAll('.blur-reveal, .spring-pop, .draw-path').forEach(el => observer.observe(el));
+                document.querySelectorAll('.blur-reveal, .cinematic-pop, .draw-path').forEach(el => observer.observe(el));
             }
 
-            /* ==========================================================================
-               5. PARALLAX EFFECT 
-               ========================================================================== */
             const parallaxItems = document.querySelectorAll('.parallax-item');
             let ticking = false;
             window.addEventListener('scroll', () => {
                 if (!ticking) {
                     window.requestAnimationFrame(() => {
-                        const windowHeight = window.innerHeight;
+                        const winH = window.innerHeight;
                         parallaxItems.forEach(item => {
                             const rect = item.getBoundingClientRect();
-                            if(rect.top < windowHeight && rect.bottom > 0) {
-                                const yPos = -((rect.top - (windowHeight / 2)) * 0.08); 
+                            if(rect.top < winH && rect.bottom > 0) {
+                                const yPos = -((rect.top - (winH / 2)) * 0.08); 
                                 const rot = item.style.getPropertyValue('--rot') || '0deg';
                                 item.style.transform = `translateY(${yPos}px) rotate(${rot})`;
                             }
@@ -1295,7 +753,7 @@
             });
 
             /* ==========================================================================
-               6. MUSIC PLAYER LOGIC 
+               5. AUDIO PLAYER
                ========================================================================== */
             const musicToggle = document.getElementById('music-toggle');
             const bgMusic = document.getElementById('bg-music');
@@ -1303,26 +761,15 @@
             let isPlaying = false;
             
             bgMusic.volume = 0.6;
-
             bgMusic.play().then(() => {
-                isPlaying = true;
-                musicToggle.classList.add('playing');
-                musicTooltip.classList.add('hidden');
+                isPlaying = true; musicToggle.classList.add('playing'); musicTooltip.classList.add('hidden');
             }).catch(() => {
-                musicToggle.classList.remove('playing');
-                musicTooltip.classList.remove('hidden');
-                musicTooltip.innerText = "Sentuh Vinyl Untuk Memutar Melodi 🎶";
+                musicToggle.classList.remove('playing'); musicTooltip.classList.remove('hidden');
             });
 
             musicToggle.addEventListener('click', () => {
-                if (isPlaying) {
-                    bgMusic.pause();
-                    musicToggle.classList.remove('playing');
-                } else {
-                    bgMusic.play();
-                    musicToggle.classList.add('playing');
-                    musicTooltip.classList.add('hidden');
-                }
+                if (isPlaying) { bgMusic.pause(); musicToggle.classList.remove('playing'); } 
+                else { bgMusic.play(); musicToggle.classList.add('playing'); musicTooltip.classList.add('hidden'); }
                 isPlaying = !isPlaying;
             });
 
