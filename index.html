@@ -49,9 +49,9 @@
             background-color: var(--sky-day);
             font-family: var(--font-sans);
             color: var(--text-light);
-            overflow: hidden; /* Prevent native scroll, we use 3D camera */
+            overflow: hidden; /* Mencegah scroll asli, kita pakai Kamera 3D */
             width: 100vw; height: 100vh;
-            perspective: 1200px;
+            perspective: 1200px; /* Kedalaman lensa kamera */
         }
 
         /* Dinamic Environment Overlays (Day, Sunset, Night, Underwater) */
@@ -127,6 +127,7 @@
         .bird-icon:nth-child(2) { transform: translateY(-20px) scale(0.8); animation-delay: 0.2s; }
         .bird-icon:nth-child(3) { transform: translateY(15px) scale(1.2); animation-delay: 0.4s; }
         @keyframes flap { 0% { transform: scaleY(1); } 100% { transform: scaleY(0.3); } }
+        
         .cine-text {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             font-family: var(--font-title); color: #FFF; font-size: 2.5rem; letter-spacing: 5px; text-align: center; text-shadow: 0 4px 15px rgba(0,0,0,0.6);
@@ -143,33 +144,33 @@
            ========================================================================== */
         #world {
             position: absolute; top: 50%; left: 50%;
-            width: 0; height: 0; /* World is a point, children branch out */
+            width: 0; height: 0; 
             transform-style: preserve-3d;
-            /* Camera transition setup */
-            transition: transform 4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            /* Pergerakan Halus Kamera / Smooth Camera Tracking */
+            transition: transform 3.5s cubic-bezier(0.34, 1.56, 0.64, 1);
             z-index: 10;
         }
 
-        /* 3D Scenes Anchors */
+        /* Container Tiap Scene: Mengambil ukuran 100% layar dan berpusat sempurna di titik X,Y,Z */
         .scene3d {
             position: absolute;
+            top: -50vh; left: -50vw; /* INI KUNCI UTAMA RESPONSIVITAS: 0,0 berada tepat di tengah layar */
+            width: 100vw; height: 100vh;
             transform-style: preserve-3d;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            width: 800px; height: 800px;
-            /* Base translation applied via inline style or CSS classes below */
         }
 
-        /* Specific Scene Placements in 3D Space */
-        #s1-arrival   { transform: translate3d(-400px, -400px, 0px); }
-        #s2-tree      { transform: translate3d(-2000px, -800px, 1000px) rotateY(20deg); }
-        #s3-sand      { transform: translate3d(1500px, 600px, 500px) rotateX(-20deg) rotateY(-15deg); }
-        #s4-underwater{ transform: translate3d(0px, 2500px, 2000px) rotateX(-5deg); }
-        #s5-boat      { transform: translate3d(3000px, 200px, -1000px) rotateY(-30deg); }
-        #s6-sunset    { transform: translate3d(-3500px, 100px, -1500px) rotateY(35deg); }
-        #s7-night     { transform: translate3d(0px, -3000px, -1000px) rotateX(25deg); }
+        /* Posisi Absolut Tiap Scene di Alam Semesta 3D */
+        #s1-arrival   { transform: translate3d(0px, 0px, 0px); }
+        #s2-tree      { transform: translate3d(-2000px, -500px, 1000px) rotateY(30deg); }
+        #s3-sand      { transform: translate3d(2000px, 500px, 2000px) rotateX(-15deg) rotateY(-25deg); }
+        #s4-underwater{ transform: translate3d(0px, 3000px, 4000px) rotateX(-10deg); }
+        #s5-boat      { transform: translate3d(4000px, 0px, -1000px) rotateY(-40deg); }
+        #s6-sunset    { transform: translate3d(-4000px, 1000px, -2000px) rotateY(45deg); }
+        #s7-night     { transform: translate3d(0px, -4000px, -2000px) rotateX(25deg); }
 
         /* ==========================================================================
-           5. CINEMATIC PANELS & GLASSMORPHISM (Floating UI)
+           5. CINEMATIC PANELS & GLASSMORPHISM
            ========================================================================== */
         .glass-panel {
             background: rgba(255, 255, 255, 0.1);
@@ -179,8 +180,10 @@
             padding: 30px; border-radius: 16px;
             transform-style: preserve-3d;
             position: relative;
+            /* Responsif untuk Mobile */
+            width: 90%; max-width: 700px;
         }
-        /* Floating effect relative to camera */
+        
         .float-layer-1 { transform: translateZ(30px); }
         .float-layer-2 { transform: translateZ(60px); }
         .float-layer-3 { transform: translateZ(90px); }
@@ -195,26 +198,26 @@
         }
         .glass-panel:hover .panel-img { transform: scale(1.08); }
 
-        /* Typography inside panels */
+        /* Typography Default (PC) */
         .h-title { font-family: var(--font-title); font-size: 2.8rem; font-weight: 700; text-shadow: 0 4px 10px rgba(0,0,0,0.5); line-height: 1.2; }
         .h-subtitle { font-family: var(--font-serif); font-size: 1.8rem; font-style: italic; color: var(--gold-accent); text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
         .p-text { font-family: var(--font-sans); font-size: 1.2rem; font-weight: 400; line-height: 1.6; text-shadow: 0 2px 5px rgba(0,0,0,0.6); }
         .h-calig { font-family: var(--font-elegant); font-size: 5rem; text-shadow: 0 5px 15px rgba(0,0,0,0.6); line-height: 1; }
         .h-hand { font-family: var(--font-hand); font-size: 2.5rem; color: var(--gold-accent); }
 
-        /* Decorative Elements in 3D */
-        .palm-leaves-dec { position: absolute; width: 300px; opacity: 0.8; filter: drop-shadow(0 20px 20px rgba(0,0,0,0.5)); pointer-events: none; }
-        .boat-dec { position: absolute; width: 400px; bottom: -150px; right: -200px; opacity: 0.9; filter: drop-shadow(0 30px 30px rgba(0,0,0,0.7)); }
+        /* Ornamen Dekorasi */
+        .palm-leaves-dec { position: absolute; width: 40vw; max-width: 400px; opacity: 0.8; filter: drop-shadow(0 20px 20px rgba(0,0,0,0.5)); pointer-events: none; }
+        .boat-dec { position: absolute; width: 50vw; max-width: 500px; bottom: -10vh; right: -10vw; opacity: 0.9; filter: drop-shadow(0 30px 30px rgba(0,0,0,0.7)); }
 
         /* ==========================================================================
-           6. EPIC NAVIGATION HUD (7 PENCETAN)
+           6. EPIC NAVIGATION HUD
            ========================================================================== */
         #nav-hud {
             position: fixed; right: 30px; top: 50%; transform: translateY(-50%);
             display: flex; flex-direction: column; gap: 15px; z-index: 1000;
             background: rgba(0,0,0,0.2); padding: 20px 10px; border-radius: 40px;
             backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);
-            opacity: 0; transition: opacity 2s ease; /* Fades in after intro */
+            opacity: 0; transition: opacity 2s ease;
         }
         .nav-btn {
             width: 16px; height: 16px; border-radius: 50%;
@@ -223,11 +226,8 @@
             position: relative; border: 2px solid transparent;
         }
         .nav-btn:hover { background: rgba(255,255,255,0.6); transform: scale(1.2); }
-        .nav-btn.active {
-            background: var(--gold-accent); transform: scale(1.5);
-            border-color: #FFF; box-shadow: 0 0 15px var(--gold-accent);
-        }
-        /* Tooltip */
+        .nav-btn.active { background: var(--gold-accent); transform: scale(1.5); border-color: #FFF; box-shadow: 0 0 15px var(--gold-accent); }
+        
         .nav-btn::before {
             content: attr(data-title); position: absolute; right: 35px; top: 50%; transform: translateY(-50%);
             background: rgba(0,0,0,0.7); color: #FFF; font-family: var(--font-sans); font-size: 0.8rem;
@@ -236,7 +236,6 @@
         }
         .nav-btn:hover::before { opacity: 1; }
 
-        /* Next/Prev Screen Buttons */
         .hud-arrows {
             position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
             display: flex; gap: 30px; z-index: 1000; opacity: 0; transition: opacity 2s ease;
@@ -252,36 +251,28 @@
         /* ==========================================================================
            7. SCENE SPECIFIC STYLING
            ========================================================================== */
+        #s1-arrival .glass-panel { max-width: 700px; text-align: center; background: rgba(11, 76, 106, 0.4); }
         
-        /* Scene 1: Arrival */
-        #s1-arrival .glass-panel { width: 700px; text-align: center; background: rgba(11, 76, 106, 0.4); }
+        #s2-tree .glass-panel { max-width: 550px; background: rgba(46, 134, 171, 0.3); }
+        .s2-trunk { position: absolute; left: -20vw; top: -100vh; width: 10vw; min-width: 80px; height: 300vh; background: linear-gradient(90deg, #3E2723, #5D4037, #3E2723); border-radius: 50px; transform: rotateZ(-15deg); z-index: -1; box-shadow: inset 20px 0 30px rgba(0,0,0,0.7), 20px 0 50px rgba(0,0,0,0.5); }
 
-        /* Scene 2: Tree */
-        #s2-tree .glass-panel { width: 550px; background: rgba(46, 134, 171, 0.3); }
-        .s2-trunk { position: absolute; left: -200px; top: -500px; width: 100px; height: 2000px; background: linear-gradient(90deg, #3E2723, #5D4037, #3E2723); border-radius: 50px; transform: rotateZ(-15deg); z-index: -1; box-shadow: inset 20px 0 30px rgba(0,0,0,0.7), 20px 0 50px rgba(0,0,0,0.5); }
+        #s3-sand .glass-panel { max-width: 600px; background: rgba(212, 184, 114, 0.2); border-color: rgba(244, 231, 195, 0.4); }
+        .sand-mound { position: absolute; bottom: -50vh; left: -50vw; width: 200vw; height: 100vh; background: radial-gradient(ellipse at top, var(--sand-light), var(--sand-dark)); border-radius: 50%; transform: rotateX(60deg); z-index: -1; box-shadow: 0 -20px 50px rgba(0,0,0,0.3); }
 
-        /* Scene 3: Sand */
-        #s3-sand .glass-panel { width: 600px; background: rgba(212, 184, 114, 0.2); border-color: rgba(244, 231, 195, 0.4); }
-        .sand-mound { position: absolute; bottom: -300px; left: -500px; width: 2000px; height: 800px; background: radial-gradient(ellipse at top, var(--sand-light), var(--sand-dark)); border-radius: 50%; transform: rotateX(60deg); z-index: -1; box-shadow: 0 -20px 50px rgba(0,0,0,0.3); }
-
-        /* Scene 4: Underwater */
-        #s4-underwater .glass-panel { width: 650px; background: rgba(0, 20, 30, 0.5); border-color: rgba(0, 150, 200, 0.3); box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,150,200,0.2); }
+        #s4-underwater .glass-panel { max-width: 650px; background: rgba(0, 20, 30, 0.5); border-color: rgba(0, 150, 200, 0.3); box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,150,200,0.2); }
         
-        /* Scene 5: Boat */
-        #s5-boat .glass-panel { width: 550px; background: rgba(139, 69, 19, 0.3); }
-        .wooden-boat { position: absolute; bottom: -100px; right: -300px; width: 600px; height: 200px; background: #5D4037; border-radius: 10% 10% 50% 50%; transform: rotateZ(-5deg); box-shadow: inset 0 -30px 50px rgba(0,0,0,0.8), 0 20px 40px rgba(0,0,0,0.6); z-index: -1; animation: bob 4s ease-in-out infinite alternate; }
+        #s5-boat .glass-panel { max-width: 550px; background: rgba(139, 69, 19, 0.3); }
+        .wooden-boat { position: absolute; bottom: -15vh; right: -20vw; width: 80vw; max-width: 600px; height: 30vh; background: #5D4037; border-radius: 10% 10% 50% 50%; transform: rotateZ(-5deg); box-shadow: inset 0 -30px 50px rgba(0,0,0,0.8), 0 20px 40px rgba(0,0,0,0.6); z-index: -1; animation: bob 4s ease-in-out infinite alternate; }
         @keyframes bob { 0% { transform: translateY(0px) rotateZ(-5deg); } 100% { transform: translateY(30px) rotateZ(-2deg); } }
 
-        /* Scene 6: Sunset Rock (Date) */
-        #s6-sunset .glass-panel { width: 800px; background: rgba(42, 19, 41, 0.4); border-color: rgba(249, 160, 63, 0.3); text-align: center; }
-        .rock-formation { position: absolute; bottom: -400px; left: -100px; width: 1000px; height: 600px; background: #1C1C1C; clip-path: polygon(10% 100%, 20% 40%, 40% 20%, 60% 50%, 80% 10%, 100% 100%); z-index: -1; box-shadow: inset 30px 0 100px rgba(249, 160, 63, 0.3); filter: drop-shadow(0 20px 50px rgba(0,0,0,0.8)); }
+        #s6-sunset .glass-panel { max-width: 800px; background: rgba(42, 19, 41, 0.4); border-color: rgba(249, 160, 63, 0.3); text-align: center; }
+        .rock-formation { position: absolute; bottom: -30vh; left: -20vw; width: 140vw; height: 70vh; background: #1C1C1C; clip-path: polygon(10% 100%, 20% 40%, 40% 20%, 60% 50%, 80% 10%, 100% 100%); z-index: -1; box-shadow: inset 30px 0 100px rgba(249, 160, 63, 0.3); filter: drop-shadow(0 20px 50px rgba(0,0,0,0.8)); }
         
         .epic-date { display: flex; flex-direction: column; align-items: center; }
-        .d-num { font-family: var(--font-elegant); font-size: 10rem; color: var(--sunset-bot); line-height: 0.8; text-shadow: 0 10px 30px rgba(249, 160, 63, 0.6); }
-        .d-month { font-family: var(--font-title); font-size: 2.5rem; letter-spacing: 15px; color: #FFF; margin-top: 20px; }
+        .d-num { font-family: var(--font-elegant); font-size: clamp(6rem, 15vw, 10rem); color: var(--sunset-bot); line-height: 0.8; text-shadow: 0 10px 30px rgba(249, 160, 63, 0.6); }
+        .d-month { font-family: var(--font-title); font-size: clamp(1.5rem, 4vw, 2.5rem); letter-spacing: clamp(5px, 2vw, 15px); color: #FFF; margin-top: 20px; }
 
-        /* Scene 7: Night Sky */
-        #s7-night .glass-panel { width: 650px; background: rgba(9, 10, 15, 0.6); border-color: rgba(255,255,255,0.2); text-align: center; }
+        #s7-night .glass-panel { max-width: 650px; background: rgba(9, 10, 15, 0.6); border-color: rgba(255,255,255,0.2); text-align: center; }
         .btn-wa {
             display: inline-block; margin-top: 30px; padding: 15px 40px; background: linear-gradient(45deg, #128C7E, #25D366);
             color: #FFF; font-family: var(--font-sans); font-weight: 700; letter-spacing: 2px; border-radius: 30px; text-decoration: none;
@@ -289,7 +280,7 @@
         }
         .btn-wa:hover { transform: scale(1.05); box-shadow: 0 15px 35px rgba(37, 211, 102, 0.6); }
 
-        /* Music Vinyl */
+        /* Music Vinyl Button */
         .vinyl-player {
             position: fixed; top: 30px; left: 30px; width: 60px; height: 60px; background-color: #111; border-radius: 50%;
             display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 1000;
@@ -298,6 +289,34 @@
         .vinyl-player::after { content: ''; width: 12px; height: 12px; background: #FFF; border-radius: 50%; position: absolute; }
         .vinyl-player.playing { animation: spin-vinyl 3s linear infinite; }
         @keyframes spin-vinyl { 100% { transform: rotate(360deg); } }
+
+        /* ==========================================================================
+           8. RESPONSIVE (MOBILE EXPERIENCE OPTIMIZATION)
+           ========================================================================== */
+        @media (max-width: 768px) {
+            /* Sesuaikan Ukuran Teks agar muat di HP */
+            .h-title { font-size: 2rem; }
+            .h-subtitle { font-size: 1.3rem; }
+            .p-text { font-size: 1rem; }
+            .h-calig { font-size: 3.5rem; }
+            .h-hand { font-size: 1.8rem; }
+            
+            /* Sesuaikan Panel & Gambar */
+            .glass-panel { padding: 20px; width: 90%; }
+            .panel-img-container { height: 250px; }
+            
+            /* Posisi HUD Navigasi */
+            #nav-hud { right: 10px; padding: 15px 8px; transform: translateY(-50%) scale(0.9); }
+            .nav-btn::before { display: none; } /* Sembunyikan tulisan menu samping agar tidak sesak */
+            
+            /* Tombol Lanjut/Sebelum */
+            .hud-arrows { bottom: 20px; width: 100%; justify-content: center; gap: 15px; }
+            .arrow-btn { padding: 10px 20px; font-size: 0.8rem; }
+            
+            /* Posisi Player Musik */
+            .vinyl-player { top: 15px; left: 15px; width: 45px; height: 45px; }
+            .vinyl-player::after { width: 8px; height: 8px; }
+        }
 
     </style>
 </head>
@@ -382,14 +401,14 @@
     <!-- THE 3D WORLD ARCHITECTURE -->
     <div id="world">
         
-        <!-- SCENE 1: OVerVIEW (Pantai Impian) -->
+        <!-- SCENE 1: OVERVIEW (Pantai Impian) -->
         <div class="scene3d" id="s1-arrival">
             <div class="glass-panel">
                 <div class="float-layer-1">
                     <h2 class="h-subtitle">Selamat Datang di</h2>
-                    <h1 class="h-title" style="color: var(--sky-ocean); margin: 10px 0;">Pantai Impian Maulidya</h1>
+                    <h1 class="h-title" style="color: var(--ocean-deep); margin: 10px 0;">Pantai Impian Maulidya</h1>
                     <p class="p-text" style="margin-top: 20px;">Sebuah perjalanan melintasi alam, khusus dirangkai untuk merayakan hari lahirmu hari ini. Nikmati anginnya, dengarkan ombaknya.</p>
-                    <h1 class="h-hand" style="margin-top: 20px; font-size: 2rem;">Dari Agronity25</h1>
+                    <h1 class="h-hand" style="margin-top: 20px;">Dari Agronity25</h1>
                 </div>
             </div>
         </div>
@@ -399,7 +418,7 @@
             <!-- 3D Decorative Trunk -->
             <div class="s2-trunk"></div>
             <!-- Huge SVG Palm Leaves falling into scene -->
-            <svg class="palm-leaves-dec" style="top: -200px; left: -300px; width: 600px;" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <svg class="palm-leaves-dec" style="top: -200px; left: -20vw;" viewBox="0 0 100 100" preserveAspectRatio="none">
                 <path d="M0,0 Q50,20 100,50 Q60,60 20,100 Q10,50 0,0 Z" fill="#215A42" />
                 <path d="M10,10 Q60,10 90,30 Q50,40 15,80 Z" fill="#143625" />
             </svg>
@@ -472,7 +491,7 @@
         <!-- SCENE 7: LANGIT MALAM BINTANG -->
         <div class="scene3d" id="s7-night">
             <div class="glass-panel">
-                <div class="panel-img-container float-layer-1" style="height: 300px; width: 300px; border-radius: 50%; margin: 0 auto;">
+                <div class="panel-img-container float-layer-1" style="height: 250px; width: 250px; border-radius: 50%; margin: 0 auto;">
                     <img src="https://image2url.com/r2/default/images/1775118495166-d20b9b56-ac04-4303-bec5-977f128d5c7b.jpg" class="panel-img" alt="Maulidya Final">
                 </div>
                 <div class="float-layer-2" style="margin-top: 30px;">
@@ -490,9 +509,33 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+
+            /* ==========================================================================
+               1. CANVASES INITIALIZATION (Memperbaiki Error Reference)
+               ========================================================================== */
+            const cSky = document.getElementById('canvas-sky');
+            const ctxSky = cSky.getContext('2d');
+            const cOcean = document.getElementById('canvas-ocean');
+            const ctxOcean = cOcean.getContext('2d');
+            const cUw = document.getElementById('canvas-underwater');
+            const ctxUw = cUw.getContext('2d');
+            
+            let w, h;
+            function resize() { 
+                w = window.innerWidth; 
+                h = window.innerHeight; 
+                cSky.width = w; 
+                cSky.height = h; 
+                cOcean.width = w; 
+                cOcean.height = h; 
+                cUw.width = w; 
+                cUw.height = h;
+            }
+            window.addEventListener('resize', resize); 
+            resize(); // Aman dipanggil sekarang karena variabel telah diinisialisasi
             
             /* ==========================================================================
-               1. AUDIO ENGINE
+               2. AUDIO ENGINE
                ========================================================================== */
             const sfxWind = document.getElementById('sfx-wind');
             const sfxWaves = document.getElementById('sfx-waves');
@@ -516,7 +559,7 @@
             });
 
             /* ==========================================================================
-               2. CINEMATIC INTRO TIMELINE (MOUNTAIN TO BEACH)
+               3. CINEMATIC INTRO TIMELINE (MOUNTAIN TO BEACH)
                ========================================================================== */
             const introOverlay = document.getElementById('cinematic-intro');
             const sun = document.getElementById('c-sun');
@@ -603,7 +646,7 @@
             }
 
             /* ==========================================================================
-               3. 3D CAMERA & SCENE CONTROLLER (7 PENCETAN)
+               4. 3D CAMERA & SCENE CONTROLLER (RESPONSIVE CENTERED)
                ========================================================================== */
             const world = document.getElementById('world');
             const navBtns = document.querySelectorAll('.nav-btn');
@@ -614,13 +657,13 @@
             // Database Koordinat 3D untuk 7 Scene
             // X, Y, Z, RotX, RotY, Environment (day/underwater/sunset/night)
             const sceneData = [
-                { x: -400, y: -400, z: 0, rx: 0, ry: 0, env: 'day' },              // 0: Arrival
-                { x: -2000, y: -800, z: 1000, rx: 0, ry: 20, env: 'day' },         // 1: Tree
-                { x: 1500, y: 600, z: 500, rx: -20, ry: -15, env: 'day' },         // 2: Sand
-                { x: 0, y: 2500, z: 2000, rx: -5, ry: 0, env: 'underwater' },      // 3: Underwater
-                { x: 3000, y: 200, z: -1000, rx: 0, ry: -30, env: 'day' },         // 4: Boat
-                { x: -3500, y: 100, z: -1500, rx: 0, ry: 35, env: 'sunset' },      // 5: Sunset Rock
-                { x: 0, y: -3000, z: -1000, rx: 25, ry: 0, env: 'night' }          // 6: Night Sky
+                { x: 0, y: 0, z: 0, rx: 0, ry: 0, env: 'day' },
+                { x: -2000, y: -500, z: 1000, rx: 0, ry: 30, env: 'day' },
+                { x: 2000, y: 500, z: 2000, rx: -15, ry: -25, env: 'day' },
+                { x: 0, y: 3000, z: 4000, rx: -10, ry: 0, env: 'underwater' },
+                { x: 4000, y: 0, z: -1000, rx: 0, ry: -40, env: 'day' },
+                { x: -4000, y: 1000, z: -2000, rx: 0, ry: 45, env: 'sunset' },
+                { x: 0, y: -4000, z: -2000, rx: 25, ry: 0, env: 'night' }
             ];
 
             const envSky = document.getElementById('env-sky');
@@ -637,11 +680,11 @@
                 navBtns.forEach(btn => btn.classList.remove('active'));
                 navBtns[currentScene].classList.add('active');
 
-                // Dapatkan data target scene
                 const target = sceneData[currentScene];
 
-                // Gerakkan Kamera (Invers dari posisi target agar target berada di tengah layar)
-                world.style.transform = `translate3d(${-target.x}px, ${-target.y}px, ${-target.z}px) rotateX(${-target.rx}deg) rotateY(${-target.ry}deg)`;
+                // PERHITUNGAN MATEMATIKA INVERSE UNTUK CENTER-LOCK DI SEMUA LAYAR
+                // Kamera selalu mengeksekusi rotasi secara terbalik terlebih dahulu, lalu bergerak menuju koordinatnya
+                world.style.transform = `rotateY(${-target.ry}deg) rotateX(${-target.rx}deg) translate3d(${-target.x}px, ${-target.y}px, ${-target.z}px)`;
 
                 // Update Environment & Audio
                 handleEnvironment(target.env);
@@ -655,8 +698,8 @@
                 envSunset.style.opacity = '0';
                 envNight.style.opacity = '0';
                 envUnderwater.style.opacity = '0';
-                document.getElementById('canvas-underwater').style.opacity = '0';
-                document.getElementById('canvas-ocean').style.opacity = '1';
+                cUw.style.opacity = '0';
+                cOcean.style.opacity = '1';
 
                 // Reset Audio Levels smoothly
                 sfxWaves.volume = 0.6;
@@ -673,8 +716,8 @@
                     sfxWaves.volume = 0.2;
                 } else if (env === 'underwater') {
                     envUnderwater.style.opacity = '1';
-                    document.getElementById('canvas-underwater').style.opacity = '1';
-                    document.getElementById('canvas-ocean').style.opacity = '0';
+                    cUw.style.opacity = '1';
+                    cOcean.style.opacity = '0';
                     
                     sfxWaves.volume = 0.0;
                     sfxWind.volume = 0.0;
@@ -694,17 +737,11 @@
             btnNext.addEventListener('click', () => updateScene(currentScene + 1));
 
             /* ==========================================================================
-               4. CANVAS 1: SKY (Clouds & Stars Engine)
+               5. CANVAS 1: SKY (Clouds & Stars Engine)
                ========================================================================== */
-            const cSky = document.getElementById('canvas-sky');
-            const ctxSky = cSky.getContext('2d');
-            let w, h;
-            function resize() { w = window.innerWidth; h = window.innerHeight; cSky.width=w; cSky.height=h; cOcean.width=w; cOcean.height=h; cUw.width=w; cUw.height=h;}
-            window.addEventListener('resize', resize); resize();
-
             const stars = [];
             for(let i=0; i<150; i++) {
-                stars.push({ x: Math.random()*w, y: Math.random()*(h/2), r: Math.random()*1.5, a: Math.random() });
+                stars.push({ x: Math.random()*window.innerWidth, y: Math.random()*(window.innerHeight/2), r: Math.random()*1.5, a: Math.random() });
             }
 
             function drawSky() {
@@ -723,10 +760,8 @@
             drawSky();
 
             /* ==========================================================================
-               5. CANVAS 2: OCEAN (Wave Engine)
+               6. CANVAS 2: OCEAN (Wave Engine)
                ========================================================================== */
-            const cOcean = document.getElementById('canvas-ocean');
-            const ctxOcean = cOcean.getContext('2d');
             let waveTime = 0;
 
             function drawOcean() {
@@ -758,18 +793,15 @@
             drawOcean();
 
             /* ==========================================================================
-               6. CANVAS 3: UNDERWATER (Fishes & Bubbles Engine)
+               7. CANVAS 3: UNDERWATER (Fishes & Bubbles Engine)
                ========================================================================== */
-            const cUw = document.getElementById('canvas-underwater');
-            const ctxUw = cUw.getContext('2d');
-            
             const bubbles = [];
-            for(let i=0; i<50; i++) bubbles.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*4+1, s: Math.random()*2+1, offset: Math.random()*100 });
+            for(let i=0; i<50; i++) bubbles.push({ x: Math.random()*window.innerWidth, y: Math.random()*window.innerHeight, r: Math.random()*4+1, s: Math.random()*2+1, offset: Math.random()*100 });
             
             const fishes = [];
-            for(let i=0; i<10; i++) {
+            for(let i=0; i<15; i++) {
                 fishes.push({
-                    x: Math.random()*w, y: Math.random()*h, 
+                    x: Math.random()*window.innerWidth, y: Math.random()*window.innerHeight, 
                     vx: (Math.random()-0.5)*3, vy: (Math.random()-0.5)*1,
                     s: Math.random()*10+10, c: `hsl(${Math.random()*60 + 180}, 70%, 60%)` // Blue/Cyan fishes
                 });
@@ -817,7 +849,7 @@
             drawUnderwater();
 
             /* ==========================================================================
-               7. MUSIC TOGGLE LOGIC
+               8. MUSIC TOGGLE LOGIC
                ========================================================================== */
             musicToggle.addEventListener('click', () => {
                 if (isPlaying) { 
