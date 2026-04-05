@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alam Untuk Maulidya | A Special Day</title>
+    <title>Pantai Impian Maulidya | Cinematic 3D Experience</title>
     
     <!-- Google Fonts for Epic & Aesthetic Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,22 +12,27 @@
 
     <style>
         /* ==========================================================================
-           1. CSS VARIABLES & PALET WARNA ALAM
+           1. CSS VARIABLES & PALET WARNA PANTAI/LAUT
            ========================================================================== */
         :root {
-            --paper-bg: #F8FBF8; 
-            --paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            /* Sky & Ocean Palette */
+            --sky-day: #6BB5DF;
+            --sky-horizon: #B0E0E6;
+            --ocean-deep: #0B4C6A;
+            --ocean-surface: #2E86AB;
+            --sand-light: #F4E7C3;
+            --sand-dark: #D4B872;
+            --sunset-top: #2A1329;
+            --sunset-mid: #88304E;
+            --sunset-bot: #F9A03F;
+            --night-sky: #090A0F;
             
-            --nature-sky: #4A90E2;      
-            --nature-cloud: #FFFFFF;    
-            --nature-mountain: #215A42; 
-            --nature-grass: #3A7D5C;    
-            --nature-sun: #F9C03F;      
+            /* Teks & Tinta */
+            --text-light: #FFFFFF;
+            --text-dark: #143625;
+            --gold-accent: #FFD700;
             
-            --ink-black: #143625;       
-            --text-gray: #4A6E5E;       
-            --tape-color: rgba(255, 255, 255, 0.7);
-            
+            /* Tipografi */
             --font-serif: 'Playfair Display', serif;
             --font-hand: 'Caveat', cursive;
             --font-elegant: 'Great Vibes', cursive;
@@ -41,309 +46,284 @@
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: linear-gradient(180deg, #6BB5DF 0%, #4A90E2 50%, #9DD6E3 100%);
-            background-attachment: fixed;
+            background-color: var(--sky-day);
             font-family: var(--font-sans);
-            color: var(--ink-black);
-            line-height: 1.7;
-            overflow-x: hidden;
-            min-height: 100vh;
+            color: var(--text-light);
+            overflow: hidden; /* Prevent native scroll, we use 3D camera */
+            width: 100vw; height: 100vh;
+            perspective: 1200px;
         }
 
-        /* Canvas untuk partikel halus */
-        #nature-dust {
+        /* Dinamic Environment Overlays (Day, Sunset, Night, Underwater) */
+        #env-sky {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            pointer-events: none; z-index: 1;
+            background: linear-gradient(180deg, var(--sky-day) 0%, var(--sky-horizon) 100%);
+            z-index: -10; transition: opacity 3s ease;
         }
+        #env-sunset {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(180deg, var(--sunset-top) 0%, var(--sunset-mid) 50%, var(--sunset-bot) 100%);
+            z-index: -9; opacity: 0; transition: opacity 3s ease;
+        }
+        #env-night {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(180deg, #02010A 0%, #090A0F 50%, #111A24 100%);
+            z-index: -8; opacity: 0; transition: opacity 3s ease;
+        }
+        #env-underwater {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(180deg, rgba(11,76,106,0.8) 0%, rgba(4,32,46,0.95) 100%);
+            z-index: 100; opacity: 0; pointer-events: none; transition: opacity 3s ease;
+        }
+
+        /* Canvases for Particles (Clouds, Stars, Birds, Fishes, Waves) */
+        canvas { position: fixed; top: 0; left: 0; pointer-events: none; }
+        #canvas-sky { z-index: -5; }
+        #canvas-ocean { z-index: -4; bottom: 0; top: auto; height: 50vh; width: 100vw; }
+        #canvas-underwater { z-index: 101; opacity: 0; transition: opacity 2s ease; }
 
         /* ==========================================================================
-           3. EPIC CINEMATIC INTRO & START SCREEN
+           3. EPIC CINEMATIC INTRO (MOUNTAIN -> SUN ZOOM)
            ========================================================================== */
-        body.locked { overflow: hidden; height: 100vh; }
-
-        /* Layar Mulai (Untuk Bypass Autoplay Policy Audio) */
         #start-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #143625; z-index: 100000;
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer; transition: opacity 0.5s ease;
+            background: #09151A; z-index: 200000;
+            display: flex; justify-content: center; align-items: center; cursor: pointer; transition: opacity 0.8s ease;
         }
         .start-btn {
-            font-family: var(--font-title); font-size: 2rem; color: #FFF;
-            letter-spacing: 5px; text-align: center;
-            animation: pulse-start 1.5s infinite alternate;
+            font-family: var(--font-title); font-size: 2rem; color: #FFF; letter-spacing: 5px; text-align: center;
+            animation: pulse-start 1.5s infinite alternate; text-shadow: 0 0 20px rgba(255,255,255,0.5);
         }
-        @keyframes pulse-start { 0% { opacity: 0.5; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.05); } }
-        
+        @keyframes pulse-start { 0% { opacity: 0.6; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.05); } }
+
         #cinematic-intro {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: linear-gradient(to bottom, #3A7BD5 0%, #3A6073 100%);
-            z-index: 99999; overflow: hidden;
-            transition: opacity 1.5s ease;
+            z-index: 199999; overflow: hidden; transition: opacity 2s ease;
         }
-
-        /* Matahari Bercahaya (Epic Sun) */
-        @keyframes pulse-sun {
-            0% { box-shadow: 0 0 100px 40px rgba(249, 192, 63, 0.8), 0 0 250px 100px rgba(249, 192, 63, 0.4); }
-            100% { box-shadow: 0 0 130px 60px rgba(249, 192, 63, 1), 0 0 350px 120px rgba(249, 192, 63, 0.6); }
-        }
-
         .intro-sun {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 150px; height: 150px; border-radius: 50%; background: #FFF;
-            animation: pulse-sun 2s infinite alternate;
-            transition: transform 4s cubic-bezier(0.35, 0, 0.25, 1);
-            z-index: 1;
+            box-shadow: 0 0 100px 40px rgba(249, 192, 63, 0.8), 0 0 250px 100px rgba(249, 192, 63, 0.4);
+            transition: transform 4s cubic-bezier(0.35, 0, 0.25, 1), box-shadow 2s ease; z-index: 1;
         }
-
-        /* Lapisan Gunung Epic */
         .intro-mountain {
             position: absolute; bottom: 0; left: 0; width: 100vw; height: 65vh;
             display: flex; justify-content: center; align-items: flex-end;
-            transition: all 6s cubic-bezier(0.35, 0, 0.25, 1); transform-origin: bottom center;
-            z-index: 2;
+            transition: all 6s cubic-bezier(0.35, 0, 0.25, 1); transform-origin: bottom center; z-index: 2;
         }
         .mtn-svg { width: 100%; min-width: 1200px; height: 100%; }
-
-        /* Lapisan Bukit Rumput */
         .intro-grass {
             position: absolute; bottom: -5vh; left: -5vw; width: 110vw; height: 35vh;
             background: linear-gradient(180deg, #4A9E73 0%, #215A42 100%);
-            border-top-left-radius: 50% 30%; border-top-right-radius: 50% 30%;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
-            transition: all 4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 3;
+            border-radius: 50% 50% 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+            transition: all 4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 3;
         }
-
-        /* Burung Siluet */
         .intro-birds {
             position: absolute; top: 20%; left: 100vw; width: 300px; height: 100px;
-            display: flex; gap: 20px; opacity: 0;
-            transition: transform 7s linear, opacity 1s ease;
-            z-index: 4;
+            display: flex; gap: 20px; opacity: 0; transition: transform 7s linear, opacity 1s ease; z-index: 4;
         }
-        .bird-icon {
-            width: 40px; fill: #143625; opacity: 0.8;
-            animation: flap 0.5s ease-in-out infinite alternate;
-        }
+        .bird-icon { width: 40px; fill: #143625; opacity: 0.8; animation: flap 0.5s ease-in-out infinite alternate; }
         .bird-icon:nth-child(2) { transform: translateY(-20px) scale(0.8); animation-delay: 0.2s; }
         .bird-icon:nth-child(3) { transform: translateY(15px) scale(1.2); animation-delay: 0.4s; }
         @keyframes flap { 0% { transform: scaleY(1); } 100% { transform: scaleY(0.3); } }
-
-        /* Teks Cinematic */
         .cine-text {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-family: var(--font-title); color: #FFF; font-size: 2.5rem; letter-spacing: 5px;
-            text-align: center; text-shadow: 0 4px 15px rgba(0,0,0,0.6);
-            opacity: 0; transition: opacity 1.2s ease, transform 4s linear;
-            z-index: 10;
+            font-family: var(--font-title); color: #FFF; font-size: 2.5rem; letter-spacing: 5px; text-align: center; text-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            opacity: 0; transition: opacity 1.2s ease, transform 4s linear; z-index: 10;
         }
         .cine-text.show { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
-
         .whiteout {
             position: absolute; top:0; left:0; width: 100vw; height: 100vh;
-            background: var(--paper-bg); opacity: 0; z-index: 100; transition: opacity 1.5s ease; pointer-events: none;
+            background: #FFF; opacity: 0; z-index: 100; transition: opacity 2s ease; pointer-events: none;
         }
 
         /* ==========================================================================
-           4. LAYOUT & SCRAPBOOK CANVAS
+           4. 3D WORLD ARCHITECTURE (THE BEACH UNIVERSE)
            ========================================================================== */
-        .scrapbook-wrapper { position: relative; z-index: 10; padding: 2rem 0; }
-
-        .scrapbook-container {
-            width: 100%; max-width: 600px; margin: 0 auto;
-            background-color: var(--paper-bg); background-image: var(--paper-texture);
-            position: relative; border-radius: 4px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.15), 20px 0 80px rgba(0,0,0,0.2), -20px 0 80px rgba(0,0,0,0.2);
-            overflow: hidden;
-        }
-        .scrapbook-container::after {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            box-shadow: inset 0 0 80px rgba(33, 90, 66, 0.08); pointer-events: none; z-index: 100;
+        #world {
+            position: absolute; top: 50%; left: 50%;
+            width: 0; height: 0; /* World is a point, children branch out */
+            transform-style: preserve-3d;
+            /* Camera transition setup */
+            transition: transform 4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 10;
         }
 
-        section {
-            min-height: 100vh; padding: 7rem 3.5rem;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; z-index: 10;
+        /* 3D Scenes Anchors */
+        .scene3d {
+            position: absolute;
+            transform-style: preserve-3d;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            width: 800px; height: 800px;
+            /* Base translation applied via inline style or CSS classes below */
         }
+
+        /* Specific Scene Placements in 3D Space */
+        #s1-arrival   { transform: translate3d(-400px, -400px, 0px); }
+        #s2-tree      { transform: translate3d(-2000px, -800px, 1000px) rotateY(20deg); }
+        #s3-sand      { transform: translate3d(1500px, 600px, 500px) rotateX(-20deg) rotateY(-15deg); }
+        #s4-underwater{ transform: translate3d(0px, 2500px, 2000px) rotateX(-5deg); }
+        #s5-boat      { transform: translate3d(3000px, 200px, -1000px) rotateY(-30deg); }
+        #s6-sunset    { transform: translate3d(-3500px, 100px, -1500px) rotateY(35deg); }
+        #s7-night     { transform: translate3d(0px, -3000px, -1000px) rotateX(25deg); }
 
         /* ==========================================================================
-           5. TYPOGRAPHY & DECORATIONS
+           5. CINEMATIC PANELS & GLASSMORPHISM (Floating UI)
            ========================================================================== */
-        h1 { font-family: var(--font-title); font-weight: 700; font-size: 2.2rem; line-height: 1.2; color: var(--nature-mountain); text-shadow: 1px 1px 2px rgba(0,0,0,0.05); }
-        h2 { font-family: var(--font-serif); font-weight: 600; font-size: 1.8rem; color: var(--nature-grass); font-style: italic; }
-        p { color: var(--text-gray); font-size: 1.05rem; font-weight: 400; letter-spacing: 0.3px; }
-        
-        .calligraphy { font-family: var(--font-elegant); color: var(--nature-sky); font-size: 4.8rem; line-height: 1; font-weight: 400; text-shadow: 2px 2px 5px rgba(74, 144, 226, 0.2); transform: rotate(-3deg); margin: 0.5rem 0; }
-        .handwriting { font-family: var(--font-hand); color: var(--nature-mountain); font-size: 2.2rem; transform: rotate(2deg); }
-        .uppercase-sub { text-transform: uppercase; letter-spacing: 4px; font-size: 0.75rem; font-weight: 600; color: var(--nature-grass); font-family: var(--font-sans); margin-bottom: 1rem; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.2);
+            padding: 30px; border-radius: 16px;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+        /* Floating effect relative to camera */
+        .float-layer-1 { transform: translateZ(30px); }
+        .float-layer-2 { transform: translateZ(60px); }
+        .float-layer-3 { transform: translateZ(90px); }
 
-        .ornament { position: absolute; pointer-events: none; z-index: 5; opacity: 0.8; fill: var(--nature-grass); filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.05)); }
+        .panel-img-container {
+            width: 100%; height: 350px; border-radius: 10px; overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+        }
+        .panel-img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: saturate(110%) contrast(1.05); transition: transform 2s ease;
+        }
+        .glass-panel:hover .panel-img { transform: scale(1.08); }
+
+        /* Typography inside panels */
+        .h-title { font-family: var(--font-title); font-size: 2.8rem; font-weight: 700; text-shadow: 0 4px 10px rgba(0,0,0,0.5); line-height: 1.2; }
+        .h-subtitle { font-family: var(--font-serif); font-size: 1.8rem; font-style: italic; color: var(--gold-accent); text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+        .p-text { font-family: var(--font-sans); font-size: 1.2rem; font-weight: 400; line-height: 1.6; text-shadow: 0 2px 5px rgba(0,0,0,0.6); }
+        .h-calig { font-family: var(--font-elegant); font-size: 5rem; text-shadow: 0 5px 15px rgba(0,0,0,0.6); line-height: 1; }
+        .h-hand { font-family: var(--font-hand); font-size: 2.5rem; color: var(--gold-accent); }
+
+        /* Decorative Elements in 3D */
+        .palm-leaves-dec { position: absolute; width: 300px; opacity: 0.8; filter: drop-shadow(0 20px 20px rgba(0,0,0,0.5)); pointer-events: none; }
+        .boat-dec { position: absolute; width: 400px; bottom: -150px; right: -200px; opacity: 0.9; filter: drop-shadow(0 30px 30px rgba(0,0,0,0.7)); }
 
         /* ==========================================================================
-           6. POLAROID & IMAGES
+           6. EPIC NAVIGATION HUD (7 PENCETAN)
            ========================================================================== */
-        .polaroid {
-            background: #FFFFFF; padding: 15px 15px 55px 15px;
-            box-shadow: 0 15px 35px rgba(20, 54, 37, 0.1), 0 5px 15px rgba(20, 54, 37, 0.05), inset 0 0 0 1px rgba(0,0,0,0.02);
-            position: relative; margin: 2.5rem 0; z-index: 2; border-radius: 3px;
-            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        #nav-hud {
+            position: fixed; right: 30px; top: 50%; transform: translateY(-50%);
+            display: flex; flex-direction: column; gap: 15px; z-index: 1000;
+            background: rgba(0,0,0,0.2); padding: 20px 10px; border-radius: 40px;
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);
+            opacity: 0; transition: opacity 2s ease; /* Fades in after intro */
         }
-        .polaroid:hover {
-            transform: scale(1.04) translateY(-10px) rotate(0deg) !important;
-            box-shadow: 0 30px 50px rgba(20, 54, 37, 0.15), 0 15px 25px rgba(20, 54, 37, 0.1); z-index: 30;
+        .nav-btn {
+            width: 16px; height: 16px; border-radius: 50%;
+            background: rgba(255,255,255,0.3); cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative; border: 2px solid transparent;
         }
+        .nav-btn:hover { background: rgba(255,255,255,0.6); transform: scale(1.2); }
+        .nav-btn.active {
+            background: var(--gold-accent); transform: scale(1.5);
+            border-color: #FFF; box-shadow: 0 0 15px var(--gold-accent);
+        }
+        /* Tooltip */
+        .nav-btn::before {
+            content: attr(data-title); position: absolute; right: 35px; top: 50%; transform: translateY(-50%);
+            background: rgba(0,0,0,0.7); color: #FFF; font-family: var(--font-sans); font-size: 0.8rem;
+            padding: 5px 12px; border-radius: 15px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+            white-space: nowrap; backdrop-filter: blur(5px);
+        }
+        .nav-btn:hover::before { opacity: 1; }
 
-        .img-container { width: 100%; height: 320px; overflow: hidden; position: relative; background: #EAEAEA; }
-        .polaroid-img {
-            width: 100%; height: 100%; object-fit: cover; display: block;
-            filter: saturate(115%) contrast(1.05); transition: filter 0.8s ease, transform 0.8s ease;
+        /* Next/Prev Screen Buttons */
+        .hud-arrows {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 30px; z-index: 1000; opacity: 0; transition: opacity 2s ease;
         }
-        .polaroid:hover .polaroid-img { filter: saturate(125%) contrast(1.1); transform: scale(1.05); }
-
-        .polaroid-caption {
-            position: absolute; bottom: 15px; left: 0; width: 100%; text-align: center;
-            font-family: var(--font-hand); font-size: 1.6rem; color: var(--nature-mountain); opacity: 0.9;
+        .arrow-btn {
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3); color: #FFF; font-family: var(--font-sans);
+            padding: 12px 30px; border-radius: 30px; cursor: pointer; font-weight: 600; letter-spacing: 2px;
+            transition: all 0.3s ease; text-transform: uppercase; font-size: 0.9rem;
         }
-
-        .tape {
-            position: absolute; width: 130px; height: 38px; background-color: var(--tape-color);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08); backdrop-filter: blur(4px); z-index: 5;
-            clip-path: polygon(0% 5%, 5% 0%, 10% 8%, 15% 0%, 20% 5%, 25% 0%, 30% 8%, 35% 0%, 40% 5%, 45% 0%, 50% 8%, 55% 0%, 60% 5%, 65% 0%, 70% 8%, 75% 0%, 80% 5%, 85% 0%, 90% 8%, 95% 0%, 100% 5%, 100% 95%, 95% 100%, 90% 92%, 85% 100%, 80% 95%, 75% 100%, 70% 92%, 65% 100%, 60% 95%, 55% 100%, 50% 92%, 45% 100%, 40% 95%, 35% 100%, 30% 92%, 25% 100%, 20% 95%, 15% 100%, 10% 92%, 5% 100%, 0% 95%);
-            background-image: linear-gradient(45deg, transparent 40%, rgba(64, 145, 108, 0.15) 40%, rgba(64, 145, 108, 0.15) 60%, transparent 60%);
-            background-size: 12px 12px;
-        }
-        .tape-1 { top: -15px; left: -30px; transform: rotate(-15deg); }
-        .tape-2 { bottom: -18px; right: -25px; transform: rotate(12deg); }
-        .tape-center { top: -18px; left: 50%; transform: translateX(-50%) rotate(3deg); width: 150px; }
+        .arrow-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
 
         /* ==========================================================================
-           7. CINEMATIC POP ANIMATION (SMOOTH 3D ENTRANCE)
+           7. SCENE SPECIFIC STYLING
            ========================================================================== */
-        .cinematic-pop {
-            opacity: 0;
-            transform: scale(0.85) translateY(50px) rotateX(15deg) rotateY(-10deg) rotateZ(calc(var(--rot, 0deg) * 1.5));
-            filter: drop-shadow(0 30px 40px rgba(0,0,0,0.15));
-            transition: all 1.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .cinematic-pop.is-visible {
-            opacity: 1;
-            transform: scale(1) translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(var(--rot, 0deg));
-            filter: drop-shadow(0 0px 0px rgba(0,0,0,0));
-        }
-
-        .blur-reveal { opacity: 0; filter: blur(10px); transform: translateY(30px); transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1); }
-        .blur-reveal.is-visible { opacity: 1; filter: blur(0px); transform: translateY(0); }
-
-        /* ==========================================================================
-           8. SPECIFIC SECTIONS
-           ========================================================================== */
-        #intro { padding-top: 9rem; }
         
-        .love-letter {
-            background: #E8F4E8; padding: 3.5rem 2.5rem;
-            box-shadow: 5px 5px 30px rgba(33, 90, 66, 0.08), inset 0 0 20px rgba(255,255,255,0.8);
-            position: relative; margin: 3rem 0; transform: rotate(1deg); border-radius: 4px 15px 4px 15px;
-            border: 1px solid rgba(58, 125, 92, 0.15);
-        }
-        .love-letter p { font-family: var(--font-hand); font-size: 1.9rem; color: var(--nature-mountain); line-height: 1.5; text-align: center; }
+        /* Scene 1: Arrival */
+        #s1-arrival .glass-panel { width: 700px; text-align: center; background: rgba(11, 76, 106, 0.4); }
 
-        /* --- EPIC CALENDAR TRANSITION REWORK --- */
-        .aesthetic-date {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            position: relative; margin: 4rem 0; width: 100%; height: 250px;
-        }
+        /* Scene 2: Tree */
+        #s2-tree .glass-panel { width: 550px; background: rgba(46, 134, 171, 0.3); }
+        .s2-trunk { position: absolute; left: -200px; top: -500px; width: 100px; height: 2000px; background: linear-gradient(90deg, #3E2723, #5D4037, #3E2723); border-radius: 50px; transform: rotateZ(-15deg); z-index: -1; box-shadow: inset 20px 0 30px rgba(0,0,0,0.7), 20px 0 50px rgba(0,0,0,0.5); }
+
+        /* Scene 3: Sand */
+        #s3-sand .glass-panel { width: 600px; background: rgba(212, 184, 114, 0.2); border-color: rgba(244, 231, 195, 0.4); }
+        .sand-mound { position: absolute; bottom: -300px; left: -500px; width: 2000px; height: 800px; background: radial-gradient(ellipse at top, var(--sand-light), var(--sand-dark)); border-radius: 50%; transform: rotateX(60deg); z-index: -1; box-shadow: 0 -20px 50px rgba(0,0,0,0.3); }
+
+        /* Scene 4: Underwater */
+        #s4-underwater .glass-panel { width: 650px; background: rgba(0, 20, 30, 0.5); border-color: rgba(0, 150, 200, 0.3); box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,150,200,0.2); }
         
-        .cal-grid-overlay {
-            display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px;
-            position: absolute; z-index: 5; transition: opacity 0.8s ease, transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .cal-grid-overlay.hidden { opacity: 0; transform: scale(1.2); pointer-events: none; }
+        /* Scene 5: Boat */
+        #s5-boat .glass-panel { width: 550px; background: rgba(139, 69, 19, 0.3); }
+        .wooden-boat { position: absolute; bottom: -100px; right: -300px; width: 600px; height: 200px; background: #5D4037; border-radius: 10% 10% 50% 50%; transform: rotateZ(-5deg); box-shadow: inset 0 -30px 50px rgba(0,0,0,0.8), 0 20px 40px rgba(0,0,0,0.6); z-index: -1; animation: bob 4s ease-in-out infinite alternate; }
+        @keyframes bob { 0% { transform: translateY(0px) rotateZ(-5deg); } 100% { transform: translateY(30px) rotateZ(-2deg); } }
+
+        /* Scene 6: Sunset Rock (Date) */
+        #s6-sunset .glass-panel { width: 800px; background: rgba(42, 19, 41, 0.4); border-color: rgba(249, 160, 63, 0.3); text-align: center; }
+        .rock-formation { position: absolute; bottom: -400px; left: -100px; width: 1000px; height: 600px; background: #1C1C1C; clip-path: polygon(10% 100%, 20% 40%, 40% 20%, 60% 50%, 80% 10%, 100% 100%); z-index: -1; box-shadow: inset 30px 0 100px rgba(249, 160, 63, 0.3); filter: drop-shadow(0 20px 50px rgba(0,0,0,0.8)); }
         
-        .cal-num {
-            font-family: var(--font-sans); font-size: 1.2rem; color: rgba(74, 144, 226, 0.4);
-            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
-            transition: all 0.5s ease;
+        .epic-date { display: flex; flex-direction: column; align-items: center; }
+        .d-num { font-family: var(--font-elegant); font-size: 10rem; color: var(--sunset-bot); line-height: 0.8; text-shadow: 0 10px 30px rgba(249, 160, 63, 0.6); }
+        .d-month { font-family: var(--font-title); font-size: 2.5rem; letter-spacing: 15px; color: #FFF; margin-top: 20px; }
+
+        /* Scene 7: Night Sky */
+        #s7-night .glass-panel { width: 650px; background: rgba(9, 10, 15, 0.6); border-color: rgba(255,255,255,0.2); text-align: center; }
+        .btn-wa {
+            display: inline-block; margin-top: 30px; padding: 15px 40px; background: linear-gradient(45deg, #128C7E, #25D366);
+            color: #FFF; font-family: var(--font-sans); font-weight: 700; letter-spacing: 2px; border-radius: 30px; text-decoration: none;
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4); transition: all 0.3s;
         }
-        .cal-num.highlight {
-            color: var(--nature-grass); font-weight: 700; transform: scale(1.5);
-            background: #FFF; border-radius: 50%; box-shadow: 0 0 20px rgba(255,255,255,1); z-index: 10;
-        }
+        .btn-wa:hover { transform: scale(1.05); box-shadow: 0 15px 35px rgba(37, 211, 102, 0.6); }
 
-        .date-final-state {
-            position: relative; display: flex; flex-direction: column; align-items: center;
-            opacity: 0; transform: scale(0.8); transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s; z-index: 10;
-        }
-        .date-final-state.show { opacity: 1; transform: scale(1); }
-        
-        .date-number { font-family: var(--font-elegant); font-size: 8.5rem; color: var(--nature-sky); line-height: 0.8; text-shadow: 4px 4px 0px rgba(74, 144, 226, 0.15); z-index: 2; }
-        .date-month { font-family: var(--font-title); font-size: 1.6rem; letter-spacing: 8px; color: var(--nature-mountain); text-transform: uppercase; margin-top: 1rem; z-index: 2; background: var(--paper-bg); padding: 0 10px; }
-        .date-line { position: absolute; top: 50%; left: -20%; width: 140%; height: 1px; background: linear-gradient(90deg, transparent, var(--nature-grass), transparent); z-index: 1; }
-
-        .draw-circle {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.3;
-        }
-        .draw-circle path { stroke-dasharray: 2000; stroke-dashoffset: 2000; transition: stroke-dashoffset 2s cubic-bezier(0.4, 0, 0.2, 1) 0.8s; }
-        .date-final-state.show .draw-circle path { stroke-dashoffset: 0; }
-
-        /* List & Gallery */
-        .sweet-list { width: 100%; display: flex; flex-direction: column; gap: 2.5rem; margin-top: 4rem; position: relative; }
-        .sweet-item { position: relative; padding-left: 4.5rem; }
-        .sweet-item h4 { font-size: 1.3rem; margin-bottom: 0.4rem; font-family: var(--font-title); color: var(--nature-mountain); }
-        .sweet-pin { position: absolute; left: 12px; top: 2px; width: 26px; height: 26px; border-radius: 50%; box-shadow: inset -2px -2px 5px rgba(0,0,0,0.2), 3px 3px 6px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; }
-        
-        .gallery-collage { position: relative; width: 100%; height: 600px; margin-top: 4rem; }
-        .gallery-collage .polaroid { position: absolute; width: 65%; margin: 0; }
-        .gal-1 { top: 0; left: 0; --rot: -6deg; z-index: 2;}
-        .gal-2 { top: 150px; right: -5%; --rot: 8deg; z-index: 3;}
-        .gal-3 { bottom: 0; left: 10%; --rot: -3deg; z-index: 4;}
-
-        .btn-aesthetic {
-            display: inline-flex; align-items: center; justify-content: center;
-            background: linear-gradient(45deg, var(--nature-mountain), var(--nature-grass)); color: white;
-            padding: 1.2rem 3rem; border-radius: 30px; text-decoration: none; font-family: var(--font-sans); font-weight: 600; letter-spacing: 2px; margin-top: 4rem;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 20px rgba(33, 90, 66, 0.3); border: 1px solid rgba(255,255,255,0.2); overflow: hidden;
-        }
-        .btn-aesthetic:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 25px rgba(33, 90, 66, 0.4); color: #E8F4E8; }
-
-        .divider { width: 80%; height: 2px; background: linear-gradient(90deg, transparent, var(--nature-sky), transparent); margin: 3rem auto; opacity: 0.5; }
-
-        /* Music Player */
+        /* Music Vinyl */
         .vinyl-player {
-            position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; background-color: #222; border-radius: 50%;
+            position: fixed; top: 30px; left: 30px; width: 60px; height: 60px; background-color: #111; border-radius: 50%;
             display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 1000;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3), inset 0 0 0 4px var(--nature-grass), inset 0 0 0 10px #333; transition: all 0.4s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.8), inset 0 0 0 2px var(--gold-accent), inset 0 0 0 8px #222; opacity: 0; transition: opacity 2s ease;
         }
-        .vinyl-player::after { content: ''; width: 15px; height: 15px; background: var(--nature-sky); border-radius: 50%; position: absolute; }
-        .vinyl-player:hover { transform: scale(1.1); }
-        .vinyl-player.playing { animation: spin-vinyl 3s linear infinite; box-shadow: 0 5px 20px rgba(74, 144, 226, 0.5), inset 0 0 0 4px var(--nature-sky), inset 0 0 0 10px #333; }
+        .vinyl-player::after { content: ''; width: 12px; height: 12px; background: #FFF; border-radius: 50%; position: absolute; }
+        .vinyl-player.playing { animation: spin-vinyl 3s linear infinite; }
         @keyframes spin-vinyl { 100% { transform: rotate(360deg); } }
 
     </style>
 </head>
 <body class="locked">
 
-    <!-- AUDIO SFX (Sound Effects Engine) -->
+    <!-- AUDIO SFX & BGM -->
     <audio id="sfx-wind" src="https://actions.google.com/sounds/v1/weather/blowing_wind.ogg" preload="auto" loop></audio>
-    <audio id="sfx-water" src="https://actions.google.com/sounds/v1/water/small_stream_flowing.ogg" preload="auto" loop></audio>
-    <audio id="sfx-birds" src="https://actions.google.com/sounds/v1/animals/birds_in_forest.ogg" preload="auto"></audio>
+    <audio id="sfx-waves" src="https://actions.google.com/sounds/v1/water/waves_crashing_on_rock_beach.ogg" preload="auto" loop></audio>
+    <audio id="sfx-underwater" src="https://actions.google.com/sounds/v1/water/underwater_ambience.ogg" preload="auto" loop></audio>
+    <audio id="sfx-birds" src="https://actions.google.com/sounds/v1/animals/seagulls_near_ocean.ogg" preload="auto"></audio>
     <audio id="sfx-whoosh" src="https://actions.google.com/sounds/v1/impacts/fast_whoosh.ogg" preload="auto"></audio>
-    <audio id="sfx-flare" src="https://actions.google.com/sounds/v1/science_fiction/force_field_power_up.ogg" preload="auto"></audio>
+    <audio id="bg-music" loop>
+        <source src="https://image2url.com/r2/default/audio/1774761920277-d342019f-c196-4c82-a840-7f80bc625172.mp3" type="audio/mpeg">
+    </audio>
 
-    <!-- START SCREEN (Bypass Autoplay Policy) -->
+    <!-- START SCREEN -->
     <div id="start-screen">
-        <div class="start-btn">TAP UNTUK MEMULAI<br><span style="font-size: 1rem; opacity: 0.8;">(Nyalakan Suara 🔊)</span></div>
+        <div class="start-btn">AWALI PERJALANAN<br><span style="font-size: 1rem; opacity: 0.8; font-family: var(--font-sans); letter-spacing: 2px;">(Nyalakan Suara 🔊)</span></div>
     </div>
 
-    <!-- TRUE 3D CINEMATIC INTRO -->
+    <!-- EPIC INTRO SEQUENCE (MOUNTAIN TO SUN) -->
     <div id="cinematic-intro">
-        <!-- Sun -->
         <div class="intro-sun" id="c-sun"></div>
-        
-        <!-- Mountain -->
         <div class="intro-mountain" id="c-mountain">
             <svg class="mtn-svg" viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax meet">
-                <path d="M-100,600 L250,250 L600,600 Z" fill="#1b402e" opacity="0.8"/>
+                <path d="M-100,600 L250,250 L600,600 Z" fill="#215A42" opacity="0.8"/>
                 <path d="M400,600 L900,150 L1440,600 Z" fill="#143625" opacity="0.6"/>
                 <path d="M150,600 L720,50 L1290,600 Z" fill="#3A7D5C"/>
                 <path d="M720,50 L720,600 L1290,600 Z" fill="#215A42" opacity="0.8"/>
@@ -351,482 +331,499 @@
                 <path d="M720,50 L720,200 L760,260 L810,220 Z" fill="#E8F4E8"/>
             </svg>
         </div>
-
-        <!-- Grass/Hills -->
         <div class="intro-grass" id="c-grass"></div>
-
-        <!-- Birds -->
         <div class="intro-birds" id="c-birds">
             <svg class="bird-icon" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
             <svg class="bird-icon" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
-            <svg class="bird-icon" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
         </div>
-
-        <!-- Fade to White / Sunflare -->
         <div class="whiteout" id="c-whiteout"></div>
 
-        <!-- Texts -->
-        <div class="cine-text" id="tx1">Di hamparan bumi yang luas...</div>
-        <div class="cine-text" id="tx2">Berdiri sebuah harapan kokoh...</div>
-        <div class="cine-text" id="tx3">Menuju puncak yang tinggi...</div>
-        <div class="cine-text" id="tx4">Menembus langit biru...</div>
-        <div class="cine-text" id="tx5">Bebas seperti burung...</div>
-        <div class="cine-text" id="tx6">Menyambut sang mentari...</div>
+        <div class="cine-text" id="tx1">Melewati bukit harapan...</div>
+        <div class="cine-text" id="tx2">Menuju puncak impian...</div>
+        <div class="cine-text" id="tx3">Menembus cakrawala biru...</div>
+        <div class="cine-text" id="tx4">Menyelami lautan kehidupan...</div>
+        <div class="cine-text" id="tx5">Untuk sebuah hari yang istimewa...</div>
     </div>
 
-    <!-- Partikel Bokeh Alam -->
-    <canvas id="nature-dust"></canvas>
+    <!-- DYNAMIC ENVIRONMENT OVERLAYS -->
+    <div id="env-sky"></div>
+    <div id="env-sunset"></div>
+    <div id="env-night"></div>
+    <div id="env-underwater"></div>
 
-    <div class="scrapbook-wrapper">
-        <div class="scrapbook-container">
+    <!-- CANVASES ENGINE -->
+    <canvas id="canvas-sky"></canvas>
+    <canvas id="canvas-ocean"></canvas>
+    <canvas id="canvas-underwater"></canvas>
 
-            <!-- SECTION 1: INTRO -->
-            <section id="intro">
-                <svg class="ornament blur-reveal" style="top: 30px; left: 20px; width: 60px; height: 60px; transition-delay: 0.1s;" viewBox="0 0 24 24">
-                    <path d="M17,8 C8,10 5.9,16.17 3.82,21.34 L5.71,22 L6.66,19.7 C7.14,19.87 7.64,20 8,20 C19,20 22,3 22,3 C21,5 14,5.25 9,6.25 C10,5 12,4 16,4 C16,4 18,2 17,2 C17,2 12,2 8,5 C6,6.5 4.5,9 4.5,9 C4.5,9 7,7.5 10,7 C12.5,6.5 17,8 17,8 Z"/>
-                </svg>
-
-                <span class="uppercase-sub blur-reveal" style="transition-delay: 0.2s;">Selamat Ulang Tahun | Dari Agronity25</span>
-                
-                <div class="hero-title-container blur-reveal" style="transition-delay: 0.3s;">
-                    <h1 class="text-center">Happy Birthday</h1>
-                    <h1 class="calligraphy text-center">Maulidya Sari</h1>
-                </div>
-                
-                <div class="polaroid cinematic-pop parallax-item" style="--rot: 2deg; transition-delay: 0.5s;">
-                    <div class="tape tape-1"></div>
-                    <div class="img-container">
-                        <img id="imgHero" src="https://image2url.com/r2/default/images/1775118495166-d20b9b56-ac04-4303-bec5-977f128d5c7b.jpg" alt="Maulidya" class="polaroid-img" onerror="this.src='https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&q=80'">
-                    </div>
-                    <div class="tape tape-2"></div>
-                    <div class="polaroid-caption">Puncak Kebahagiaan</div>
-                </div>
-
-                <p class="text-center blur-reveal" style="transition-delay: 0.8s; margin-top: 2rem; font-style: italic;">"Hari ini spesial buat ngerayain hari lahir kamu. Tambah usia, tambah tinggi harapannya ya, Maulidya!"</p>
-            </section>
-
-            <!-- SECTION 2: MAKNA ALAM -->
-            <section id="meaning">
-                <div class="divider"></div>
-                
-                <h2 class="text-center blur-reveal">SEJUK KAYA ANGIN GUNUNG...</h2>
-                <p class="text-center blur-reveal" style="transition-delay: 0.2s; margin: 1.5rem 0;">Sama kaya angin pegunungan yang bikin adem, kehadiran kamu selalu bawa ketenangan buat kita semua. Tetep jadi Maulidya yang humble dan asik ya!</p>
-                
-                <div class="polaroid cinematic-pop parallax-item" style="--rot: -3deg; transition-delay: 0.4s; margin-top: 1rem;">
-                    <div class="tape tape-center"></div>
-                    <div class="img-container">
-                        <img id="imgMiddle" src="https://image2url.com/r2/default/images/1775118959381-67519bd5-3348-48ec-be53-939c831a5a4a.jpeg" alt="Alam" class="polaroid-img" onerror="this.src='https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80'">
-                    </div>
-                </div>
-
-                <span class="handwriting blur-reveal" style="transition-delay: 0.6s; margin-top: 2rem;">Bestie for real.</span>
-                <div class="divider" style="margin-top: 3rem;"></div>
-            </section>
-
-            <!-- SECTION 3: PESAN -->
-            <section id="message" style="padding: 4rem 2.5rem;">
-                <span class="uppercase-sub blur-reveal">Wishes Dari Kita</span>
-                
-                <div class="love-letter cinematic-pop" style="--rot: 1deg; transition-delay: 0.2s;">
-                    <p>
-                        "Happy level up, Maulidya! Semoga di umur yang baru ini kamu makin tinggi prestasinya kaya gunung, dan hatinya seluas langit biru. Ditunggu traktirannya!"
-                    </p>
-                </div>
-
-                <span class="calligraphy blur-reveal" style="font-size: 3rem; transition-delay: 0.4s; transform: rotate(-5deg); margin-top: -1rem;">Stay Awesome ✨</span>
-            </section>
-
-            <!-- SECTION 4: EPIC DATE MORPH (7 MARET 2026) -->
-            <section id="mark">
-                <div class="aesthetic-date" id="calendar-anim-container">
-                    
-                    <!-- 1. Grid Awal -->
-                    <div class="cal-grid-overlay" id="cal-grid"></div>
-
-                    <!-- 2. Final Result -->
-                    <div class="date-final-state" id="date-final">
-                        <div class="date-line"></div>
-                        <svg class="draw-circle" style="width: 180px; height: 180px;" viewBox="0 0 100 100">
-                            <path d="M 50,10 C 70,10 90,30 90,50 C 90,75 65,90 40,85 C 15,80 10,50 20,30 C 30,15 40,10 50,10" stroke="var(--nature-sky)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                        </svg>
-                        
-                        <span class="date-number" style="color: var(--nature-grass); text-shadow: 3px 3px 0px rgba(64, 145, 108, 0.15);">7</span>
-                        <span class="date-month">MARET 2026</span>
-                    </div>
-
-                </div>
-                <p class="text-center blur-reveal" style="transition-delay: 0.3s; font-size: 1.15rem; color: var(--nature-mountain);">Hari di mana temen kita yang satu ini resmi nambah umur!</p>
-            </section>
-
-            <!-- SECTION 5: 4 HAL -->
-            <section id="things">
-                <h2 class="text-center blur-reveal" style="font-size: 2rem;">4 HAL SERU TENTANG KAMU</h2>
-                
-                <div class="sweet-list">
-                    <div class="sweet-item blur-reveal" style="transition-delay: 0.1s;">
-                        <div class="sweet-pin" style="background: radial-gradient(circle at 30% 30%, #B0E0E6, #40916C);"></div>
-                        <h4>Vibe Positif</h4>
-                        <p>Selalu bawa energi segar kaya embun pagi yang bikin tongkrongan jadi asik.</p>
-                    </div>
-                    <div class="sweet-item blur-reveal" style="transition-delay: 0.3s;">
-                        <div class="sweet-pin" style="background: radial-gradient(circle at 30% 30%, #B0E0E6, #4A90E2);"></div>
-                        <h4>Teman Curhat</h4>
-                        <p>Tempat cerita paling adem, selalu ngasih solusi yang nenangin hati.</p>
-                    </div>
-                    <div class="sweet-item blur-reveal" style="transition-delay: 0.5s;">
-                        <div class="sweet-pin" style="background: radial-gradient(circle at 30% 30%, #B0E0E6, #F9C03F);"></div>
-                        <h4>Tawa Lepas</h4>
-                        <p>Kalo udah ketawa, suasananya cerah dan nular kaya matahari siang hari.</p>
-                    </div>
-                    <div class="sweet-item blur-reveal" style="transition-delay: 0.7s;">
-                        <div class="sweet-pin" style="background: radial-gradient(circle at 30% 30%, #B0E0E6, #143625);"></div>
-                        <h4>Support System</h4>
-                        <p>Selalu jadi sandaran yang kuat dan kokoh kaya gunung buat temen-temennya.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 6: COLLAGE -->
-            <section id="memories">
-                <div class="divider"></div>
-                <h2 class="text-center blur-reveal" style="font-size: 2.2rem; line-height: 1.1;">MEMORI DI BAWAH<br>LANGIT BIRU</h2>
-                <p class="text-center blur-reveal" style="transition-delay: 0.2s; margin-top: 1rem;">Perjalanan kita masih panjang, setinggi puncak yang mau kita capai bareng-bareng!</p>
-
-                <div class="gallery-collage">
-                    <div class="polaroid gal-1 cinematic-pop" style="transition-delay: 0.3s;">
-                        <div class="tape tape-1"></div>
-                        <div class="img-container">
-                            <img id="imgGal1" src="https://image2url.com/r2/default/images/1775119004771-0484097d-dc2f-4f16-8cd6-9818136e60bf.jpeg" alt="Memori 1" class="polaroid-img">
-                        </div>
-                    </div>
-                    <div class="polaroid gal-2 cinematic-pop" style="transition-delay: 0.5s;">
-                        <div class="tape tape-2" style="top:-15px; bottom:auto;"></div>
-                        <div class="img-container">
-                            <img id="imgGal2" src="https://image2url.com/r2/default/images/1775119103652-e34a2f84-70f0-47b1-bbe6-e3514c1df704.jpg" alt="Memori 2" class="polaroid-img">
-                        </div>
-                    </div>
-                    <div class="polaroid gal-3 cinematic-pop" style="transition-delay: 0.7s;">
-                        <div class="img-container">
-                            <img id="imgGal3" src="https://image2url.com/r2/default/images/1775118495166-d20b9b56-ac04-4303-bec5-977f128d5c7b.jpg" alt="Memori 3" class="polaroid-img">
-                        </div>
-                        <div class="polaroid-caption" style="font-size: 1.2rem;">Moments</div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 7: CLOSING -->
-            <section id="closing" style="padding-bottom: 8rem; text-align: center;">
-                <div class="polaroid cinematic-pop parallax-item" style="--rot: 1.5deg; margin-bottom: 3rem;">
-                    <div class="tape tape-center"></div>
-                    <div class="img-container" style="height: 350px;">
-                        <img id="imgClosing" src="https://image2url.com/r2/default/images/1775118959381-67519bd5-3348-48ec-be53-939c831a5a4a.jpeg" alt="Maulidya Nature" class="polaroid-img">
-                    </div>
-                </div>
-
-                <span class="uppercase-sub blur-reveal">Sekali Lagi, Happy Birthday!</span>
-                <h1 class="calligraphy blur-reveal" style="font-size: 3.5rem; transition-delay: 0.2s; color: var(--nature-sky);">Dari Agronity25,</h1>
-                <p class="handwriting blur-reveal" style="font-size: 2.2rem; transform: rotate(0); transition-delay: 0.4s; color: var(--ink-black); margin-top: -1rem;">Buat Maulidya Sari</p>
-
-                <a href="https://wa.me/6289693569381?text=HBD%20Maulidya!%20Wish%20you%20all%20the%20best%20ya,%20jangan%20lupa%20makan-makan!%20%F0%9F%8E%89" class="btn-aesthetic blur-reveal" style="transition-delay: 0.6s;" target="_blank">
-                    KIRIM UCAPAN HBD
-                </a>
-            </section>
-
-        </div>
-    </div>
-
-    <!-- AUDIO PLAYER & UI -->
-    <div id="music-tooltip" class="music-tooltip hidden">Melodi Alam Sedang Diputar 🎶</div>
+    <!-- MUSIC UI -->
     <div id="music-toggle" class="vinyl-player">
-        <svg style="width: 20px; height: 20px; fill: white; z-index: 10; position: absolute;" viewBox="0 0 24 24">
+        <svg style="width: 20px; height: 20px; fill: var(--gold-accent); position: absolute; z-index: 10;" viewBox="0 0 24 24">
             <path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle>
         </svg>
     </div>
-    
-    <!-- Background Music -->
-    <audio id="bg-music" loop>
-        <source src="https://image2url.com/r2/default/audio/1774761920277-d342019f-c196-4c82-a840-7f80bc625172.mp3" type="audio/mpeg">
-    </audio>
+
+    <!-- NAVIGATION HUD (7 PENCETAN) -->
+    <div id="nav-hud">
+        <div class="nav-btn active" data-id="0" data-title="Hamparan Pantai"></div>
+        <div class="nav-btn" data-id="1" data-title="Pohon Kelapa"></div>
+        <div class="nav-btn" data-id="2" data-title="Jejak Pasir"></div>
+        <div class="nav-btn" data-id="3" data-title="Bawah Laut"></div>
+        <div class="nav-btn" data-id="4" data-title="Perahu Harapan"></div>
+        <div class="nav-btn" data-id="5" data-title="Karang Senja"></div>
+        <div class="nav-btn" data-id="6" data-title="Langit Malam"></div>
+    </div>
+
+    <div class="hud-arrows" id="hud-arrows">
+        <button class="arrow-btn" id="btn-prev">❮ Sebelum</button>
+        <button class="arrow-btn" id="btn-next">Lanjut ❯</button>
+    </div>
+
+    <!-- THE 3D WORLD ARCHITECTURE -->
+    <div id="world">
+        
+        <!-- SCENE 1: OVerVIEW (Pantai Impian) -->
+        <div class="scene3d" id="s1-arrival">
+            <div class="glass-panel">
+                <div class="float-layer-1">
+                    <h2 class="h-subtitle">Selamat Datang di</h2>
+                    <h1 class="h-title" style="color: var(--sky-ocean); margin: 10px 0;">Pantai Impian Maulidya</h1>
+                    <p class="p-text" style="margin-top: 20px;">Sebuah perjalanan melintasi alam, khusus dirangkai untuk merayakan hari lahirmu hari ini. Nikmati anginnya, dengarkan ombaknya.</p>
+                    <h1 class="h-hand" style="margin-top: 20px; font-size: 2rem;">Dari Agronity25</h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCENE 2: POHON KELAPA -->
+        <div class="scene3d" id="s2-tree">
+            <!-- 3D Decorative Trunk -->
+            <div class="s2-trunk"></div>
+            <!-- Huge SVG Palm Leaves falling into scene -->
+            <svg class="palm-leaves-dec" style="top: -200px; left: -300px; width: 600px;" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <path d="M0,0 Q50,20 100,50 Q60,60 20,100 Q10,50 0,0 Z" fill="#215A42" />
+                <path d="M10,10 Q60,10 90,30 Q50,40 15,80 Z" fill="#143625" />
+            </svg>
+
+            <div class="glass-panel">
+                <div class="panel-img-container float-layer-1">
+                    <img src="https://image2url.com/r2/default/images/1775118495166-d20b9b56-ac04-4303-bec5-977f128d5c7b.jpg" class="panel-img" alt="Maulidya 1">
+                </div>
+                <div class="float-layer-2" style="margin-top: 25px; text-align: center;">
+                    <h2 class="h-subtitle">Sesejuk Angin Pantai...</h2>
+                    <p class="p-text" style="margin-top: 10px;">Seperti hembusan angin di bawah pohon kelapa, kehadiranmu selalu membawa aura positif. Teman ngobrol yang bikin suasana selalu hidup dan adem.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCENE 3: JEJAK PASIR -->
+        <div class="scene3d" id="s3-sand">
+            <div class="sand-mound"></div>
+            <div class="glass-panel">
+                <div class="panel-img-container float-layer-1">
+                    <img src="https://image2url.com/r2/default/images/1775118959381-67519bd5-3348-48ec-be53-939c831a5a4a.jpeg" class="panel-img" alt="Maulidya 2">
+                </div>
+                <div class="float-layer-2" style="margin-top: 25px; text-align: center;">
+                    <h2 class="h-subtitle" style="color: #6BB5DF;">Jejak Langkah Bermakna...</h2>
+                    <p class="p-text" style="margin-top: 10px;">Setiap langkah yang kita lalui bareng nyisain jejak yang nggak bakal kehapus ombak. Makasih udah selalu jadi support system yang kuat buat kita.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCENE 4: BAWAH LAUT -->
+        <div class="scene3d" id="s4-underwater">
+            <!-- Fishes will swim around here via Canvas 2 -->
+            <div class="glass-panel">
+                <div class="panel-img-container float-layer-1">
+                    <img src="https://image2url.com/r2/default/images/1775119004771-0484097d-dc2f-4f16-8cd6-9818136e60bf.jpeg" class="panel-img" alt="Maulidya 3">
+                </div>
+                <div class="float-layer-2" style="margin-top: 25px; text-align: center;">
+                    <h2 class="h-subtitle" style="color: #B0E0E6;">Menyelami Kedalaman Hati...</h2>
+                    <p class="p-text" style="margin-top: 10px;">Tawa lepas kamu itu sejernih air laut, selalu berhasil nyebarin kebahagiaan ke orang sekitar. Tetep jadi Maulidya yang ceria ya!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCENE 5: PERAHU KAYU -->
+        <div class="scene3d" id="s5-boat">
+            <div class="wooden-boat"></div>
+            <div class="glass-panel">
+                <div class="panel-img-container float-layer-1">
+                    <img src="https://image2url.com/r2/default/images/1775119103652-e34a2f84-70f0-47b1-bbe6-e3514c1df704.jpg" class="panel-img" alt="Maulidya 4">
+                </div>
+                <div class="float-layer-2" style="margin-top: 25px; text-align: center;">
+                    <h2 class="h-subtitle" style="color: var(--sand-dark);">Berlayar Menuju Harapan...</h2>
+                    <p class="p-text" style="margin-top: 10px;">Di umur yang baru ini, semoga perahumu makin kuat ngadepin ombak kuliah dan kehidupan. Capai semua impianmu, kita selalu dukung dari belakang!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCENE 6: KARANG SENJA (DATE) -->
+        <div class="scene3d" id="s6-sunset">
+            <div class="rock-formation"></div>
+            <div class="glass-panel">
+                <div class="epic-date float-layer-2">
+                    <span class="d-num">7</span>
+                    <span class="d-month">MARET 2026</span>
+                </div>
+                <p class="p-text float-layer-1" style="margin-top: 30px;">Senja hari ini melukiskan tanggal yang paling indah. Hari di mana dunia menyambut kelahiran seorang gadis luar biasa.</p>
+            </div>
+        </div>
+
+        <!-- SCENE 7: LANGIT MALAM BINTANG -->
+        <div class="scene3d" id="s7-night">
+            <div class="glass-panel">
+                <div class="panel-img-container float-layer-1" style="height: 300px; width: 300px; border-radius: 50%; margin: 0 auto;">
+                    <img src="https://image2url.com/r2/default/images/1775118495166-d20b9b56-ac04-4303-bec5-977f128d5c7b.jpg" class="panel-img" alt="Maulidya Final">
+                </div>
+                <div class="float-layer-2" style="margin-top: 30px;">
+                    <h1 class="h-calig" style="color: var(--gold-accent);">Sekali Lagi,</h1>
+                    <h1 class="h-title" style="margin: 15px 0;">Selamat Ulang Tahun<br>Maulidya Sari</h1>
+                    
+                    <a href="https://wa.me/6289693569381?text=HBD%20Maulidya!%20Wish%20you%20all%20the%20best%20ya,%20jangan%20lupa%20makan-makan!%20%F0%9F%8E%89" class="btn-wa" target="_blank">
+                        KIRIM UCAPAN HBD
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
             /* ==========================================================================
-               0. SOUND EFFECTS ENGINE & START OVERLAY
+               1. AUDIO ENGINE
                ========================================================================== */
             const sfxWind = document.getElementById('sfx-wind');
-            const sfxWater = document.getElementById('sfx-water');
+            const sfxWaves = document.getElementById('sfx-waves');
+            const sfxUnderwater = document.getElementById('sfx-underwater');
             const sfxBirds = document.getElementById('sfx-birds');
-            const sfxWhooshBase = document.getElementById('sfx-whoosh');
-            const sfxFlare = document.getElementById('sfx-flare');
+            const sfxWhoosh = document.getElementById('sfx-whoosh');
             const bgMusic = document.getElementById('bg-music');
             
             const startScreen = document.getElementById('start-screen');
             const musicToggle = document.getElementById('music-toggle');
-            const musicTooltip = document.getElementById('music-tooltip');
             let isPlaying = false;
 
-            // Fungsi untuk memutar suara transisi menukik
             function playWhoosh() {
-                let w = sfxWhooshBase.cloneNode(); // Clone agar suara bisa bertumpuk
-                w.volume = 1.0;
-                w.play().catch(()=>{});
+                let w = sfxWhoosh.cloneNode(); w.volume = 1.0; w.play().catch(()=>{});
             }
 
-            // Tombol "TAP UNTUK MEMULAI" Ditekan
             startScreen.addEventListener('click', () => {
-                // Sembunyikan layar awal
                 startScreen.style.opacity = '0';
-                setTimeout(() => { startScreen.style.display = 'none'; }, 500);
-
-                // Mulai lagu utama
-                bgMusic.volume = 0.6;
-                bgMusic.play().catch(()=>{});
-                isPlaying = true;
-                musicToggle.classList.add('playing');
-                
-                // Panggil Intro Epik
-                runIntroTimeline();
+                setTimeout(() => { startScreen.style.display = 'none'; }, 800);
+                runCinematicIntro();
             });
 
-
             /* ==========================================================================
-               1. TRUE CINEMATIC 3D-LIKE FLYTHROUGH WITH EPIC SUN ZOOM & SFX
+               2. CINEMATIC INTRO TIMELINE (MOUNTAIN TO BEACH)
                ========================================================================== */
-            const overlay = document.getElementById('cinematic-intro');
+            const introOverlay = document.getElementById('cinematic-intro');
             const sun = document.getElementById('c-sun');
             const mtn = document.getElementById('c-mountain');
             const grass = document.getElementById('c-grass');
             const birds = document.getElementById('c-birds');
             const whiteout = document.getElementById('c-whiteout');
-            
             const tx = [
                 document.getElementById('tx1'), document.getElementById('tx2'),
-                document.getElementById('tx3'), document.getElementById('tx4'),
-                document.getElementById('tx5'), document.getElementById('tx6')
+                document.getElementById('tx3'), document.getElementById('tx4'), document.getElementById('tx5')
             ];
+            
+            const navHud = document.getElementById('nav-hud');
+            const hudArrows = document.getElementById('hud-arrows');
 
-            function runIntroTimeline() {
-                // T=0s: Mulai (Suara Angin & Air Sungai Latar Belakang)
+            function runCinematicIntro() {
                 sfxWind.volume = 1.0; sfxWind.play().catch(()=>{});
-                sfxWater.volume = 1.0; sfxWater.play().catch(()=>{});
+                
                 setTimeout(() => { tx[0].classList.add('show'); }, 500);
 
-                // T=3.5s: Kamera Menengadah ke Gunung (SFX Whoosh)
                 setTimeout(() => {
                     playWhoosh();
                     tx[0].classList.remove('show');
                     grass.style.transform = "translateY(100vh)"; 
-                    mtn.style.transform = "scale(1.2) translateY(5vh)";
-                    sun.style.transform = "translate(-50%, -60%) scale(1.1)";
+                    mtn.style.transform = "scale(1.5) translateY(10vh)";
+                    sun.style.transform = "translate(-50%, -60%) scale(1.2)";
                     setTimeout(() => { tx[1].classList.add('show'); }, 800);
                 }, 3500);
 
-                // T=7s: Mendekati Puncak Gunung (SFX Whoosh)
                 setTimeout(() => {
                     playWhoosh();
                     tx[1].classList.remove('show');
-                    mtn.style.transform = "scale(2.5) translateY(20vh)";
-                    sun.style.transform = "translate(-50%, -70%) scale(1.3)";
+                    mtn.style.transform = "scale(4) translateY(40vh)";
+                    sun.style.transform = "translate(-50%, -70%) scale(1.5)";
                     setTimeout(() => { tx[2].classList.add('show'); }, 800);
                 }, 7000);
 
-                // T=10.5s: Terbang Melewati Puncak (SFX Whoosh)
                 setTimeout(() => {
                     playWhoosh();
                     tx[2].classList.remove('show');
-                    mtn.style.transform = "scale(5) translateY(100vh)"; 
-                    mtn.style.opacity = "0"; 
-                    sun.style.transform = "translate(-50%, -80%) scale(1.5)";
+                    mtn.style.transform = "scale(10) translateY(120vh)"; mtn.style.opacity = "0"; 
                     setTimeout(() => { tx[3].classList.add('show'); }, 800);
                 }, 10500);
 
-                // T=14s: Burung Masuk (SFX Kicauan Burung)
                 setTimeout(() => {
-                    sfxBirds.volume = 1.0; sfxBirds.play().catch(()=>{});
+                    sfxBirds.volume = 0.8; sfxBirds.play().catch(()=>{});
                     tx[3].classList.remove('show');
                     birds.style.opacity = "1";
                     birds.style.transform = "translateX(-150vw) translateY(-10vh) scale(1.5)"; 
                     setTimeout(() => { tx[4].classList.add('show'); }, 800);
                 }, 14000);
 
-                // T=17.5s: Menatap Mentari (SFX Flare/Energi Magis)
-                setTimeout(() => {
-                    sfxFlare.volume = 1.0; sfxFlare.play().catch(()=>{});
-                    tx[4].classList.remove('show');
-                    
-                    sun.style.transition = "all 3.5s cubic-bezier(0.25, 1, 0.5, 1)";
-                    sun.style.transform = "translate(-50%, -50%) scale(3)"; 
-                    sun.style.boxShadow = "0 0 200px 100px rgba(249, 192, 63, 0.9), 0 0 400px 200px rgba(249, 192, 63, 0.6)"; 
-                    
-                    setTimeout(() => { tx[5].classList.add('show'); }, 800);
-                }, 17500);
-
-                // T=21s: Tembus Matahari (Boom SFX & Fade Out Latar)
                 setTimeout(() => {
                     playWhoosh();
-                    tx[5].classList.remove('show');
+                    tx[4].classList.remove('show');
+                    sun.style.transition = "transform 2.5s cubic-bezier(0.7, 0, 0.1, 1), box-shadow 2s";
+                    sun.style.transform = "translate(-50%, -50%) scale(80)"; 
+                    sun.style.boxShadow = "0 0 300px 200px rgba(249, 192, 63, 1), 0 0 500px 300px #FFF";
                     
-                    // Zoom Ekstrem
-                    sun.style.transition = "transform 2s cubic-bezier(0.7, 0, 0.1, 1), opacity 1s";
-                    sun.style.transform = "translate(-50%, -50%) scale(60)"; 
-                    
-                    // Hilangkan perlahan suara ambient
-                    let fadeOut = setInterval(() => {
-                        if(sfxWind.volume > 0.1) sfxWind.volume -= 0.1;
-                        if(sfxWater.volume > 0.1) sfxWater.volume -= 0.1;
-                        if(sfxBirds.volume > 0.1) sfxBirds.volume -= 0.1;
-                        else {
-                            clearInterval(fadeOut);
-                            sfxWind.pause(); sfxWater.pause(); sfxBirds.pause();
-                        }
-                    }, 100);
-
-                    // Picu efek Flash Putih
                     setTimeout(() => {
                         whiteout.style.opacity = "1"; 
-                        whiteout.style.backgroundColor = "#F8FBF8"; 
                         
-                        // Buka Scrapbook
                         setTimeout(() => {
-                            overlay.style.opacity = "0";
+                            // Masuk ke Beach World
+                            introOverlay.style.display = "none";
                             document.body.classList.remove('locked');
-                            initScrollAnimations();
-                            setTimeout(() => { overlay.style.display = "none"; }, 1500);
-                        }, 1000);
-
-                    }, 800);
-
-                }, 21000);
-            }
-
-
-            /* ==========================================================================
-               2. ELEGANT DATE MORPH (ANTI-LAG CALENDAR)
-               ========================================================================== */
-            const calContainer = document.getElementById('calendar-anim-container');
-            const calGrid = document.getElementById('cal-grid');
-            const dateFinal = document.getElementById('date-final');
-
-            for (let i = 1; i <= 31; i++) {
-                const span = document.createElement('span');
-                span.className = 'cal-num'; span.innerText = i;
-                if (i === 7) span.id = 'target-date-7';
-                calGrid.appendChild(span);
-            }
-
-            const calObs = new IntersectionObserver((entries, obs) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        obs.unobserve(entry.target);
-                        calGrid.style.opacity = "1";
-                        calGrid.style.transform = "scale(1)";
-                        
-                        setTimeout(() => {
-                            const target = document.getElementById('target-date-7');
-                            target.classList.add('highlight');
                             
-                            setTimeout(() => {
-                                calGrid.classList.add('hidden');
-                                dateFinal.classList.add('show');
-                            }, 800);
+                            // Mainkan audio pantai
+                            sfxWaves.volume = 0.6; sfxWaves.play().catch(()=>{});
+                            sfxWind.volume = 0.4;
+                            
+                            bgMusic.volume = 0.5; bgMusic.play().catch(()=>{});
+                            isPlaying = true; musicToggle.classList.add('playing'); musicToggle.style.opacity = "1";
+                            
+                            // Tampilkan navigasi
+                            navHud.style.opacity = "1";
+                            hudArrows.style.opacity = "1";
 
+                            updateScene(0); // Mulai dari Scene 1
                         }, 1000);
-                    }
+                    }, 1200);
+
+                }, 18000);
+            }
+
+            /* ==========================================================================
+               3. 3D CAMERA & SCENE CONTROLLER (7 PENCETAN)
+               ========================================================================== */
+            const world = document.getElementById('world');
+            const navBtns = document.querySelectorAll('.nav-btn');
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+            let currentScene = 0;
+
+            // Database Koordinat 3D untuk 7 Scene
+            // X, Y, Z, RotX, RotY, Environment (day/underwater/sunset/night)
+            const sceneData = [
+                { x: -400, y: -400, z: 0, rx: 0, ry: 0, env: 'day' },              // 0: Arrival
+                { x: -2000, y: -800, z: 1000, rx: 0, ry: 20, env: 'day' },         // 1: Tree
+                { x: 1500, y: 600, z: 500, rx: -20, ry: -15, env: 'day' },         // 2: Sand
+                { x: 0, y: 2500, z: 2000, rx: -5, ry: 0, env: 'underwater' },      // 3: Underwater
+                { x: 3000, y: 200, z: -1000, rx: 0, ry: -30, env: 'day' },         // 4: Boat
+                { x: -3500, y: 100, z: -1500, rx: 0, ry: 35, env: 'sunset' },      // 5: Sunset Rock
+                { x: 0, y: -3000, z: -1000, rx: 25, ry: 0, env: 'night' }          // 6: Night Sky
+            ];
+
+            const envSky = document.getElementById('env-sky');
+            const envSunset = document.getElementById('env-sunset');
+            const envNight = document.getElementById('env-night');
+            const envUnderwater = document.getElementById('env-underwater');
+
+            function updateScene(index) {
+                if (index < 0) index = 0;
+                if (index > 6) index = 6;
+                currentScene = index;
+
+                // Update HUD Active State
+                navBtns.forEach(btn => btn.classList.remove('active'));
+                navBtns[currentScene].classList.add('active');
+
+                // Dapatkan data target scene
+                const target = sceneData[currentScene];
+
+                // Gerakkan Kamera (Invers dari posisi target agar target berada di tengah layar)
+                world.style.transform = `translate3d(${-target.x}px, ${-target.y}px, ${-target.z}px) rotateX(${-target.rx}deg) rotateY(${-target.ry}deg)`;
+
+                // Update Environment & Audio
+                handleEnvironment(target.env);
+
+                // Play Whoosh for camera movement
+                playWhoosh();
+            }
+
+            function handleEnvironment(env) {
+                // Reset Opacity
+                envSunset.style.opacity = '0';
+                envNight.style.opacity = '0';
+                envUnderwater.style.opacity = '0';
+                document.getElementById('canvas-underwater').style.opacity = '0';
+                document.getElementById('canvas-ocean').style.opacity = '1';
+
+                // Reset Audio Levels smoothly
+                sfxWaves.volume = 0.6;
+                sfxWind.volume = 0.4;
+                sfxUnderwater.pause();
+
+                if (env === 'day') {
+                    // Default day sky is always visible behind
+                } else if (env === 'sunset') {
+                    envSunset.style.opacity = '1';
+                    sfxWaves.volume = 0.4;
+                } else if (env === 'night') {
+                    envNight.style.opacity = '1';
+                    sfxWaves.volume = 0.2;
+                } else if (env === 'underwater') {
+                    envUnderwater.style.opacity = '1';
+                    document.getElementById('canvas-underwater').style.opacity = '1';
+                    document.getElementById('canvas-ocean').style.opacity = '0';
+                    
+                    sfxWaves.volume = 0.0;
+                    sfxWind.volume = 0.0;
+                    sfxUnderwater.volume = 0.8;
+                    sfxUnderwater.play().catch(()=>{});
+                }
+            }
+
+            // Event Listeners for Navigation
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    updateScene(parseInt(e.target.getAttribute('data-id')));
                 });
-            }, { threshold: 0.6 });
-            calObs.observe(calContainer);
-
-
-            /* ==========================================================================
-               3. BOKEH DUST PARTICLES
-               ========================================================================== */
-            const canvas = document.getElementById('nature-dust');
-            const ctx = canvas.getContext('2d');
-            let w, h; let particles = [];
-
-            function resizeCanvas() {
-                w = window.innerWidth; h = window.innerHeight;
-                canvas.width = w; canvas.height = h;
-            }
-            window.addEventListener('resize', resizeCanvas); resizeCanvas();
-
-            class Particle {
-                constructor() {
-                    this.x = Math.random() * w; this.y = Math.random() * h;
-                    this.size = Math.random() * 8 + 2; 
-                    this.speedY = Math.random() * -0.5 - 0.2; 
-                    this.opacity = Math.random() * 0.3 + 0.1;
-                }
-                update() {
-                    this.y += this.speedY;
-                    this.x += Math.sin(this.y * 0.02) * 0.5; 
-                    if (this.y < -20) { this.y = h + 20; this.x = Math.random() * w; }
-                }
-                draw() {
-                    ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-                    ctx.shadowBlur = 5; ctx.shadowColor = '#FFF';
-                    ctx.fill(); ctx.shadowBlur = 0;
-                }
-            }
-
-            for (let i = 0; i < 40; i++) particles.push(new Particle());
-            function animateParticles() {
-                ctx.clearRect(0, 0, w, h);
-                particles.forEach(p => { p.update(); p.draw(); });
-                requestAnimationFrame(animateParticles);
-            }
-            animateParticles();
-
-            /* ==========================================================================
-               4. SCROLL ANIMATIONS (STAGGER & PARALLAX)
-               ========================================================================== */
-            function initScrollAnimations() {
-                const obsOpt = { root: null, threshold: 0.15, rootMargin: "0px 0px -50px 0px" };
-                const observer = new IntersectionObserver((entries, obs) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('is-visible');
-                            obs.unobserve(entry.target); 
-                        }
-                    });
-                }, obsOpt);
-
-                document.querySelectorAll('.blur-reveal, .cinematic-pop, .draw-path').forEach(el => observer.observe(el));
-            }
-
-            const parallaxItems = document.querySelectorAll('.parallax-item');
-            let ticking = false;
-            window.addEventListener('scroll', () => {
-                if (!ticking) {
-                    window.requestAnimationFrame(() => {
-                        const winH = window.innerHeight;
-                        parallaxItems.forEach(item => {
-                            const rect = item.getBoundingClientRect();
-                            if(rect.top < winH && rect.bottom > 0) {
-                                const yPos = -((rect.top - (winH / 2)) * 0.08); 
-                                const rot = item.style.getPropertyValue('--rot') || '0deg';
-                                item.style.transform = `translateY(${yPos}px) rotate(${rot})`;
-                            }
-                        });
-                        ticking = false;
-                    });
-                    ticking = true;
-                }
             });
 
+            btnPrev.addEventListener('click', () => updateScene(currentScene - 1));
+            btnNext.addEventListener('click', () => updateScene(currentScene + 1));
+
             /* ==========================================================================
-               5. AUDIO TOGGLE BUTTON LOGIC
+               4. CANVAS 1: SKY (Clouds & Stars Engine)
+               ========================================================================== */
+            const cSky = document.getElementById('canvas-sky');
+            const ctxSky = cSky.getContext('2d');
+            let w, h;
+            function resize() { w = window.innerWidth; h = window.innerHeight; cSky.width=w; cSky.height=h; cOcean.width=w; cOcean.height=h; cUw.width=w; cUw.height=h;}
+            window.addEventListener('resize', resize); resize();
+
+            const stars = [];
+            for(let i=0; i<150; i++) {
+                stars.push({ x: Math.random()*w, y: Math.random()*(h/2), r: Math.random()*1.5, a: Math.random() });
+            }
+
+            function drawSky() {
+                ctxSky.clearRect(0,0,w,h);
+                // Gambar bintang hanya jika environment malam
+                if (sceneData[currentScene] && sceneData[currentScene].env === 'night') {
+                    ctxSky.fillStyle = '#FFF';
+                    stars.forEach(s => {
+                        ctxSky.globalAlpha = Math.abs(Math.sin(Date.now() * 0.001 + s.a));
+                        ctxSky.beginPath(); ctxSky.arc(s.x, s.y, s.r, 0, Math.PI*2); ctxSky.fill();
+                    });
+                    ctxSky.globalAlpha = 1;
+                }
+                requestAnimationFrame(drawSky);
+            }
+            drawSky();
+
+            /* ==========================================================================
+               5. CANVAS 2: OCEAN (Wave Engine)
+               ========================================================================== */
+            const cOcean = document.getElementById('canvas-ocean');
+            const ctxOcean = cOcean.getContext('2d');
+            let waveTime = 0;
+
+            function drawOcean() {
+                ctxOcean.clearRect(0,0,w,h);
+                waveTime += 0.02;
+                
+                // Draw 3 layers of waves
+                for(let i=0; i<3; i++) {
+                    ctxOcean.beginPath();
+                    ctxOcean.moveTo(0, h);
+                    
+                    let yOffset = 100 + (i * 30);
+                    let amp = 20 - (i * 5);
+                    let freq = 0.01 + (i * 0.005);
+                    
+                    for(let x=0; x<=w; x+=20) {
+                        let y = Math.sin(x * freq + waveTime + i) * amp + yOffset;
+                        ctxOcean.lineTo(x, y);
+                    }
+                    ctxOcean.lineTo(w, h);
+                    ctxOcean.lineTo(0, h);
+                    
+                    let opacity = 0.3 + (i * 0.2);
+                    ctxOcean.fillStyle = `rgba(46, 134, 171, ${opacity})`;
+                    ctxOcean.fill();
+                }
+                requestAnimationFrame(drawOcean);
+            }
+            drawOcean();
+
+            /* ==========================================================================
+               6. CANVAS 3: UNDERWATER (Fishes & Bubbles Engine)
+               ========================================================================== */
+            const cUw = document.getElementById('canvas-underwater');
+            const ctxUw = cUw.getContext('2d');
+            
+            const bubbles = [];
+            for(let i=0; i<50; i++) bubbles.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*4+1, s: Math.random()*2+1, offset: Math.random()*100 });
+            
+            const fishes = [];
+            for(let i=0; i<10; i++) {
+                fishes.push({
+                    x: Math.random()*w, y: Math.random()*h, 
+                    vx: (Math.random()-0.5)*3, vy: (Math.random()-0.5)*1,
+                    s: Math.random()*10+10, c: `hsl(${Math.random()*60 + 180}, 70%, 60%)` // Blue/Cyan fishes
+                });
+            }
+
+            function drawUnderwater() {
+                ctxUw.clearRect(0,0,w,h);
+                
+                // Draw Bubbles
+                ctxUw.fillStyle = 'rgba(255,255,255,0.4)';
+                bubbles.forEach(b => {
+                    b.y -= b.s;
+                    b.x += Math.sin(b.y*0.05 + b.offset) * 1;
+                    if(b.y < -10) { b.y = h+10; b.x = Math.random()*w; }
+                    ctxUw.beginPath(); ctxUw.arc(b.x, b.y, b.r, 0, Math.PI*2); ctxUw.fill();
+                });
+
+                // Draw Fishes (Simple Boids)
+                fishes.forEach(f => {
+                    f.x += f.vx; f.y += f.vy;
+                    if(f.x < -50) f.x = w+50; if(f.x > w+50) f.x = -50;
+                    if(f.y < -50) f.y = h+50; if(f.y > h+50) f.y = -50;
+
+                    ctxUw.save();
+                    ctxUw.translate(f.x, f.y);
+                    ctxUw.rotate(Math.atan2(f.vy, f.vx));
+                    ctxUw.fillStyle = f.c;
+                    
+                    // Simple fish shape
+                    ctxUw.beginPath();
+                    ctxUw.ellipse(0, 0, f.s, f.s/2, 0, 0, Math.PI*2);
+                    ctxUw.fill();
+                    // Tail
+                    ctxUw.beginPath();
+                    ctxUw.moveTo(-f.s+2, 0);
+                    ctxUw.lineTo(-f.s-f.s/1.5, -f.s/1.5);
+                    ctxUw.lineTo(-f.s-f.s/1.5, f.s/1.5);
+                    ctxUw.fill();
+                    
+                    ctxUw.restore();
+                });
+
+                requestAnimationFrame(drawUnderwater);
+            }
+            drawUnderwater();
+
+            /* ==========================================================================
+               7. MUSIC TOGGLE LOGIC
                ========================================================================== */
             musicToggle.addEventListener('click', () => {
                 if (isPlaying) { 
-                    bgMusic.pause(); 
-                    musicToggle.classList.remove('playing'); 
+                    bgMusic.pause(); musicToggle.classList.remove('playing'); 
                 } else { 
-                    bgMusic.play(); 
-                    musicToggle.classList.add('playing'); 
-                    musicTooltip.classList.add('hidden'); 
+                    bgMusic.play(); musicToggle.classList.add('playing'); 
                 }
                 isPlaying = !isPlaying;
             });
