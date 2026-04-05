@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Pantai Impian Maulidya | Cinematic 3D Experience</title>
     
     <!-- Google Fonts for Epic & Aesthetic Typography -->
@@ -52,6 +52,7 @@
             overflow: hidden; /* Mencegah scroll asli, kita pakai Kamera 3D */
             width: 100vw; height: 100vh;
             perspective: 1200px; /* Kedalaman lensa kamera */
+            touch-action: none; /* Mencegah pinch-zoom dan pan di mobile */
         }
 
         /* Dinamic Environment Overlays (Day, Sunset, Night, Underwater) */
@@ -482,7 +483,7 @@
             <div class="glass-panel">
                 <div class="epic-date float-layer-2">
                     <span class="d-num">7</span>
-                    <span class="d-month">MARET 2026</span>
+                    <span class="d-month">APRIL 2026</span>
                 </div>
                 <p class="p-text float-layer-1" style="margin-top: 30px;">Senja hari ini melukiskan tanggal yang paling indah. Hari di mana dunia menyambut kelahiran seorang gadis luar biasa.</p>
             </div>
