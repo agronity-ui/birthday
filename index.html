@@ -56,13 +56,14 @@
             line-height: 1.8;
             overflow-x: hidden;
             min-height: 100vh;
+            background-color: #000; /* Fallback */
         }
         
         body.locked { overflow: hidden; height: 100vh; touch-action: none; }
         canvas { position: fixed; top: 0; left: 0; pointer-events: none; }
 
         /* ==========================================================================
-           3. EPIC CINEMATIC BEACH SUNSET INTRO (MULTI-POV 3D CAMERA)
+           3. EPIC CINEMATIC BEACH SUNSET INTRO (2.5D PARALLAX DRONE RIG - ANTI BOLONG)
            ========================================================================== */
         #start-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -80,72 +81,74 @@
         #sunset-intro {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; z-index: 200000; overflow: hidden;
-            transition: background 2s ease, opacity 1.5s ease; perspective: 1200px;
+            transition: background 2s ease, opacity 1.5s ease;
         }
 
-        /* THE 3D CAMERA RIG 
-           Kamera ini akan dirotasi dan digeser oleh class POV yang di-trigger via JavaScript
-        */
+        /* Cinematic Overlays (Vignette & Film Grain) */
+        .intro-vignette {
+            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+            box-shadow: inset 0 0 250px rgba(0,0,0,0.95); pointer-events: none; z-index: 25;
+        }
+        .film-grain {
+            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 26; mix-blend-mode: overlay;
+        }
+
+        /* THE 2.5D CAMERA RIG (Anti-Clipping) */
         .camera-rig {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
             transform-origin: 50% 55%; 
-            transform-style: preserve-3d; will-change: transform;
+            will-change: transform;
             transition: transform 4.5s cubic-bezier(0.45, 0, 0.15, 1);
         }
 
-        /* DYNAMIC POINT OF VIEWS (POV) */
-        /* POV 1: Pandangan tinggi dari udara, melihat ke ufuk (Wide Horizon) */
-        .pov-1 { transform: translate3d(0, 10vh, 200px) rotateX(-10deg) rotateY(15deg) scale(1.1); }
-        
-        /* POV 2: Kamera menukik rendah ke arah lautan, menengok ke sisi lain (Low Tide View) */
-        .pov-2 { transform: translate3d(15vw, -15vh, 500px) rotateX(5deg) rotateY(-25deg) scale(1.3); }
-        
-        /* POV 3: Dutch angle, kamera miring ke langit dan awan (Dutch Sky Pan) */
-        .pov-3 { transform: translate3d(-20vw, 25vh, 400px) rotateX(-15deg) rotateZ(8deg) scale(1.4); }
-        
-        /* POV 4: Kamera lurus ke tengah, mengunci target ke matahari (Center Lock) */
-        .pov-4 { transform: translate3d(0, 0, 700px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1.6); }
-        
-        /* POV 5: Lesatan Ekstrem ke dalam inti matahari (Hyper Zoom) */
-        .pov-zoom { 
-            transform: translate3d(0, 0, 2000px) scale(80) !important; 
-            transition: transform 3.5s cubic-bezier(0.85, 0, 0.15, 1) !important; 
+        /* Drone Float Animation */
+        .camera-float {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            animation: drone-float 6s ease-in-out infinite alternate;
         }
+        @keyframes drone-float { 0% { transform: translateY(-1vh); } 100% { transform: translateY(1vh); } }
+
+        /* DYNAMIC POINT OF VIEWS (Simulasi Translasi & Skala 2D yang aman) */
+        .pov-1 { transform: scale(1) translateY(2vh); }
+        .pov-2 { transform: scale(1.15) translate(4vw, -6vh); }
+        .pov-3 { transform: scale(1.3) translate(-4vw, 4vh) rotateZ(3deg); }
+        .pov-4 { transform: scale(1.5) translate(0, 0) rotateZ(0deg); }
+        .pov-zoom { transform: scale(80) translate(0, 0) !important; transition: transform 3.5s cubic-bezier(0.85, 0, 0.15, 1) !important; }
 
         /* Hyper Shake Effect for Final Zoom */
         .hyper-shake { animation: hyper-shake 0.1s infinite; filter: contrast(1.2) saturate(1.3); }
         @keyframes hyper-shake {
-            0%, 100% { margin-left: 0; margin-top: 0; }
-            20% { margin-left: -5px; margin-top: 4px; }
-            40% { margin-left: 5px; margin-top: -4px; }
-            60% { margin-left: -4px; margin-top: -5px; }
-            80% { margin-left: 4px; margin-top: 5px; }
+            0%, 100% { transform: translate(0, 0); }
+            20% { transform: translate(-5px, 4px); }
+            40% { transform: translate(5px, -4px); }
+            60% { transform: translate(-4px, -5px); }
+            80% { transform: translate(4px, 5px); }
         }
 
         /* ==================== WORLD ELEMENTS ==================== */
-        /* Langit Senja: Diperlebar ekstrim agar saat rotasi kamera tidak bocor */
+        /* Langit Senja (Super Lebar) */
         .s-sky {
-            position: absolute; top: -80vh; left: -150vw; width: 400vw; height: 150vh;
+            position: absolute; top: -30vh; left: -30vw; width: 160vw; height: 100vh;
             background: linear-gradient(to bottom, var(--sun-purple) 0%, var(--sun-deep-red) 50%, var(--sun-orange) 100%);
-            transform: translateZ(-500px); z-index: 1;
+            z-index: 1; transition: filter 4.5s ease;
         }
 
         /* Awan Bergerak */
         .s-clouds {
-            position: absolute; top: -30vh; left: -150vw; width: 400vw; height: 100vh;
+            position: absolute; top: -20vh; left: -50vw; width: 200vw; height: 80vh;
             background-image: radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, transparent 70%);
             background-size: 50vw 100%; animation: cloud-pan 50s linear infinite; z-index: 2; opacity: 0.7; mix-blend-mode: overlay;
-            transform: translateZ(-300px);
         }
-        @keyframes cloud-pan { 0% { transform: translateX(0); } 100% { transform: translateX(50vw); } }
+        @keyframes cloud-pan { 0% { background-position: 0 0; } 100% { background-position: 100vw 0; } }
 
         /* Burung Terbang */
         .s-birds {
-            position: absolute; top: 20vh; left: -50vw; display: flex; gap: 20px; z-index: 5;
-            transform: translateZ(-100px); opacity: 0; transition: opacity 2s ease;
+            position: absolute; top: 20vh; left: -20vw; display: flex; gap: 20px; z-index: 5; opacity: 0; transition: opacity 2s ease;
         }
         .s-birds.fly { animation: fly-birds 20s linear forwards; opacity: 0.85; }
-        @keyframes fly-birds { 0% { transform: translateX(0) translateY(0) scale(0.5); } 100% { transform: translateX(200vw) translateY(-20vh) scale(1.5); } }
+        @keyframes fly-birds { 0% { transform: translateX(0) translateY(0) scale(0.5); } 100% { transform: translateX(150vw) translateY(-20vh) scale(1.5); } }
         .bird-svg { width: 35px; fill: #110300; animation: flap 0.8s ease-in-out infinite alternate; }
         .bird-svg:nth-child(2) { transform: translateY(-20px) scale(0.7); animation-delay: 0.3s; }
         .bird-svg:nth-child(3) { transform: translateY(15px) scale(1.2); animation-delay: 0.6s; }
@@ -186,67 +189,60 @@
             box-shadow: 0 0 30px 10px rgba(255, 140, 0, 0.9);
             filter: blur(1px); z-index: 7; mix-blend-mode: screen;
         }
-        
-        /* Halo Ring */
-        .lens-flare-halo {
-            position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%);
-            width: 600px; height: 600px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.05);
-            box-shadow: inset 0 0 50px rgba(255, 140, 0, 0.2), 0 0 50px rgba(255, 140, 0, 0.2);
-            z-index: 7; mix-blend-mode: screen;
-        }
 
         @keyframes flare-rotate { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
 
-        /* Lautan Parallax 3D MENDALAM: Diperlebar gila-gilaan agar rotasi kamera ekstrem aman */
+        /* LAUTAN 2.5D (TIDAK ADA LAGI ROTATEX - DIJAMIN 100% TIDAK BOLONG) */
         .s-ocean {
-            position: absolute; top: 54vh; left: -150vw; width: 400vw; height: 8000vh; /* Tinggi ekstrem 8000vh */
-            background: linear-gradient(to bottom, #8A2B06 0%, #3a0d00 15vh, var(--ocean-dark) 40vh, #000 100vh, #000 100%);
-            transform-origin: top center;
-            transform: rotateX(76deg) translateY(-5px); /* Perspektif dasar laut */
-            z-index: 4; overflow: hidden;
-            box-shadow: inset 0 30px 100px rgba(0,0,0,0.9);
+            position: absolute; top: 55vh; left: -20vw; width: 140vw; height: 60vh;
+            background: linear-gradient(to bottom, #8A2B06 0%, #3a0d00 30%, var(--ocean-dark) 100%);
+            z-index: 4; overflow: hidden; transition: filter 4.5s ease;
         }
 
         /* Garis Pantulan Cahaya di Air */
         .s-reflection {
             position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-            width: 300px; height: 100%;
-            background: linear-gradient(to bottom, rgba(255, 215, 0, 0.9) 0%, rgba(255, 140, 0, 0.6) 10vh, transparent 40vh); 
+            width: 250px; height: 100%;
+            background: linear-gradient(to bottom, rgba(255, 215, 0, 0.9) 0%, rgba(255, 140, 0, 0.6) 40%, transparent 100%); 
             filter: blur(15px); z-index: 5; mix-blend-mode: overlay;
             animation: shimmer 1.5s infinite alternate;
         }
         @keyframes shimmer { 0% { opacity: 0.7; transform: translateX(-50%) scaleX(0.85); } 100% { opacity: 1; transform: translateX(-50%) scaleX(1.3); } }
 
-        /* Gelombang Ombak SVG Melebar */
-        .s-wave { position: absolute; left: 0; width: 500vw; background-repeat: repeat-x; will-change: transform; }
+        /* Gelombang Ombak SVG Bertumpuk (Faux 3D) */
+        .s-wave { position: absolute; left: 0; width: 300vw; background-repeat: repeat-x; will-change: transform; }
         
         .w-back { 
-            top: -10px; height: 150px; transform: scaleY(0.7); background-size: 50vw 150px;
+            top: -10px; height: 100px; background-size: 50vw 100px;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%236e1c00' fill-opacity='1' d='M0,160L48,170.7C96,181,192,203,288,202.7C384,203,480,181,576,149.3C672,117,768,75,864,80C960,85,1056,139,1152,165.3C1248,192,1344,192,1392,192L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); 
             animation: wave-move 16s linear infinite; z-index: 6; opacity: 0.8;
         }
         .w-mid { 
-            top: 50px; height: 250px; transform: scaleY(1); background-size: 50vw 250px;
+            top: 20px; height: 150px; background-size: 50vw 150px;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%238A2B06' fill-opacity='1' d='M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,250.7C960,235,1056,181,1152,149.3C1248,117,1344,107,1392,101.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); 
             animation: wave-move 10s linear infinite reverse; z-index: 7; 
         }
         .w-front { 
-            top: 150px; height: 400px; transform: scaleY(1.3); background-size: 50vw 400px;
+            top: 80px; height: 300px; background-size: 50vw 300px;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23b83600' fill-opacity='1' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); 
             animation: wave-move 7s linear infinite; z-index: 8; filter: drop-shadow(0 -10px 20px rgba(255,215,0,0.15)); 
         }
-        
-        /* Penambal Celah Ekstrem: Membentangkan lautan pekat hingga ujung bawah layar */
+
+        /* Penutup dasar layar jika ombak bergerak */
         .w-front::after {
-            content: ''; position: absolute; top: 390px; left: 0; width: 100%; height: 8000vh;
-            background: linear-gradient(to bottom, #b83600 0%, #3a0d00 15vh, var(--ocean-dark) 40vh, #000 100vh, #000 100%);
+            content: ''; position: absolute; top: 290px; left: 0; width: 100%; height: 50vh;
+            background: #b83600;
         }
 
         @keyframes wave-move { 0% { transform: translateX(0); } 100% { transform: translateX(-50vw); } }
 
+        /* Efek Depth of Field (DoF) Dinamis via Class POV */
+        .pov-1 .w-front { filter: blur(2px); }
+        .pov-2 .s-sky { filter: blur(3px); }
+        .pov-3 .s-ocean { filter: blur(3px); }
+        
         /* Teks Cinematic yang Tumbuh Ekstrem (Dynamic Tracking) */
         .cine-text {
-            /* Text ini di luar camera-rig agar tidak ikut berputar dan selalu menatap layar */
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             font-family: var(--font-title); color: #FFF; font-size: 3.5rem; letter-spacing: 2px;
             text-align: center; text-shadow: 0 5px 25px rgba(0,0,0,0.9), 0 0 20px rgba(255,140,0,0.8);
@@ -471,50 +467,58 @@
         <div class="start-btn">AWALI KISAH<br><span style="font-size: 1rem; opacity: 0.8; font-family: var(--font-sans); letter-spacing: 2px; text-shadow: none; text-transform: none;">(Nyalakan Suara 🔊)</span></div>
     </div>
 
-    <!-- 5-SCENE EPIC SUNSET INTRO (UPGRADED FULLSCREEN 3D MULTI-POV) -->
+    <!-- 5-SCENE EPIC SUNSET INTRO (UPGRADED FULLSCREEN 2.5D MULTI-POV) -->
     <div id="sunset-intro">
 
-        <!-- Camera Drone Rig untuk POV Berubah-ubah -->
+        <!-- Cinematic Vignette Overlay -->
+        <div class="intro-vignette"></div>
+        <div class="film-grain"></div>
+
+        <!-- Camera Drone Rig untuk POV Berubah-ubah tanpa Bolong -->
         <div class="camera-rig" id="camera-rig">
             
-            <!-- S1: Wide Shot Horizon (Sky) -->
-            <div class="s-sky"></div>
-            
-            <!-- Moving Clouds -->
-            <div class="s-clouds"></div>
+            <!-- Drone Float Animation Wrapper -->
+            <div class="camera-float">
+                
+                <!-- S1: Wide Shot Horizon (Sky) -->
+                <div class="s-sky"></div>
+                
+                <!-- Moving Clouds -->
+                <div class="s-clouds"></div>
 
-            <!-- Flying Birds -->
-            <div class="s-birds" id="intro-birds">
-                <svg class="bird-svg" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
-                <svg class="bird-svg" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
-                <svg class="bird-svg" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
-            </div>
+                <!-- Flying Birds -->
+                <div class="s-birds" id="intro-birds">
+                    <svg class="bird-svg" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
+                    <svg class="bird-svg" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
+                    <svg class="bird-svg" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
+                </div>
 
-            <!-- Sun Rays (God Rays) -->
-            <div class="sun-rays"></div>
+                <!-- Sun Rays (God Rays) -->
+                <div class="sun-rays"></div>
 
-            <!-- S4: Glowing Sun -->
-            <div class="s-sun" id="epic-sun"></div>
-            
-            <!-- S3: Lens Flares -->
-            <div class="lens-flare"></div>
-            <div class="lens-flare"></div>
-            
-            <!-- Anamorphic Flare & Halo -->
-            <div class="lens-flare-anamorphic"></div>
-            <div class="lens-flare-halo"></div>
+                <!-- S4: Glowing Sun -->
+                <div class="s-sun" id="epic-sun"></div>
+                
+                <!-- S3: Lens Flares -->
+                <div class="lens-flare"></div>
+                <div class="lens-flare"></div>
+                
+                <!-- Anamorphic Flare & Halo -->
+                <div class="lens-flare-anamorphic"></div>
+                <div class="lens-flare-halo"></div>
 
-            <!-- S2: The Tide (Ocean with SVG Waves & 3D Depth) -->
-            <div class="s-ocean">
-                <div class="s-reflection"></div>
-                <div class="s-wave w-back"></div>
-                <div class="s-wave w-mid"></div>
-                <div class="s-wave w-front"></div>
-            </div>
+                <!-- S2: The Tide (Ocean with SVG Waves, Using 2.5D Scale to prevent clipping) -->
+                <div class="s-ocean">
+                    <div class="s-reflection"></div>
+                    <div class="s-wave w-back"></div>
+                    <div class="s-wave w-mid"></div>
+                    <div class="s-wave w-front"></div>
+                </div>
             
+            </div> <!-- End Drone Float -->
         </div> <!-- End Camera Rig -->
 
-        <!-- Texts Storyboard (Di luar rig agar tidak terbalik saat kamera berputar) -->
+        <!-- Texts Storyboard (Di luar rig agar tidak terdistorsi saat kamera bergerak) -->
         <div class="cine-text" id="tx1">Semesta menyambut dengan tenang...</div>
         <div class="cine-text" id="tx2">Di mana setiap deburan adalah doa...</div>
         <div class="cine-text" id="tx3">Mengukir jejak di atas lautan waktu...</div>
@@ -723,7 +727,7 @@
             });
 
             /* ==========================================================================
-               1. EPIC SUNSET INTRO TIMELINE (DYNAMIC MULTI-POV 3D CAMERA)
+               1. EPIC SUNSET INTRO TIMELINE (DYNAMIC 2.5D PARALLAX RIG)
                ========================================================================== */
             const introContainer = document.getElementById('sunset-intro');
             const camRig = document.getElementById('camera-rig');
@@ -750,7 +754,7 @@
                     setTimeout(() => { tx[1].classList.add('show'); }, 800);
                 }, 4500);
 
-                // T=9s: Scene 3 (POV 3: Dutch Angle, Kamera Miring Menatap Langit)
+                // T=9s: Scene 3 (POV 3: Dutch Angle, Kamera Miring)
                 setTimeout(() => {
                     tx[1].classList.remove('show');
                     camRig.classList.replace('pov-2', 'pov-3');
@@ -851,7 +855,7 @@
                     if(p.x > w+10) p.x = -10; if(p.y < -10) p.y = h+10;
                     
                     ctxDust.beginPath(); ctxDust.arc(p.x, p.y, p.s, 0, Math.PI*2);
-                    ctxDust.fillStyle = `rgba(255, 140, 0, ${p.o})`; // Debu berwarna oranye hangat
+                    ctxDust.fillStyle = `rgba(255, 140, 0, ${p.o})`; 
                     ctxDust.fill();
                 });
                 requestAnimationFrame(animateCanvases);
