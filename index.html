@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Alam Untuk Nabil | Epic Cinematic Edition</title>
+    <title>Alam Untuk Nabil | Director's Cut Edition</title>
     
     <!-- Google Fonts for Epic & Aesthetic Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -62,7 +62,7 @@
         canvas { position: fixed; top: 0; left: 0; pointer-events: none; }
 
         /* ==========================================================================
-           3. EPIC CINEMATIC BEACH SUNSET INTRO (UPGRADED FULL SCREEN)
+           3. EPIC CINEMATIC BEACH SUNSET INTRO (MULTI-POV 3D CAMERA)
            ========================================================================== */
         #start-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -77,84 +77,132 @@
         }
         @keyframes pulse-start { 0% { opacity: 0.5; filter: blur(2px); transform: scale(0.98); } 100% { opacity: 1; filter: blur(0px); transform: scale(1.02); text-shadow: 0 0 20px var(--sun-gold); } }
 
-        /* Pita Hitam Sinematik (Letterbox) */
-        .cinematic-bars {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: 250000; pointer-events: none;
-            display: flex; flex-direction: column; justify-content: space-between;
-        }
-        .c-bar { width: 100%; height: 12vh; background: #000; transition: height 3s cubic-bezier(0.65, 0, 0.15, 1); }
-        .cinematic-bars.open .c-bar { height: 0; }
-
         #sunset-intro {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; z-index: 200000; overflow: hidden;
             transition: background 2s ease, opacity 1.5s ease; perspective: 1200px;
         }
 
-        /* Kamera Drone Melayang */
+        /* THE 3D CAMERA RIG 
+           Kamera ini akan dirotasi dan digeser oleh class POV yang di-trigger via JavaScript
+        */
         .camera-rig {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
             transform-origin: 50% 55%; 
             transform-style: preserve-3d; will-change: transform;
-            animation: camera-float 8s ease-in-out infinite alternate;
-        }
-        @keyframes camera-float {
-            0% { transform: translate3d(0, -1vh, 0) rotateZ(-0.5deg); }
-            100% { transform: translate3d(0, 1vh, 0) rotateZ(0.5deg); }
+            transition: transform 4.5s cubic-bezier(0.45, 0, 0.15, 1);
         }
 
-        /* Langit Senja Bergradasi */
+        /* DYNAMIC POINT OF VIEWS (POV) */
+        /* POV 1: Pandangan tinggi dari udara, melihat ke ufuk (Wide Horizon) */
+        .pov-1 { transform: translate3d(0, 10vh, 200px) rotateX(-10deg) rotateY(15deg) scale(1.1); }
+        
+        /* POV 2: Kamera menukik rendah ke arah lautan, menengok ke sisi lain (Low Tide View) */
+        .pov-2 { transform: translate3d(15vw, -15vh, 500px) rotateX(5deg) rotateY(-25deg) scale(1.3); }
+        
+        /* POV 3: Dutch angle, kamera miring ke langit dan awan (Dutch Sky Pan) */
+        .pov-3 { transform: translate3d(-20vw, 25vh, 400px) rotateX(-15deg) rotateZ(8deg) scale(1.4); }
+        
+        /* POV 4: Kamera lurus ke tengah, mengunci target ke matahari (Center Lock) */
+        .pov-4 { transform: translate3d(0, 0, 700px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1.6); }
+        
+        /* POV 5: Lesatan Ekstrem ke dalam inti matahari (Hyper Zoom) */
+        .pov-zoom { 
+            transform: translate3d(0, 0, 2000px) scale(80) !important; 
+            transition: transform 3.5s cubic-bezier(0.85, 0, 0.15, 1) !important; 
+        }
+
+        /* Hyper Shake Effect for Final Zoom */
+        .hyper-shake { animation: hyper-shake 0.1s infinite; filter: contrast(1.2) saturate(1.3); }
+        @keyframes hyper-shake {
+            0%, 100% { margin-left: 0; margin-top: 0; }
+            20% { margin-left: -5px; margin-top: 4px; }
+            40% { margin-left: 5px; margin-top: -4px; }
+            60% { margin-left: -4px; margin-top: -5px; }
+            80% { margin-left: 4px; margin-top: 5px; }
+        }
+
+        /* ==================== WORLD ELEMENTS ==================== */
+        /* Langit Senja: Diperlebar ekstrim agar saat rotasi kamera tidak bocor */
         .s-sky {
-            position: absolute; top: -50vh; left: -50vw; width: 200vw; height: 120vh;
+            position: absolute; top: -80vh; left: -100vw; width: 300vw; height: 150vh;
             background: linear-gradient(to bottom, var(--sun-purple) 0%, var(--sun-deep-red) 50%, var(--sun-orange) 100%);
-            transform: translateZ(-300px); z-index: 1;
+            transform: translateZ(-500px); z-index: 1;
         }
 
         /* Awan Bergerak */
         .s-clouds {
-            position: absolute; top: -20vh; left: -50vw; width: 200vw; height: 80vh;
+            position: absolute; top: -30vh; left: -100vw; width: 300vw; height: 100vh;
             background-image: radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, transparent 70%);
             background-size: 50vw 100%; animation: cloud-pan 50s linear infinite; z-index: 2; opacity: 0.7; mix-blend-mode: overlay;
+            transform: translateZ(-300px);
         }
         @keyframes cloud-pan { 0% { transform: translateX(0); } 100% { transform: translateX(50vw); } }
 
         /* Burung Terbang */
         .s-birds {
-            position: absolute; top: 25vh; left: -20vw; display: flex; gap: 20px; z-index: 5;
-            transform: translateZ(50px); opacity: 0; transition: opacity 2s ease;
+            position: absolute; top: 20vh; left: -50vw; display: flex; gap: 20px; z-index: 5;
+            transform: translateZ(-100px); opacity: 0; transition: opacity 2s ease;
         }
-        .s-birds.fly { animation: fly-birds 18s linear forwards; opacity: 0.85; }
-        @keyframes fly-birds { 0% { transform: translateX(0) translateY(0) scale(0.4) translateZ(50px); } 100% { transform: translateX(150vw) translateY(-15vh) scale(1.5) translateZ(100px); } }
+        .s-birds.fly { animation: fly-birds 20s linear forwards; opacity: 0.85; }
+        @keyframes fly-birds { 0% { transform: translateX(0) translateY(0) scale(0.5); } 100% { transform: translateX(200vw) translateY(-20vh) scale(1.5); } }
         .bird-svg { width: 35px; fill: #110300; animation: flap 0.8s ease-in-out infinite alternate; }
         .bird-svg:nth-child(2) { transform: translateY(-20px) scale(0.7); animation-delay: 0.3s; }
         .bird-svg:nth-child(3) { transform: translateY(15px) scale(1.2); animation-delay: 0.6s; }
 
+        /* Sun Rays (God Rays) */
+        .sun-rays {
+            position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%);
+            width: 1200px; height: 1200px; border-radius: 50%;
+            background: repeating-conic-gradient(from 0deg, transparent 0deg 10deg, rgba(255, 200, 0, 0.1) 10deg 20deg);
+            mask-image: radial-gradient(circle, black 20%, transparent 70%);
+            -webkit-mask-image: radial-gradient(circle, black 20%, transparent 70%);
+            z-index: 2; animation: spin-rays 60s linear infinite;
+        }
+        @keyframes spin-rays { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
         /* Matahari Hiper-Realistis */
         .s-sun {
             position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%);
-            width: 250px; height: 250px; border-radius: 50%;
+            width: 300px; height: 300px; border-radius: 50%;
             background: radial-gradient(circle, #FFF 0%, var(--sun-gold) 35%, var(--sun-orange) 80%);
-            box-shadow: 0 0 150px 80px rgba(255, 140, 0, 0.9), 0 0 350px 180px rgba(255, 215, 0, 0.6), inset 0 0 50px #FFF;
+            box-shadow: 0 0 200px 100px rgba(255, 140, 0, 0.9), 0 0 450px 250px rgba(255, 215, 0, 0.6), inset 0 0 80px #FFF;
             z-index: 3; transition: all 3s ease;
         }
         
-        /* Lens Flare Effects (Optical Glow) */
+        /* Advanced Lens Flare Effects */
         .lens-flare {
             position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%);
-            width: 200vw; height: 12px; background: rgba(255, 255, 255, 0.3);
-            filter: blur(3px); transform-origin: center; z-index: 6;
+            width: 250vw; height: 20px; background: rgba(255, 255, 255, 0.25);
+            filter: blur(5px); transform-origin: center; z-index: 6;
             animation: flare-rotate 15s linear infinite; mix-blend-mode: screen;
         }
-        .lens-flare:nth-child(2) { width: 120vw; height: 25px; filter: blur(6px); animation-duration: 22s; animation-direction: reverse; }
-        .lens-flare:nth-child(3) { width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%); animation: none; z-index: 7; mix-blend-mode: overlay; }
+        .lens-flare:nth-child(2) { width: 180vw; height: 40px; filter: blur(8px); animation-duration: 25s; animation-direction: reverse; }
+        
+        /* Anamorphic Flare (Horizontal Streak ala J.J. Abrams) */
+        .lens-flare-anamorphic {
+            position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%);
+            width: 350vw; height: 4px; background: rgba(255, 230, 150, 0.9);
+            box-shadow: 0 0 30px 10px rgba(255, 140, 0, 0.9);
+            filter: blur(1px); z-index: 7; mix-blend-mode: screen;
+        }
+        
+        /* Halo Ring */
+        .lens-flare-halo {
+            position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%);
+            width: 600px; height: 600px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 0 50px rgba(255, 140, 0, 0.2), 0 0 50px rgba(255, 140, 0, 0.2);
+            z-index: 7; mix-blend-mode: screen;
+        }
 
-        /* Lautan Parallax 3D MENDALAM (Diperpanjang Ekstrem agar Tidak Bolong) */
+        @keyframes flare-rotate { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        /* Lautan Parallax 3D MENDALAM: Diperlebar gila-gilaan agar rotasi kamera ekstrem aman */
         .s-ocean {
-            position: absolute; top: 55vh; left: -50vw; width: 200vw; height: 800vh; /* Tinggi ekstrem menutupi seluruh bawah */
+            position: absolute; top: 55vh; left: -100vw; width: 300vw; height: 800vh;
             background: linear-gradient(to bottom, #8A2B06 0%, #3a0d00 15%, var(--ocean-dark) 40%, #000 100%);
             transform-origin: top center;
-            transform: rotateX(72deg) translateY(-5px); /* Perspektif lebih datar dan jauh */
+            transform: rotateX(76deg) translateY(-5px); /* Perspektif dasar laut */
             z-index: 4; overflow: hidden;
             box-shadow: inset 0 30px 100px rgba(0,0,0,0.9);
         }
@@ -162,7 +210,7 @@
         /* Garis Pantulan Cahaya di Air */
         .s-reflection {
             position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-            width: 200px; height: 100%;
+            width: 250px; height: 100%;
             background: linear-gradient(to bottom, rgba(255, 215, 0, 0.9) 0%, rgba(255, 140, 0, 0.6) 20%, transparent 60%); 
             filter: blur(15px); z-index: 5; mix-blend-mode: overlay;
             animation: shimmer 1.5s infinite alternate;
@@ -170,31 +218,30 @@
         @keyframes shimmer { 0% { opacity: 0.7; transform: translateX(-50%) scaleX(0.85); } 100% { opacity: 1; transform: translateX(-50%) scaleX(1.3); } }
 
         /* Gelombang Ombak SVG Melebar */
-        .s-wave { position: absolute; left: 0; width: 300vw; background-repeat: repeat-x; background-size: 50vw 100%; will-change: transform; }
-        .w-back { top: -10px; height: 120px; transform: scaleY(0.7); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%236e1c00' fill-opacity='1' d='M0,160L48,170.7C96,181,192,203,288,202.7C384,203,480,181,576,149.3C672,117,768,75,864,80C960,85,1056,139,1152,165.3C1248,192,1344,192,1392,192L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); animation: wave-move 14s linear infinite; z-index: 6; opacity: 0.8;}
-        .w-mid { top: 40px; height: 180px; transform: scaleY(1); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%238A2B06' fill-opacity='1' d='M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,250.7C960,235,1056,181,1152,149.3C1248,117,1344,107,1392,101.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); animation: wave-move 9s linear infinite reverse; z-index: 7; }
-        .w-front { top: 120px; height: 350px; transform: scaleY(1.3); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23b83600' fill-opacity='1' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); animation: wave-move 6s linear infinite; z-index: 8; filter: drop-shadow(0 -10px 20px rgba(255,215,0,0.2)); }
+        .s-wave { position: absolute; left: 0; width: 400vw; background-repeat: repeat-x; background-size: 50vw 100%; will-change: transform; }
+        .w-back { top: -10px; height: 150px; transform: scaleY(0.7); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%236e1c00' fill-opacity='1' d='M0,160L48,170.7C96,181,192,203,288,202.7C384,203,480,181,576,149.3C672,117,768,75,864,80C960,85,1056,139,1152,165.3C1248,192,1344,192,1392,192L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); animation: wave-move 16s linear infinite; z-index: 6; opacity: 0.8;}
+        .w-mid { top: 50px; height: 250px; transform: scaleY(1); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%238A2B06' fill-opacity='1' d='M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,250.7C960,235,1056,181,1152,149.3C1248,117,1344,107,1392,101.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); animation: wave-move 10s linear infinite reverse; z-index: 7; }
+        .w-front { top: 150px; height: 400px; transform: scaleY(1.3); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23b83600' fill-opacity='1' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); animation: wave-move 7s linear infinite; z-index: 8; filter: drop-shadow(0 -10px 20px rgba(255,215,0,0.15)); }
 
         @keyframes wave-move { 0% { transform: translateX(0); } 100% { transform: translateX(-50vw); } }
 
-        /* Teks Cinematic yang Diperindah */
+        /* Teks Cinematic yang Tumbuh Ekstrem (Dynamic Tracking) */
         .cine-text {
+            /* Text ini di luar camera-rig agar tidak ikut berputar dan selalu menatap layar */
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-family: var(--font-title); color: #FFF; font-size: 3rem; letter-spacing: 8px;
-            text-align: center; text-shadow: 0 5px 25px rgba(0,0,0,0.9), 0 0 15px rgba(255,140,0,0.5);
-            opacity: 0; filter: blur(10px); transition: opacity 1.2s ease, filter 1.2s ease, transform 4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 20;
-            will-change: transform, opacity, filter; width: 90%;
+            font-family: var(--font-title); color: #FFF; font-size: 3.5rem; letter-spacing: 2px;
+            text-align: center; text-shadow: 0 5px 25px rgba(0,0,0,0.9), 0 0 20px rgba(255,140,0,0.8);
+            opacity: 0; filter: blur(15px) contrast(2); 
+            transition: opacity 1.2s ease, filter 1.5s ease, transform 4.5s cubic-bezier(0.16, 1, 0.3, 1), letter-spacing 4.5s ease-out;
+            will-change: transform, opacity, filter, letter-spacing; width: 90%; z-index: 200;
         }
-        .cine-text.show { opacity: 1; filter: blur(0px); transform: translate(-50%, -50%) scale(1.1); }
+        .cine-text.show { opacity: 1; filter: blur(0px) contrast(1); transform: translate(-50%, -50%) scale(1.15); letter-spacing: 15px; }
 
         .whiteout {
             position: absolute; top:0; left:0; width: 100vw; height: 100vh;
-            background: #FFF; opacity: 0; z-index: 100; transition: opacity 1.5s ease; pointer-events: none;
+            background: #FFF; opacity: 0; z-index: 250000; transition: opacity 1.5s ease; pointer-events: none;
             will-change: opacity;
         }
-
-        /* Canvas Sea Spray */
-        #sea-spray { position: absolute; top: 0; left: 0; z-index: 10; pointer-events: none; }
 
         /* ==========================================================================
            4. OPTIMIZED SCRAPBOOK CONTAINER (MAIN CONTENT)
@@ -238,15 +285,15 @@
            ========================================================================== */
         .polaroid {
             background: #FFFFFF; 
-            padding: 18px 18px 65px 18px; /* Bingkai bawah lebih lebar khas polaroid */
+            padding: 18px 18px 65px 18px; 
             box-shadow: 0 10px 25px rgba(62, 39, 35, 0.15);
             position: relative; 
-            margin: 3.5rem auto; /* Pusatkan */
+            margin: 3.5rem auto; 
             z-index: 2; border-radius: 4px;
             transition: transform 0.3s ease, box-shadow 0.3s ease; 
             transform: rotateZ(var(--rot, 0deg)); 
             width: 90%; 
-            max-width: 320px; /* Lebar dibatasi agar memaksa bentuk memanjang (portrait) */
+            max-width: 320px; 
         }
         .polaroid:hover {
             transform: translateY(-5px) scale(1.02) rotateZ(0deg);
@@ -255,7 +302,7 @@
 
         .img-container { 
             width: 100%; 
-            height: 420px; /* Tinggi dipanjangkan agar foto di dalam menjadi portrait murni */
+            height: 420px; 
             overflow: hidden; position: relative; background: #EAEAEA; border-radius: 2px; 
         }
         .polaroid-img { 
@@ -326,7 +373,6 @@
         }
         .love-letter p { font-family: var(--font-hand); font-size: 1.9rem; color: var(--nature-mountain); line-height: 1.5; text-align: center; }
 
-        /* KEMBALI KE DAFTAR VERTIKAL YANG STABIL DAN BEBAS LAG */
         .sweet-list { width: 100%; display: flex; flex-direction: column; gap: 2rem; margin-top: 3rem; position: relative; }
         .sweet-list::before { content: ''; position: absolute; left: 24px; top: 15px; bottom: 15px; width: 2px; background: linear-gradient(to bottom, transparent, var(--nature-sky), var(--nature-grass), transparent); opacity: 0.5; }
         
@@ -340,7 +386,6 @@
             display: flex; align-items: center; justify-content: center; z-index: 2; border: 2px solid #FFF; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        /* KEMBALI KE GALERI KOLASE STATIS YANG BEBAS LAG */
         .gallery-collage { position: relative; width: 100%; height: 750px; margin-top: 4rem; }
         .gallery-collage .polaroid { position: absolute; width: 75%; max-width: 300px; margin: 0; }
         .gal-1 { top: 0; left: 0; --rot: -6deg; z-index: 2;}
@@ -378,12 +423,12 @@
             section { padding: 4rem 1.2rem; }
             .scrapbook-container { border-radius: 0; border: none; }
             .polaroid { max-width: 280px; padding: 10px 10px 45px 10px; margin: 2rem auto; }
-            .img-container { height: 360px; } /* Sesuaikan tinggi portrait di HP */
+            .img-container { height: 360px; } 
             .love-letter { padding: 2rem 1.2rem; }
             .love-letter p { font-size: 1.3rem; }
             .date-number { font-size: 5rem; } .date-month { font-size: 1rem; letter-spacing: 4px; }
             .sweet-item { padding-left: 4.5rem; } .sweet-pin { left: 10px; }
-            .gallery-collage { height: 600px; } /* Sesuaikan tinggi kolase di HP */
+            .gallery-collage { height: 600px; } 
             .gal-1 { left: 5%; } .gal-2 { right: 5%; top: 180px; } .gal-3 { left: 15%; top: 350px;}
             .vinyl-player { bottom: 20px; right: 20px; width: 50px; height: 50px; } 
             .cine-text { font-size: 1.4rem; width: 90%; }
@@ -407,13 +452,12 @@
         <div class="start-btn">AWALI KISAH<br><span style="font-size: 1rem; opacity: 0.8; font-family: var(--font-sans); letter-spacing: 2px; text-shadow: none; text-transform: none;">(Nyalakan Suara 🔊)</span></div>
     </div>
 
-    <!-- CINEMATIC LETTERBOX BARS (DIHAPUS UNTUK FULLSCREEN) -->
-    <!-- Dihapus karena permintaan user agar full layar dan tidak ada pita hitam -->
-
-    <!-- 5-SCENE EPIC SUNSET INTRO (UPGRADED FULLSCREEN 3D) -->
+    <!-- 5-SCENE EPIC SUNSET INTRO (UPGRADED FULLSCREEN 3D MULTI-POV) -->
     <div id="sunset-intro">
-        <!-- Hilangkan class cinematic-bars animation -->
+
+        <!-- Camera Drone Rig untuk POV Berubah-ubah -->
         <div class="camera-rig" id="camera-rig">
+            
             <!-- S1: Wide Shot Horizon (Sky) -->
             <div class="s-sky"></div>
             
@@ -427,13 +471,19 @@
                 <svg class="bird-svg" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
             </div>
 
+            <!-- Sun Rays (God Rays) -->
+            <div class="sun-rays"></div>
+
             <!-- S4: Glowing Sun -->
             <div class="s-sun" id="epic-sun"></div>
             
             <!-- S3: Lens Flares -->
             <div class="lens-flare"></div>
             <div class="lens-flare"></div>
-            <div class="lens-flare"></div>
+            
+            <!-- Anamorphic Flare & Halo -->
+            <div class="lens-flare-anamorphic"></div>
+            <div class="lens-flare-halo"></div>
 
             <!-- S2: The Tide (Ocean with SVG Waves & 3D Depth) -->
             <div class="s-ocean">
@@ -443,11 +493,9 @@
                 <div class="s-wave w-front"></div>
             </div>
             
-            <!-- Canvas for Sea Spray / Golden Dust -->
-            <canvas id="sea-spray"></canvas>
-        </div>
+        </div> <!-- End Camera Rig -->
 
-        <!-- Texts Storyboard -->
+        <!-- Texts Storyboard (Di luar rig agar tidak terbalik saat kamera berputar) -->
         <div class="cine-text" id="tx1">Semesta menyambut dengan tenang...</div>
         <div class="cine-text" id="tx2">Di mana setiap deburan adalah doa...</div>
         <div class="cine-text" id="tx3">Mengukir jejak di atas lautan waktu...</div>
@@ -537,7 +585,7 @@
                 <p class="blur-reveal" style="font-size: 1.15rem; color: var(--nature-mountain); margin-top: 1rem;">Hari di mana sosok ketua andalan kita resmi nambah umur!</p>
             </section>
 
-            <!-- SECTION 5: 4 HAL (DIKEMBALIKAN KE LIST VERTIKAL STABIL) -->
+            <!-- SECTION 5: 4 HAL (LIST VERTIKAL STABIL) -->
             <section id="things">
                 <h2 class="blur-reveal" style="font-size: 2rem;">4 HAL SERU TENTANGMU</h2>
                 
@@ -565,7 +613,7 @@
                 </div>
             </section>
 
-            <!-- SECTION 6: COLLAGE (DIKEMBALIKAN KE GALERI KOLASE STATIS STABIL) -->
+            <!-- SECTION 6: COLLAGE (GALERI KOLASE STATIS STABIL) -->
             <section id="memories">
                 <div class="divider"></div>
                 <h2 class="blur-reveal" style="font-size: 2.2rem; line-height: 1.1;">MEMORI DI BAWAH<br>SENJA</h2>
@@ -644,7 +692,7 @@
             });
 
             /* ==========================================================================
-               1. EPIC SUNSET INTRO TIMELINE (THE 5-SCENE STORYBOARD)
+               1. EPIC SUNSET INTRO TIMELINE (DYNAMIC MULTI-POV 3D CAMERA)
                ========================================================================== */
             const introContainer = document.getElementById('sunset-intro');
             const camRig = document.getElementById('camera-rig');
@@ -657,71 +705,35 @@
                 document.getElementById('tx3'), document.getElementById('tx4')
             ];
 
-            // Engine Canvas Sea Spray / Golden Dust (Khusus Intro)
-            const cSpray = document.getElementById('sea-spray');
-            const ctxSpray = cSpray.getContext('2d');
-            cSpray.width = window.innerWidth; cSpray.height = window.innerHeight;
-            const sprays = [];
-            for(let i=0; i<80; i++) {
-                sprays.push({
-                    x: Math.random() * cSpray.width,
-                    y: (cSpray.height * 0.55) + Math.random() * (cSpray.height * 0.45), // Hanya muncul di air
-                    s: Math.random() * 2 + 1,
-                    vy: Math.random() * -1 - 0.5, // Terbang ke atas
-                    vx: (Math.random() - 0.5) * 0.5,
-                    o: Math.random() * 0.8 + 0.2
-                });
-            }
-            let drawSprayAnim;
-            function drawSpray() {
-                ctxSpray.clearRect(0,0,cSpray.width,cSpray.height);
-                sprays.forEach(p => {
-                    p.x += p.vx; p.y += p.vy;
-                    // Reset partikel jika terlalu tinggi atau keluar layar
-                    if(p.y < cSpray.height * 0.5 || p.x < 0 || p.x > cSpray.width) {
-                        p.y = cSpray.height; p.x = Math.random() * cSpray.width;
-                    }
-                    ctxSpray.beginPath(); ctxSpray.arc(p.x, p.y, p.s, 0, Math.PI*2);
-                    ctxSpray.fillStyle = `rgba(255, 215, 0, ${p.o})`; // Warna golden dust
-                    ctxSpray.shadowBlur = 5; ctxSpray.shadowColor = '#FF8C00';
-                    ctxSpray.fill(); ctxSpray.shadowBlur = 0;
-                });
-                drawSprayAnim = requestAnimationFrame(drawSpray);
-            }
-
             function runSunsetIntro() {
-                // Mulai SFX Pantai
+                // Mulai SFX Laut
                 sfxWaves.volume = 0.5; sfxWaves.play().catch(()=>{});
-                drawSpray(); 
-                birds.classList.add('fly'); // Burung mulai terbang
+                birds.classList.add('fly'); 
 
-                // T=0s: Scene 1 (Wide Shot Horizon)
+                // T=0s: Scene 1 (POV 1: Wide Horizon, Kamera Tinggi)
+                camRig.classList.add('pov-1');
                 setTimeout(() => { tx[0].classList.add('show'); }, 500);
 
-                // T=4.5s: Scene 2 (The Tide - Camera pans down)
+                // T=4.5s: Scene 2 (POV 2: Low Tide, Kamera Menukik ke Air)
                 setTimeout(() => {
                     tx[0].classList.remove('show');
-                    camRig.style.transform = "translateY(-15vh) scale(1.2)";
+                    camRig.classList.replace('pov-1', 'pov-2');
                     setTimeout(() => { tx[1].classList.add('show'); }, 800);
                 }, 4500);
 
-                // T=9s: Scene 3 (Glint & Reflection Focus)
+                // T=9s: Scene 3 (POV 3: Dutch Angle, Kamera Miring Menatap Langit)
                 setTimeout(() => {
                     tx[1].classList.remove('show');
                     sfxRumble.volume = 0.3; sfxRumble.play().catch(()=>{}); 
-                    camRig.style.transform = "translateY(-5vh) scale(1.6)";
+                    camRig.classList.replace('pov-2', 'pov-3');
                     setTimeout(() => { tx[2].classList.add('show'); }, 800);
                 }, 9000);
 
-                // T=13.5s: Scene 4 (Deep Zoom Ke Matahari)
+                // T=13.5s: Scene 4 (POV 4: Center Lock, Kamera Lurus ke Matahari)
                 setTimeout(() => {
                     tx[2].classList.remove('show');
-                    
-                    // Transisi Kamera Melesat Masuk
-                    camRig.style.transition = "transform 4s cubic-bezier(0.5, 0, 0.5, 1)";
-                    camRig.style.transform = "translateY(5vh) scale(4)";
+                    camRig.classList.replace('pov-3', 'pov-4');
 
-                    // Crescendo Audio Bass
                     let rumbleUp = setInterval(() => {
                         if(sfxRumble.volume < 0.9) sfxRumble.volume += 0.05;
                         else clearInterval(rumbleUp);
@@ -730,59 +742,56 @@
                     setTimeout(() => { tx[3].classList.add('show'); }, 1000);
                 }, 13500);
 
-                // T=17.5s: Scene 5 (Epic White/Golden Flash & Masuk Scrapbook)
+                // T=18s: Scene 5 (POV ZOOM: Lelesatan Ekstrem ke Matahari)
                 setTimeout(() => {
                     tx[3].classList.remove('show');
                     
-                    // Zoom Maksimal Menembus Matahari Secara Ekstrem
-                    camRig.style.transition = "transform 2s cubic-bezier(0.7, 0, 0.1, 1)";
-                    camRig.style.transform = "scale(80)"; 
+                    // Tambahkan getaran ekstrem sebelum melesat
+                    camRig.classList.add('hyper-shake');
                     
-                    // Background dirubah cerah agar tidak ada area bolong gelap di tepi layer laut 3D
-                    introContainer.style.background = '#FFD700'; 
-                    
-                    sfxFlash.volume = 1.0; sfxFlash.play().catch(()=>{});
-                    flashOverlay.style.opacity = '1';
-                    flashOverlay.style.background = '#FFD700'; // Flash keemasan
-
-                    // Fade out SFX laut
-                    let fadeOut = setInterval(() => {
-                        if(sfxWaves.volume > 0.05) sfxWaves.volume -= 0.05;
-                        if(sfxRumble.volume > 0.05) sfxRumble.volume -= 0.05;
-                        else { 
-                            clearInterval(fadeOut); 
-                            sfxWaves.pause(); sfxRumble.pause(); 
-                            cancelAnimationFrame(drawSprayAnim); // Stop canvas
-                        }
-                    }, 100);
-
-                    // Reveal Scrapbook
+                    // Delay sebentar untuk getaran, lalu melesat (Hyper Zoom)
                     setTimeout(() => {
-                        flashOverlay.style.background = 'rgba(255, 250, 245, 1)'; // Transisi warna flash ke warna kertas
+                        camRig.classList.remove('hyper-shake');
+                        camRig.classList.replace('pov-4', 'pov-zoom');
                         
-                        introContainer.style.display = 'none';
-                        document.body.classList.remove('locked');
+                        introContainer.style.background = '#FFD700'; 
                         
-                        scrapbookWrapper.style.display = 'block';
-                        
-                        // Mulai BGM Utama
-                        bgMusic.volume = 0.6; bgMusic.play().catch(()=>{});
-                        isPlaying = true;
-                        musicToggle.style.opacity = "1";
-                        musicToggle.style.pointerEvents = "auto";
-                        musicToggle.classList.add('playing');
-                        
-                        // Nyalakan Canvas Debu Scrapbook
-                        document.getElementById('nature-dust').style.opacity = '1';
+                        sfxFlash.volume = 1.0; sfxFlash.play().catch(()=>{});
+                        flashOverlay.style.opacity = '1';
+                        flashOverlay.style.background = '#FFD700'; 
 
-                        initScrollAnimations();
+                        let fadeOut = setInterval(() => {
+                            if(sfxWaves.volume > 0.05) sfxWaves.volume -= 0.05;
+                            if(sfxRumble.volume > 0.05) sfxRumble.volume -= 0.05;
+                            else { 
+                                clearInterval(fadeOut); 
+                                sfxWaves.pause(); sfxRumble.pause(); 
+                            }
+                        }, 100);
 
-                        // Hilangkan Flash Putih Perlahan
-                        setTimeout(() => { flashOverlay.style.opacity = '0'; }, 500);
+                        // Reveal Scrapbook
+                        setTimeout(() => {
+                            flashOverlay.style.background = 'rgba(255, 250, 245, 1)'; 
+                            
+                            introContainer.style.display = 'none';
+                            document.body.classList.remove('locked');
+                            
+                            scrapbookWrapper.style.display = 'block';
+                            
+                            bgMusic.volume = 0.6; bgMusic.play().catch(()=>{});
+                            isPlaying = true;
+                            musicToggle.style.opacity = "1";
+                            musicToggle.style.pointerEvents = "auto";
+                            musicToggle.classList.add('playing');
+                            
+                            document.getElementById('nature-dust').style.opacity = '1';
+                            initScrollAnimations();
 
-                    }, 1500); 
+                            setTimeout(() => { flashOverlay.style.opacity = '0'; }, 500);
+                        }, 1500); 
+                    }, 300);
 
-                }, 17500);
+                }, 18000);
             }
 
             /* ==========================================================================
