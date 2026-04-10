@@ -20,20 +20,20 @@
             --sun-purple: #4A148C;
             --sun-gold: #FFD700;
             --sun-deep-red: #B71C1C;
-            --ocean-dark: #1A0500;
+            --ocean-dark: #0a0200;
             
-            /* ORANGE SCRAPBOOK PALETTE (New Theme) */
-            --paper-bg: rgba(255, 250, 245, 0.96); /* Kertas lebih hangat (Warm White) */
+            /* ORANGE SCRAPBOOK PALETTE */
+            --paper-bg: rgba(255, 250, 245, 0.96); 
             --paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
             
-            --nature-sky: #E65100;      /* Deep Orange */
-            --nature-mountain: #4E342E; /* Dark Brown/Wood */
-            --nature-grass: #D84315;    /* Burnt Orange */
-            --nature-sun: #FF8F00;      /* Golden Orange */
+            --nature-sky: #E65100;      
+            --nature-mountain: #4E342E; 
+            --nature-grass: #D84315;    
+            --nature-sun: #FF8F00;      
             
-            --ink-black: #3E2723;       /* Coklat Pekat */
+            --ink-black: #3E2723;       
             --text-gray: #5D4037;       
-            --tape-color: rgba(255, 235, 210, 0.85); /* Lakban dengan tone hangat */
+            --tape-color: rgba(255, 235, 210, 0.85); 
             
             /* Tipografi */
             --font-serif: 'Playfair Display', serif;
@@ -49,7 +49,6 @@
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            /* Background gradien senja (Orange to Warm Yellow) */
             background: linear-gradient(135deg, #FF7E5F 0%, #FEB47B 100%);
             background-attachment: fixed;
             font-family: var(--font-sans);
@@ -63,7 +62,7 @@
         canvas { position: fixed; top: 0; left: 0; pointer-events: none; }
 
         /* ==========================================================================
-           3. EPIC CINEMATIC BEACH SUNSET INTRO (FULL SCREEN)
+           3. EPIC CINEMATIC BEACH SUNSET INTRO (UPGRADED FULL SCREEN)
            ========================================================================== */
         #start-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -78,97 +77,111 @@
         }
         @keyframes pulse-start { 0% { opacity: 0.5; filter: blur(2px); transform: scale(0.98); } 100% { opacity: 1; filter: blur(0px); transform: scale(1.02); text-shadow: 0 0 20px var(--sun-gold); } }
 
+        /* Pita Hitam Sinematik (Letterbox) */
+        .cinematic-bars {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 250000; pointer-events: none;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .c-bar { width: 100%; height: 12vh; background: #000; transition: height 3s cubic-bezier(0.65, 0, 0.15, 1); }
+        .cinematic-bars.open .c-bar { height: 0; }
+
         #sunset-intro {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; z-index: 200000; overflow: hidden;
-            transition: opacity 1.5s ease; perspective: 1000px;
+            transition: background 2s ease, opacity 1.5s ease; perspective: 1200px;
         }
 
+        /* Kamera Drone Melayang */
         .camera-rig {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
             transform-origin: 50% 55%; 
-            transition: transform 5s cubic-bezier(0.5, 0, 0.3, 1);
             transform-style: preserve-3d; will-change: transform;
+            animation: camera-float 8s ease-in-out infinite alternate;
+        }
+        @keyframes camera-float {
+            0% { transform: translate3d(0, -1vh, 0) rotateZ(-0.5deg); }
+            100% { transform: translate3d(0, 1vh, 0) rotateZ(0.5deg); }
         }
 
-        /* Langit Senja Bergradasi menutupi seluruh layar */
+        /* Langit Senja Bergradasi */
         .s-sky {
-            position: absolute; top: -30vh; left: -20vw; width: 140vw; height: 90vh;
+            position: absolute; top: -50vh; left: -50vw; width: 200vw; height: 120vh;
             background: linear-gradient(to bottom, var(--sun-purple) 0%, var(--sun-deep-red) 50%, var(--sun-orange) 100%);
-            transform: translateZ(-200px); z-index: 1;
+            transform: translateZ(-300px); z-index: 1;
         }
 
         /* Awan Bergerak */
         .s-clouds {
-            position: absolute; top: -10vh; left: -50vw; width: 200vw; height: 60vh;
-            background-image: radial-gradient(ellipse at center, rgba(255,255,255,0.1) 0%, transparent 60%);
-            background-size: 50vw 100%; animation: cloud-pan 40s linear infinite; z-index: 2; opacity: 0.6; mix-blend-mode: overlay;
+            position: absolute; top: -20vh; left: -50vw; width: 200vw; height: 80vh;
+            background-image: radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, transparent 70%);
+            background-size: 50vw 100%; animation: cloud-pan 50s linear infinite; z-index: 2; opacity: 0.7; mix-blend-mode: overlay;
         }
         @keyframes cloud-pan { 0% { transform: translateX(0); } 100% { transform: translateX(50vw); } }
 
         /* Burung Terbang */
         .s-birds {
-            position: absolute; top: 25vh; left: -20vw; display: flex; gap: 15px; z-index: 5;
+            position: absolute; top: 25vh; left: -20vw; display: flex; gap: 20px; z-index: 5;
             transform: translateZ(50px); opacity: 0; transition: opacity 2s ease;
         }
-        .s-birds.fly { animation: fly-birds 15s linear forwards; opacity: 0.8; }
-        @keyframes fly-birds { 0% { transform: translateX(0) translateY(0) scale(0.5) translateZ(50px); } 100% { transform: translateX(140vw) translateY(-10vh) scale(1.2) translateZ(100px); } }
-        .bird-svg { width: 30px; fill: #110300; animation: flap 0.8s ease-in-out infinite alternate; }
-        .bird-svg:nth-child(2) { transform: translateY(-15px) scale(0.8); animation-delay: 0.3s; }
-        .bird-svg:nth-child(3) { transform: translateY(10px) scale(1.1); animation-delay: 0.6s; }
+        .s-birds.fly { animation: fly-birds 18s linear forwards; opacity: 0.85; }
+        @keyframes fly-birds { 0% { transform: translateX(0) translateY(0) scale(0.4) translateZ(50px); } 100% { transform: translateX(150vw) translateY(-15vh) scale(1.5) translateZ(100px); } }
+        .bird-svg { width: 35px; fill: #110300; animation: flap 0.8s ease-in-out infinite alternate; }
+        .bird-svg:nth-child(2) { transform: translateY(-20px) scale(0.7); animation-delay: 0.3s; }
+        .bird-svg:nth-child(3) { transform: translateY(15px) scale(1.2); animation-delay: 0.6s; }
 
-        /* Matahari Bercahaya Intens */
+        /* Matahari Hiper-Realistis */
         .s-sun {
             position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%);
-            width: 220px; height: 220px; border-radius: 50%;
-            background: radial-gradient(circle, #FFF 0%, var(--sun-gold) 40%, var(--sun-orange) 80%);
-            box-shadow: 0 0 150px 80px rgba(255, 140, 0, 0.9), 0 0 300px 150px rgba(255, 215, 0, 0.6);
-            z-index: 3;
+            width: 250px; height: 250px; border-radius: 50%;
+            background: radial-gradient(circle, #FFF 0%, var(--sun-gold) 35%, var(--sun-orange) 80%);
+            box-shadow: 0 0 150px 80px rgba(255, 140, 0, 0.9), 0 0 350px 180px rgba(255, 215, 0, 0.6), inset 0 0 50px #FFF;
+            z-index: 3; transition: all 3s ease;
         }
         
-        /* Lens Flare Effects */
+        /* Lens Flare Effects (Optical Glow) */
         .lens-flare {
             position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%);
-            width: 180vw; height: 15px; background: rgba(255, 255, 255, 0.25);
-            filter: blur(4px); transform-origin: center; z-index: 6;
-            animation: flare-rotate 12s linear infinite; mix-blend-mode: screen;
+            width: 200vw; height: 12px; background: rgba(255, 255, 255, 0.3);
+            filter: blur(3px); transform-origin: center; z-index: 6;
+            animation: flare-rotate 15s linear infinite; mix-blend-mode: screen;
         }
-        .lens-flare:nth-child(2) { width: 100vw; height: 30px; animation-duration: 18s; animation-direction: reverse; }
-        @keyframes flare-rotate { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+        .lens-flare:nth-child(2) { width: 120vw; height: 25px; filter: blur(6px); animation-duration: 22s; animation-direction: reverse; }
+        .lens-flare:nth-child(3) { width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%); animation: none; z-index: 7; mix-blend-mode: overlay; }
 
-        /* Lautan Parallax 3D MENDALAM membentang keluar layar */
+        /* Lautan Parallax 3D MENDALAM (Diperpanjang Ekstrem agar Tidak Bolong) */
         .s-ocean {
-            position: absolute; top: 55vh; left: -20vw; width: 140vw; height: 400vh; /* Diperpanjang menjadi 400vh agar tidak bolong */
-            background: linear-gradient(to bottom, #8A2B06 0%, var(--ocean-dark) 20%, var(--ocean-dark) 100%);
+            position: absolute; top: 55vh; left: -50vw; width: 200vw; height: 800vh; /* Tinggi ekstrem menutupi seluruh bawah */
+            background: linear-gradient(to bottom, #8A2B06 0%, #3a0d00 15%, var(--ocean-dark) 40%, #000 100%);
             transform-origin: top center;
-            transform: rotateX(65deg) translateY(-20px); 
+            transform: rotateX(72deg) translateY(-5px); /* Perspektif lebih datar dan jauh */
             z-index: 4; overflow: hidden;
-            box-shadow: inset 0 20px 50px rgba(0,0,0,0.8);
+            box-shadow: inset 0 30px 100px rgba(0,0,0,0.9);
         }
 
         /* Garis Pantulan Cahaya di Air */
         .s-reflection {
             position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-            width: 180px; height: 100%;
-            background: linear-gradient(to bottom, rgba(255, 215, 0, 0.9) 0%, rgba(255, 140, 0, 0.5) 15%, transparent 40%); /* Gradien disesuaikan agar natural */
-            filter: blur(12px); z-index: 5; mix-blend-mode: overlay;
+            width: 200px; height: 100%;
+            background: linear-gradient(to bottom, rgba(255, 215, 0, 0.9) 0%, rgba(255, 140, 0, 0.6) 20%, transparent 60%); 
+            filter: blur(15px); z-index: 5; mix-blend-mode: overlay;
             animation: shimmer 1.5s infinite alternate;
         }
-        @keyframes shimmer { 0% { opacity: 0.7; transform: translateX(-50%) scaleX(0.9); } 100% { opacity: 1; transform: translateX(-50%) scaleX(1.3); } }
+        @keyframes shimmer { 0% { opacity: 0.7; transform: translateX(-50%) scaleX(0.85); } 100% { opacity: 1; transform: translateX(-50%) scaleX(1.3); } }
 
-        /* Gelombang Ombak SVG */
-        .s-wave { position: absolute; left: 0; width: 200vw; background-repeat: repeat-x; background-size: 50vw 100%; will-change: transform; }
-        .w-back { top: -10px; height: 100px; transform: scaleY(0.6); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%236e1c00' fill-opacity='1' d='M0,160L48,170.7C96,181,192,203,288,202.7C384,203,480,181,576,149.3C672,117,768,75,864,80C960,85,1056,139,1152,165.3C1248,192,1344,192,1392,192L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); animation: wave-move 12s linear infinite; z-index: 6; opacity: 0.7;}
-        .w-mid { top: 50px; height: 150px; transform: scaleY(0.9); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%238A2B06' fill-opacity='1' d='M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,250.7C960,235,1056,181,1152,149.3C1248,117,1344,107,1392,101.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); animation: wave-move 8s linear infinite reverse; z-index: 7; }
-        .w-front { top: 150px; height: 250px; transform: scaleY(1.2); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23b83600' fill-opacity='1' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); animation: wave-move 6s linear infinite; z-index: 8; filter: drop-shadow(0 -10px 15px rgba(255,215,0,0.15)); }
+        /* Gelombang Ombak SVG Melebar */
+        .s-wave { position: absolute; left: 0; width: 300vw; background-repeat: repeat-x; background-size: 50vw 100%; will-change: transform; }
+        .w-back { top: -10px; height: 120px; transform: scaleY(0.7); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%236e1c00' fill-opacity='1' d='M0,160L48,170.7C96,181,192,203,288,202.7C384,203,480,181,576,149.3C672,117,768,75,864,80C960,85,1056,139,1152,165.3C1248,192,1344,192,1392,192L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); animation: wave-move 14s linear infinite; z-index: 6; opacity: 0.8;}
+        .w-mid { top: 40px; height: 180px; transform: scaleY(1); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%238A2B06' fill-opacity='1' d='M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,250.7C960,235,1056,181,1152,149.3C1248,117,1344,107,1392,101.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); animation: wave-move 9s linear infinite reverse; z-index: 7; }
+        .w-front { top: 120px; height: 350px; transform: scaleY(1.3); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23b83600' fill-opacity='1' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); animation: wave-move 6s linear infinite; z-index: 8; filter: drop-shadow(0 -10px 20px rgba(255,215,0,0.2)); }
 
         @keyframes wave-move { 0% { transform: translateX(0); } 100% { transform: translateX(-50vw); } }
 
         /* Teks Cinematic yang Diperindah */
         .cine-text {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-family: var(--font-title); color: #FFF; font-size: 2.8rem; letter-spacing: 8px;
-            text-align: center; text-shadow: 0 5px 25px rgba(0,0,0,0.9);
+            font-family: var(--font-title); color: #FFF; font-size: 3rem; letter-spacing: 8px;
+            text-align: center; text-shadow: 0 5px 25px rgba(0,0,0,0.9), 0 0 15px rgba(255,140,0,0.5);
             opacity: 0; filter: blur(10px); transition: opacity 1.2s ease, filter 1.2s ease, transform 4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 20;
             will-change: transform, opacity, filter; width: 90%;
         }
@@ -394,8 +407,12 @@
         <div class="start-btn">AWALI KISAH<br><span style="font-size: 1rem; opacity: 0.8; font-family: var(--font-sans); letter-spacing: 2px; text-shadow: none; text-transform: none;">(Nyalakan Suara 🔊)</span></div>
     </div>
 
+    <!-- CINEMATIC LETTERBOX BARS (DIHAPUS UNTUK FULLSCREEN) -->
+    <!-- Dihapus karena permintaan user agar full layar dan tidak ada pita hitam -->
+
     <!-- 5-SCENE EPIC SUNSET INTRO (UPGRADED FULLSCREEN 3D) -->
     <div id="sunset-intro">
+        <!-- Hilangkan class cinematic-bars animation -->
         <div class="camera-rig" id="camera-rig">
             <!-- S1: Wide Shot Horizon (Sky) -->
             <div class="s-sky"></div>
@@ -414,6 +431,7 @@
             <div class="s-sun" id="epic-sun"></div>
             
             <!-- S3: Lens Flares -->
+            <div class="lens-flare"></div>
             <div class="lens-flare"></div>
             <div class="lens-flare"></div>
 
@@ -519,7 +537,7 @@
                 <p class="blur-reveal" style="font-size: 1.15rem; color: var(--nature-mountain); margin-top: 1rem;">Hari di mana sosok ketua andalan kita resmi nambah umur!</p>
             </section>
 
-            <!-- SECTION 5: 4 HAL -->
+            <!-- SECTION 5: 4 HAL (DIKEMBALIKAN KE LIST VERTIKAL STABIL) -->
             <section id="things">
                 <h2 class="blur-reveal" style="font-size: 2rem;">4 HAL SERU TENTANGMU</h2>
                 
@@ -547,7 +565,7 @@
                 </div>
             </section>
 
-            <!-- SECTION 6: COLLAGE -->
+            <!-- SECTION 6: COLLAGE (DIKEMBALIKAN KE GALERI KOLASE STATIS STABIL) -->
             <section id="memories">
                 <div class="divider"></div>
                 <h2 class="blur-reveal" style="font-size: 2.2rem; line-height: 1.1;">MEMORI DI BAWAH<br>SENJA</h2>
@@ -702,7 +720,7 @@
                     // Transisi Kamera Melesat Masuk
                     camRig.style.transition = "transform 4s cubic-bezier(0.5, 0, 0.5, 1)";
                     camRig.style.transform = "translateY(5vh) scale(4)";
-                    
+
                     // Crescendo Audio Bass
                     let rumbleUp = setInterval(() => {
                         if(sfxRumble.volume < 0.9) sfxRumble.volume += 0.05;
@@ -719,6 +737,9 @@
                     // Zoom Maksimal Menembus Matahari Secara Ekstrem
                     camRig.style.transition = "transform 2s cubic-bezier(0.7, 0, 0.1, 1)";
                     camRig.style.transform = "scale(80)"; 
+                    
+                    // Background dirubah cerah agar tidak ada area bolong gelap di tepi layer laut 3D
+                    introContainer.style.background = '#FFD700'; 
                     
                     sfxFlash.volume = 1.0; sfxFlash.play().catch(()=>{});
                     flashOverlay.style.opacity = '1';
