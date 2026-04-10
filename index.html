@@ -125,14 +125,14 @@
         /* ==================== WORLD ELEMENTS ==================== */
         /* Langit Senja: Diperlebar ekstrim agar saat rotasi kamera tidak bocor */
         .s-sky {
-            position: absolute; top: -80vh; left: -100vw; width: 300vw; height: 150vh;
+            position: absolute; top: -80vh; left: -150vw; width: 400vw; height: 150vh;
             background: linear-gradient(to bottom, var(--sun-purple) 0%, var(--sun-deep-red) 50%, var(--sun-orange) 100%);
             transform: translateZ(-500px); z-index: 1;
         }
 
         /* Awan Bergerak */
         .s-clouds {
-            position: absolute; top: -30vh; left: -100vw; width: 300vw; height: 100vh;
+            position: absolute; top: -30vh; left: -150vw; width: 400vw; height: 100vh;
             background-image: radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, transparent 70%);
             background-size: 50vw 100%; animation: cloud-pan 50s linear infinite; z-index: 2; opacity: 0.7; mix-blend-mode: overlay;
             transform: translateZ(-300px);
@@ -199,8 +199,8 @@
 
         /* Lautan Parallax 3D MENDALAM: Diperlebar gila-gilaan agar rotasi kamera ekstrem aman */
         .s-ocean {
-            position: absolute; top: 55vh; left: -100vw; width: 300vw; height: 800vh;
-            background: linear-gradient(to bottom, #8A2B06 0%, #3a0d00 15%, var(--ocean-dark) 40%, #000 100%);
+            position: absolute; top: 54vh; left: -150vw; width: 400vw; height: 8000vh; /* Tinggi ekstrem 8000vh */
+            background: linear-gradient(to bottom, #8A2B06 0%, #3a0d00 15vh, var(--ocean-dark) 40vh, #000 100vh, #000 100%);
             transform-origin: top center;
             transform: rotateX(76deg) translateY(-5px); /* Perspektif dasar laut */
             z-index: 4; overflow: hidden;
@@ -210,18 +210,37 @@
         /* Garis Pantulan Cahaya di Air */
         .s-reflection {
             position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-            width: 250px; height: 100%;
-            background: linear-gradient(to bottom, rgba(255, 215, 0, 0.9) 0%, rgba(255, 140, 0, 0.6) 20%, transparent 60%); 
+            width: 300px; height: 100%;
+            background: linear-gradient(to bottom, rgba(255, 215, 0, 0.9) 0%, rgba(255, 140, 0, 0.6) 10vh, transparent 40vh); 
             filter: blur(15px); z-index: 5; mix-blend-mode: overlay;
             animation: shimmer 1.5s infinite alternate;
         }
         @keyframes shimmer { 0% { opacity: 0.7; transform: translateX(-50%) scaleX(0.85); } 100% { opacity: 1; transform: translateX(-50%) scaleX(1.3); } }
 
         /* Gelombang Ombak SVG Melebar */
-        .s-wave { position: absolute; left: 0; width: 400vw; background-repeat: repeat-x; background-size: 50vw 100%; will-change: transform; }
-        .w-back { top: -10px; height: 150px; transform: scaleY(0.7); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%236e1c00' fill-opacity='1' d='M0,160L48,170.7C96,181,192,203,288,202.7C384,203,480,181,576,149.3C672,117,768,75,864,80C960,85,1056,139,1152,165.3C1248,192,1344,192,1392,192L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); animation: wave-move 16s linear infinite; z-index: 6; opacity: 0.8;}
-        .w-mid { top: 50px; height: 250px; transform: scaleY(1); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%238A2B06' fill-opacity='1' d='M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,250.7C960,235,1056,181,1152,149.3C1248,117,1344,107,1392,101.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); animation: wave-move 10s linear infinite reverse; z-index: 7; }
-        .w-front { top: 150px; height: 400px; transform: scaleY(1.3); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23b83600' fill-opacity='1' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); animation: wave-move 7s linear infinite; z-index: 8; filter: drop-shadow(0 -10px 20px rgba(255,215,0,0.15)); }
+        .s-wave { position: absolute; left: 0; width: 500vw; background-repeat: repeat-x; will-change: transform; }
+        
+        .w-back { 
+            top: -10px; height: 150px; transform: scaleY(0.7); background-size: 50vw 150px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%236e1c00' fill-opacity='1' d='M0,160L48,170.7C96,181,192,203,288,202.7C384,203,480,181,576,149.3C672,117,768,75,864,80C960,85,1056,139,1152,165.3C1248,192,1344,192,1392,192L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); 
+            animation: wave-move 16s linear infinite; z-index: 6; opacity: 0.8;
+        }
+        .w-mid { 
+            top: 50px; height: 250px; transform: scaleY(1); background-size: 50vw 250px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%238A2B06' fill-opacity='1' d='M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,250.7C960,235,1056,181,1152,149.3C1248,117,1344,107,1392,101.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); 
+            animation: wave-move 10s linear infinite reverse; z-index: 7; 
+        }
+        .w-front { 
+            top: 150px; height: 400px; transform: scaleY(1.3); background-size: 50vw 400px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23b83600' fill-opacity='1' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); 
+            animation: wave-move 7s linear infinite; z-index: 8; filter: drop-shadow(0 -10px 20px rgba(255,215,0,0.15)); 
+        }
+        
+        /* Penambal Celah Ekstrem: Membentangkan lautan pekat hingga ujung bawah layar */
+        .w-front::after {
+            content: ''; position: absolute; top: 390px; left: 0; width: 100%; height: 8000vh;
+            background: linear-gradient(to bottom, #b83600 0%, #3a0d00 15vh, var(--ocean-dark) 40vh, #000 100vh, #000 100%);
+        }
 
         @keyframes wave-move { 0% { transform: translateX(0); } 100% { transform: translateX(-50vw); } }
 
@@ -688,6 +707,18 @@
             startScreen.addEventListener('click', () => {
                 startScreen.style.opacity = '0';
                 setTimeout(() => { startScreen.style.display = 'none'; }, 500);
+                
+                // NYALAKAN SEMUA MUSIK DI AWAL PAS TAP
+                bgMusic.volume = 0.6; 
+                bgMusic.play().catch(()=>{});
+                isPlaying = true;
+                
+                sfxWaves.volume = 0.5; 
+                sfxWaves.play().catch(()=>{});
+                
+                sfxRumble.volume = 0.3; 
+                sfxRumble.play().catch(()=>{});
+
                 runSunsetIntro();
             });
 
@@ -706,8 +737,6 @@
             ];
 
             function runSunsetIntro() {
-                // Mulai SFX Laut
-                sfxWaves.volume = 0.5; sfxWaves.play().catch(()=>{});
                 birds.classList.add('fly'); 
 
                 // T=0s: Scene 1 (POV 1: Wide Horizon, Kamera Tinggi)
@@ -724,7 +753,6 @@
                 // T=9s: Scene 3 (POV 3: Dutch Angle, Kamera Miring Menatap Langit)
                 setTimeout(() => {
                     tx[1].classList.remove('show');
-                    sfxRumble.volume = 0.3; sfxRumble.play().catch(()=>{}); 
                     camRig.classList.replace('pov-2', 'pov-3');
                     setTimeout(() => { tx[2].classList.add('show'); }, 800);
                 }, 9000);
@@ -778,8 +806,6 @@
                             
                             scrapbookWrapper.style.display = 'block';
                             
-                            bgMusic.volume = 0.6; bgMusic.play().catch(()=>{});
-                            isPlaying = true;
                             musicToggle.style.opacity = "1";
                             musicToggle.style.pointerEvents = "auto";
                             musicToggle.classList.add('playing');
