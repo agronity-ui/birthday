@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Alam Untuk Nabil | Director's Cut Edition</title>
+    <title>Alam Untuk Nabil | Elegant Navy Edition</title>
     
     <!-- Google Fonts for Epic & Aesthetic Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Caveat:wght@400;500;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         /* ==========================================================================
-           1. CSS VARIABLES (SUNSET INTRO & ORANGE SCRAPBOOK PALETTE)
+           1. CSS VARIABLES (SUNSET INTRO & NAVY BLUE SCRAPBOOK PALETTE)
            ========================================================================== */
         :root {
             /* Sunset Intro Palette */
@@ -22,25 +22,21 @@
             --sun-deep-red: #B71C1C;
             --ocean-dark: #0a0200;
             
-            /* ORANGE SCRAPBOOK PALETTE */
-            --paper-bg: rgba(255, 250, 245, 0.96); 
-            --paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            /* NAVY BLUE & GOLD SCRAPBOOK PALETTE (Masculine & Elegant) */
+            --paper-bg: #0B192C;        /* Deep Navy Blue */
+            --paper-bg-light: #1A365D;  /* Lighter Navy for gradients */
+            --accent-gold: #D4AF37;     /* Classic Gold */
+            --accent-gold-light: #F9E596; 
+            --accent-silver: #E2E8F0;   /* White/Silver for readability */
+            --text-muted: #94A3B8;      /* Soft grayish blue for body text */
             
-            --nature-sky: #E65100;      
-            --nature-mountain: #4E342E; 
-            --nature-grass: #D84315;    
-            --nature-sun: #FF8F00;      
-            
-            --ink-black: #3E2723;       
-            --text-gray: #5D4037;       
-            --tape-color: rgba(255, 235, 210, 0.85); 
+            --paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
             
             /* Tipografi */
+            --font-script: 'Great Vibes', cursive;
             --font-serif: 'Playfair Display', serif;
-            --font-hand: 'Caveat', cursive;
-            --font-elegant: 'Great Vibes', cursive;
-            --font-title: 'Cinzel', serif;
             --font-sans: 'Montserrat', sans-serif;
+            --font-title: 'Cinzel', serif;
         }
 
         /* ==========================================================================
@@ -49,21 +45,19 @@
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: linear-gradient(135deg, #FF7E5F 0%, #FEB47B 100%);
-            background-attachment: fixed;
+            background-color: #000;
             font-family: var(--font-sans);
-            color: var(--ink-black);
+            color: var(--accent-silver);
             line-height: 1.8;
             overflow-x: hidden;
             min-height: 100vh;
-            background-color: #000; /* Fallback */
         }
         
         body.locked { overflow: hidden; height: 100vh; touch-action: none; }
         canvas { position: fixed; top: 0; left: 0; pointer-events: none; }
 
         /* ==========================================================================
-           3. EPIC CINEMATIC BEACH SUNSET INTRO (2.5D PARALLAX DRONE RIG - ANTI BOLONG)
+           3. EPIC CINEMATIC BEACH SUNSET INTRO (FULL 18s MULTI-POV 3D RIG)
            ========================================================================== */
         #start-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -81,10 +75,9 @@
         #sunset-intro {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; z-index: 200000; overflow: hidden;
-            transition: background 2s ease, opacity 1.5s ease;
+            transition: background 2s ease, opacity 1.5s ease; perspective: 1200px;
         }
 
-        /* Cinematic Overlays (Vignette & Film Grain) */
         .intro-vignette {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
             box-shadow: inset 0 0 250px rgba(0,0,0,0.95); pointer-events: none; z-index: 25;
@@ -95,7 +88,6 @@
             pointer-events: none; z-index: 26; mix-blend-mode: overlay;
         }
 
-        /* THE 2.5D CAMERA RIG (Anti-Clipping) */
         .camera-rig {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
             transform-origin: 50% 55%; 
@@ -103,21 +95,18 @@
             transition: transform 4.5s cubic-bezier(0.45, 0, 0.15, 1);
         }
 
-        /* Drone Float Animation */
         .camera-float {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             animation: drone-float 6s ease-in-out infinite alternate;
         }
         @keyframes drone-float { 0% { transform: translateY(-1vh); } 100% { transform: translateY(1vh); } }
 
-        /* DYNAMIC POINT OF VIEWS (Simulasi Translasi & Skala 2D yang aman) */
         .pov-1 { transform: scale(1) translateY(2vh); }
         .pov-2 { transform: scale(1.15) translate(4vw, -6vh); }
         .pov-3 { transform: scale(1.3) translate(-4vw, 4vh) rotateZ(3deg); }
         .pov-4 { transform: scale(1.5) translate(0, 0) rotateZ(0deg); }
         .pov-zoom { transform: scale(80) translate(0, 0) !important; transition: transform 3.5s cubic-bezier(0.85, 0, 0.15, 1) !important; }
 
-        /* Hyper Shake Effect for Final Zoom */
         .hyper-shake { animation: hyper-shake 0.1s infinite; filter: contrast(1.2) saturate(1.3); }
         @keyframes hyper-shake {
             0%, 100% { transform: translate(0, 0); }
@@ -127,15 +116,11 @@
             80% { transform: translate(4px, 5px); }
         }
 
-        /* ==================== WORLD ELEMENTS ==================== */
-        /* Langit Senja (Super Lebar) */
         .s-sky {
             position: absolute; top: -30vh; left: -30vw; width: 160vw; height: 100vh;
             background: linear-gradient(to bottom, var(--sun-purple) 0%, var(--sun-deep-red) 50%, var(--sun-orange) 100%);
             z-index: 1; transition: filter 4.5s ease;
         }
-
-        /* Awan Bergerak */
         .s-clouds {
             position: absolute; top: -20vh; left: -50vw; width: 200vw; height: 80vh;
             background-image: radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, transparent 70%);
@@ -143,7 +128,6 @@
         }
         @keyframes cloud-pan { 0% { background-position: 0 0; } 100% { background-position: 100vw 0; } }
 
-        /* Burung Terbang */
         .s-birds {
             position: absolute; top: 20vh; left: -20vw; display: flex; gap: 20px; z-index: 5; opacity: 0; transition: opacity 2s ease;
         }
@@ -153,7 +137,6 @@
         .bird-svg:nth-child(2) { transform: translateY(-20px) scale(0.7); animation-delay: 0.3s; }
         .bird-svg:nth-child(3) { transform: translateY(15px) scale(1.2); animation-delay: 0.6s; }
 
-        /* Sun Rays (God Rays) */
         .sun-rays {
             position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%);
             width: 1200px; height: 1200px; border-radius: 50%;
@@ -164,7 +147,6 @@
         }
         @keyframes spin-rays { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
 
-        /* Matahari Hiper-Realistis */
         .s-sun {
             position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%);
             width: 300px; height: 300px; border-radius: 50%;
@@ -173,84 +155,62 @@
             z-index: 3; transition: all 3s ease;
         }
         
-        /* Advanced Lens Flare Effects */
         .lens-flare {
             position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%);
             width: 250vw; height: 20px; background: rgba(255, 255, 255, 0.25);
-            filter: blur(5px); transform-origin: center; z-index: 6;
-            animation: flare-rotate 15s linear infinite; mix-blend-mode: screen;
+            filter: blur(5px); transform-origin: center; z-index: 6; animation: flare-rotate 15s linear infinite; mix-blend-mode: screen;
         }
         .lens-flare:nth-child(2) { width: 180vw; height: 40px; filter: blur(8px); animation-duration: 25s; animation-direction: reverse; }
-        
-        /* Anamorphic Flare (Horizontal Streak ala J.J. Abrams) */
         .lens-flare-anamorphic {
             position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%);
             width: 350vw; height: 4px; background: rgba(255, 230, 150, 0.9);
             box-shadow: 0 0 30px 10px rgba(255, 140, 0, 0.9);
             filter: blur(1px); z-index: 7; mix-blend-mode: screen;
         }
-
+        .lens-flare-halo {
+            position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%);
+            width: 600px; height: 600px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 0 50px rgba(255, 140, 0, 0.2), 0 0 50px rgba(255, 140, 0, 0.2);
+            z-index: 7; mix-blend-mode: screen;
+        }
         @keyframes flare-rotate { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
 
-        /* LAUTAN 2.5D (TIDAK ADA LAGI ROTATEX - DIJAMIN 100% TIDAK BOLONG) */
         .s-ocean {
             position: absolute; top: 55vh; left: -20vw; width: 140vw; height: 60vh;
-            background: linear-gradient(to bottom, #8A2B06 0%, #3a0d00 30%, var(--ocean-dark) 100%);
+            background: linear-gradient(to bottom, #8A2B06 0%, #3a0d00 40%, var(--ocean-dark) 100%);
             z-index: 4; overflow: hidden; transition: filter 4.5s ease;
         }
-
-        /* Garis Pantulan Cahaya di Air */
         .s-reflection {
-            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-            width: 250px; height: 100%;
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 250px; height: 100%;
             background: linear-gradient(to bottom, rgba(255, 215, 0, 0.9) 0%, rgba(255, 140, 0, 0.6) 40%, transparent 100%); 
-            filter: blur(15px); z-index: 5; mix-blend-mode: overlay;
-            animation: shimmer 1.5s infinite alternate;
+            filter: blur(15px); z-index: 5; mix-blend-mode: overlay; animation: shimmer 1.5s infinite alternate;
         }
         @keyframes shimmer { 0% { opacity: 0.7; transform: translateX(-50%) scaleX(0.85); } 100% { opacity: 1; transform: translateX(-50%) scaleX(1.3); } }
 
-        /* Gelombang Ombak SVG Bertumpuk (Faux 3D) */
         .s-wave { position: absolute; left: 0; width: 300vw; background-repeat: repeat-x; will-change: transform; }
+        .w-back { top: -10px; height: 100px; background-size: 50vw 100px; opacity: 0.8; z-index: 6; animation: wave-move 16s linear infinite; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%236e1c00' fill-opacity='1' d='M0,160L48,170.7C96,181,192,203,288,202.7C384,203,480,181,576,149.3C672,117,768,75,864,80C960,85,1056,139,1152,165.3C1248,192,1344,192,1392,192L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); }
+        .w-mid { top: 20px; height: 150px; background-size: 50vw 150px; z-index: 7; animation: wave-move 10s linear infinite reverse; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%238A2B06' fill-opacity='1' d='M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,250.7C960,235,1056,181,1152,149.3C1248,117,1344,107,1392,101.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); }
+        .w-front { top: 60px; height: 250px; background-size: 50vw 250px; z-index: 8; animation: wave-move 7s linear infinite; filter: drop-shadow(0 -10px 20px rgba(255,215,0,0.15)); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23b83600' fill-opacity='1' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); }
         
-        .w-back { 
-            top: -10px; height: 100px; background-size: 50vw 100px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%236e1c00' fill-opacity='1' d='M0,160L48,170.7C96,181,192,203,288,202.7C384,203,480,181,576,149.3C672,117,768,75,864,80C960,85,1056,139,1152,165.3C1248,192,1344,192,1392,192L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); 
-            animation: wave-move 16s linear infinite; z-index: 6; opacity: 0.8;
-        }
-        .w-mid { 
-            top: 20px; height: 150px; background-size: 50vw 150px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%238A2B06' fill-opacity='1' d='M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,250.7C960,235,1056,181,1152,149.3C1248,117,1344,107,1392,101.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); 
-            animation: wave-move 10s linear infinite reverse; z-index: 7; 
-        }
-        .w-front { 
-            top: 80px; height: 300px; background-size: 50vw 300px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23b83600' fill-opacity='1' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); 
-            animation: wave-move 7s linear infinite; z-index: 8; filter: drop-shadow(0 -10px 20px rgba(255,215,0,0.15)); 
-        }
-
-        /* Penutup dasar layar jika ombak bergerak */
         .w-front::after {
-            content: ''; position: absolute; top: 290px; left: 0; width: 100%; height: 50vh;
-            background: #b83600;
+            content: ''; position: absolute; top: 240px; left: 0; width: 100%; height: 8000vh;
+            background: linear-gradient(to bottom, #b83600 0%, #3a0d00 15vh, var(--ocean-dark) 40vh, #000 100vh, #000 100%);
         }
-
         @keyframes wave-move { 0% { transform: translateX(0); } 100% { transform: translateX(-50vw); } }
 
-        /* Efek Depth of Field (DoF) Dinamis via Class POV */
         .pov-1 .w-front { filter: blur(2px); }
         .pov-2 .s-sky { filter: blur(3px); }
         .pov-3 .s-ocean { filter: blur(3px); }
-        
-        /* Teks Cinematic yang Tumbuh Ekstrem (Dynamic Tracking) */
+
         .cine-text {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-family: var(--font-title); color: #FFF; font-size: 3.5rem; letter-spacing: 2px;
-            text-align: center; text-shadow: 0 5px 25px rgba(0,0,0,0.9), 0 0 20px rgba(255,140,0,0.8);
+            font-family: var(--font-title); color: #FFF; font-size: 2rem; letter-spacing: 2px;
+            text-align: center; text-shadow: 0 5px 20px rgba(0,0,0,0.9), 0 0 15px rgba(255,140,0,0.8);
             opacity: 0; filter: blur(15px) contrast(2); 
             transition: opacity 1.2s ease, filter 1.5s ease, transform 4.5s cubic-bezier(0.16, 1, 0.3, 1), letter-spacing 4.5s ease-out;
             will-change: transform, opacity, filter, letter-spacing; width: 90%; z-index: 200;
         }
-        .cine-text.show { opacity: 1; filter: blur(0px) contrast(1); transform: translate(-50%, -50%) scale(1.15); letter-spacing: 15px; }
+        .cine-text.show { opacity: 1; filter: blur(0px) contrast(1); transform: translate(-50%, -50%) scale(1.1); letter-spacing: 8px; }
 
         .whiteout {
             position: absolute; top:0; left:0; width: 100vw; height: 100vh;
@@ -259,194 +219,201 @@
         }
 
         /* ==========================================================================
-           4. OPTIMIZED SCRAPBOOK CONTAINER (MAIN CONTENT)
+           4. NEW THEME: NAVY BLUE & GOLD BACKGROUND
            ========================================================================== */
-        #nature-dust { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; opacity: 0; transition: opacity 2s ease; }
-
-        .scrapbook-wrapper { position: relative; z-index: 10; padding: 4rem 0 8rem 0; display: none; } 
-
-        .scrapbook-container {
-            width: 100%; max-width: 700px; margin: 0 auto;
-            background-color: var(--paper-bg); background-image: var(--paper-texture);
-            position: relative; border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-            overflow: hidden;
-            animation: float-container 6s ease-in-out infinite alternate;
-            will-change: transform;
+        #navy-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(180deg, var(--paper-bg) 0%, var(--paper-bg-light) 100%);
+            z-index: 0; opacity: 0; transition: opacity 2s ease; pointer-events: none; overflow: hidden;
         }
-        @keyframes float-container {
-            0% { transform: translateY(0px); }
-            100% { transform: translateY(-10px); }
+        .navy-noise {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: var(--paper-texture);
+            opacity: 0.8; mix-blend-mode: multiply; z-index: 1;
+        }
+        #sparkles-canvas { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 2; opacity: 0.5; }
+
+        /* ==========================================================================
+           5. NAVY SCRAPBOOK CONTAINER 
+           ========================================================================== */
+        .scrapbook-wrapper { position: relative; z-index: 10; padding: 0; display: none; } 
+        
+        .scrapbook-content { 
+            position: relative; z-index: 20; width: 100%; max-width: 500px; margin: 0 auto; 
+            background: transparent; overflow: hidden;
         }
 
         section {
-            min-height: 100vh; padding: 6rem 3rem;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; z-index: 10;
+            min-height: auto; padding: 3rem 1.5rem;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative;
         }
 
         /* ==========================================================================
-           5. SCRAPBOOK TYPOGRAPHY & DECORATIONS
+           6. TYPOGRAPHY & ASSETS (NAVY/GOLD)
            ========================================================================== */
-        h1 { font-family: var(--font-title); font-weight: 800; font-size: 2.5rem; line-height: 1.2; color: var(--nature-mountain); text-align: center; }
-        h2 { font-family: var(--font-serif); font-weight: 700; font-size: 2rem; color: var(--nature-grass); font-style: italic; text-align: center; }
-        p { color: var(--text-gray); font-size: 1.15rem; font-weight: 500; letter-spacing: 0.5px; line-height: 1.8; text-align: center; }
+        .s-script { font-family: var(--font-script); font-size: 4rem; line-height: 1; color: var(--accent-gold); text-align: center; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); transform: rotate(-5deg); margin-bottom: 1rem; }
+        .s-serif { font-family: var(--font-serif); font-weight: 700; font-size: 2.5rem; line-height: 1; color: var(--accent-silver); text-align: center; letter-spacing: -1px; margin-bottom: 10px;}
+        .s-text { font-family: var(--font-sans); font-size: 0.95rem; font-weight: 400; letter-spacing: 0.5px; line-height: 1.6; text-align: center; color: var(--text-muted); }
         
-        .calligraphy { font-family: var(--font-elegant); color: var(--nature-sky); font-size: 4.8rem; line-height: 1; font-weight: 400; transform: rotate(-4deg); margin: 0.5rem 0; text-align: center; }
-        .handwriting { font-family: var(--font-hand); color: var(--nature-mountain); font-size: 2.6rem; transform: rotate(2deg); font-weight: 700; text-align: center; }
-        .uppercase-sub { text-transform: uppercase; letter-spacing: 5px; font-size: 0.85rem; font-weight: 700; color: var(--nature-grass); font-family: var(--font-sans); margin-bottom: 1.5rem; background: rgba(216, 67, 21, 0.1); padding: 5px 15px; border-radius: 20px; }
+        .s-divider { width: 50px; height: 1px; background: var(--accent-gold); margin: 2rem auto; }
+
+        /* SVGs (Champagne, Clink, Cake, Seals) */
+        .svg-glass { width: 100px; height: auto; margin-bottom: -10px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); z-index: 2; position: relative; }
+        .svg-clink { width: 150px; height: auto; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); margin: 2rem 0; }
+        .svg-cake { width: 100px; height: auto; filter: drop-shadow(0 5px 15px rgba(212, 175, 55, 0.4)); margin-bottom: 1rem; }
+        .svg-wax { width: 50px; height: auto; position: absolute; top: -20px; right: -20px; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); transform: rotate(15deg); z-index: 10;}
 
         /* ==========================================================================
-           6. PORTRAIT POLAROIDS (ALL VERTICAL)
+           7. POLAROIDS & PHOTO GRIDS
            ========================================================================== */
         .polaroid {
             background: #FFFFFF; 
-            padding: 18px 18px 65px 18px; 
-            box-shadow: 0 10px 25px rgba(62, 39, 35, 0.15);
-            position: relative; 
-            margin: 3.5rem auto; 
-            z-index: 2; border-radius: 4px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+            padding: 10px 10px 35px 10px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            position: relative; margin: 2rem auto; z-index: 2; border-radius: 2px;
+            transition: transform 0.4s ease, box-shadow 0.4s ease; 
             transform: rotateZ(var(--rot, 0deg)); 
-            width: 90%; 
-            max-width: 320px; 
+            width: 90%; max-width: 320px; 
         }
-        .polaroid:hover {
-            transform: translateY(-5px) scale(1.02) rotateZ(0deg);
-            box-shadow: 0 15px 35px rgba(62, 39, 35, 0.25); z-index: 10;
-        }
+        .polaroid:hover { transform: translateY(-10px) scale(1.03) rotateZ(0deg); box-shadow: 0 25px 45px rgba(0,0,0,0.8); z-index: 10; }
 
-        .img-container { 
-            width: 100%; 
-            height: 420px; 
-            overflow: hidden; position: relative; background: #EAEAEA; border-radius: 2px; 
+        .card-img-wrapper { 
+            width: 100%; height: 350px; 
+            overflow: hidden; position: relative; background: #0B192C; border-radius: 1px; 
         }
-        .polaroid-img { 
+        .card-img { 
             width: 100%; height: 100%; object-fit: cover; 
-            display: block; filter: saturate(110%); transition: transform 0.5s ease; 
+            display: block; transition: transform 0.6s ease; filter: contrast(1.1);
         }
-        .polaroid:hover .polaroid-img { transform: scale(1.05); }
-
-        .polaroid-caption {
-            position: absolute; bottom: 20px; left: 0; width: 100%; text-align: center;
-            font-family: var(--font-hand); font-size: 1.8rem; font-weight: 700; color: var(--nature-mountain);
-            transition: color 0.3s ease;
-        }
-        .polaroid:hover .polaroid-caption { color: var(--nature-sky); }
+        .polaroid:hover .card-img { transform: scale(1.05); }
 
         .tape {
-            position: absolute; width: 120px; height: 35px; background-color: var(--tape-color);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 5;
-            background-image: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,0.4) 2px, rgba(255,255,255,0.4) 4px);
+            position: absolute; width: 100px; height: 25px; background-color: rgba(255,255,255,0.8);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3); z-index: 5; backdrop-filter: blur(2px);
         }
-        .tape-1 { top: -15px; left: -30px; transform: rotate(-15deg); }
-        .tape-2 { bottom: -15px; right: -25px; transform: rotate(12deg); }
-        .tape-center { top: -15px; left: 50%; transform: translateX(-50%) rotate(3deg); width: 140px; }
+        .tape-center { top: -10px; left: 50%; transform: translateX(-50%) rotate(-2deg); }
+
+        .photo-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+            background: #FFF; padding: 10px; box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            width: 90%; max-width: 340px; margin: 2rem auto; transform: rotate(2deg);
+            transition: transform 0.4s ease; position: relative;
+        }
+        .photo-grid:hover { transform: rotate(0deg) scale(1.02); }
+        .grid-img-wrap { width: 100%; aspect-ratio: 1/1; overflow: hidden; background: #0B192C; }
+        .grid-img { width: 100%; height: 100%; object-fit: cover; filter: contrast(1.1); transition: transform 0.5s ease; }
+        .grid-img-wrap:hover .grid-img { transform: scale(1.1); }
 
         /* ==========================================================================
-           7. LIGHTWEIGHT CINEMATIC TRANSITIONS
+           8. NEW AESTHETIC ELEMENTS (CALENDAR, STICKY NOTE)
            ========================================================================== */
-        .cinematic-pop {
-            opacity: 0; transform: scale(0.8) translateY(40px);
-            transition: opacity 1s ease, transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-            will-change: transform, opacity;
+        /* Tear-off Calendar */
+        .calendar-leaf {
+            background: #FFF; width: 140px; border-radius: 6px; overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6); margin: 2rem auto; transform: rotate(-4deg);
+            transition: transform 0.3s;
         }
-        .cinematic-pop.is-visible { opacity: 1; transform: scale(1) translateY(0); }
+        .calendar-leaf:hover { transform: rotate(0deg) scale(1.05); }
+        .cal-top { background: var(--accent-gold); color: #000; padding: 8px; font-family: var(--font-sans); font-weight: 800; text-align: center; font-size: 0.9rem; letter-spacing: 2px;}
+        .cal-mid { font-family: var(--font-serif); font-size: 5.5rem; color: var(--paper-bg); line-height: 1; text-align: center; padding: 15px 0 5px 0; font-weight: 700; }
+        .cal-bot { font-family: var(--font-sans); font-size: 0.9rem; color: #666; text-align: center; padding-bottom: 15px; font-weight: 600; text-transform: uppercase;}
 
-        .blur-reveal { opacity: 0; filter: blur(5px); transform: translateY(20px); transition: all 1s ease; will-change: transform, opacity, filter; }
+        /* Sticky Note */
+        .sticky-note {
+            background: linear-gradient(135deg, #FDFBF7, #F3E9D2);
+            padding: 30px 25px; width: 85%; max-width: 320px; margin: 3rem auto;
+            transform: rotate(3deg); box-shadow: 5px 15px 25px rgba(0,0,0,0.5);
+            position: relative; border-bottom-right-radius: 20px; /* Slight curl effect */
+        }
+        .pushpin {
+            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #FF5252, #B71C1C);
+            box-shadow: inset -3px -3px 5px rgba(0,0,0,0.4), 0 5px 10px rgba(0,0,0,0.6);
+            z-index: 10;
+        }
+        .pushpin::after { /* The pin shadow */
+            content: ''; position: absolute; top: 100%; left: 50%; width: 2px; height: 15px;
+            background: rgba(0,0,0,0.3); transform: rotate(45deg); transform-origin: top; z-index: -1;
+        }
+        .sticky-text { font-family: var(--font-hand); font-size: 1.8rem; color: #333; line-height: 1.4; text-align: center; }
+
+        /* ==========================================================================
+           9. LIVE TIME COUNTER & DATE STYLE
+           ========================================================================== */
+        .live-counter-box {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px; padding: 20px 10px; margin: 1.5rem 0; width: 90%;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+        .counter-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px 5px; }
+        .c-item { display: flex; flex-direction: column; align-items: center; }
+        .c-num { font-family: var(--font-serif); font-size: 2.2rem; color: var(--accent-gold); font-weight: 700; line-height: 1; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .c-label { font-family: var(--font-sans); font-size: 0.65rem; color: var(--accent-silver); text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+
+        /* NEW SIDE-BY-SIDE DATE HEADER */
+        .aesthetic-date-header {
+            display: flex; align-items: center; justify-content: center; gap: 15px; margin: 2rem 0;
+            position: relative; z-index: 5;
+        }
+        .a-num { 
+            font-family: var(--font-serif); font-size: 10rem; color: #FFFFFF; 
+            line-height: 0.75; text-shadow: 0 15px 30px rgba(0,0,0,0.8); font-weight: 700; 
+        }
+        .a-month { 
+            font-family: var(--font-script); font-size: 4.5rem; color: var(--accent-gold); 
+            transform: rotate(-5deg) translateY(-20px); text-shadow: 2px 2px 10px rgba(0,0,0,0.6);
+        }
+
+        /* ==========================================================================
+           10. THE LIST / TRAITS 
+           ========================================================================== */
+        .traits-container { width: 100%; padding: 1rem 0; }
+        .trait-item { text-align: center; margin-bottom: 2.5rem; }
+        .trait-title { font-family: var(--font-serif); font-size: 1.3rem; color: var(--accent-gold); font-style: italic; margin-bottom: 0.5rem; }
+        .trait-desc { font-family: var(--font-sans); font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; padding: 0 20px; }
+        .trait-dot { width: 4px; height: 4px; background: var(--accent-gold); border-radius: 50%; margin: 1.5rem auto; }
+
+        /* ==========================================================================
+           11. BUTTONS & FOOTER
+           ========================================================================== */
+        .btn-gold {
+            display: inline-flex; align-items: center; justify-content: center;
+            background: var(--accent-gold); color: #000;
+            padding: 1rem 2.5rem; border-radius: 30px; text-decoration: none; font-family: var(--font-sans); font-weight: 700; letter-spacing: 2px; font-size: 0.85rem;
+            margin-top: 2rem; transition: all 0.3s ease; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .btn-gold:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 15px 25px rgba(212, 175, 55, 0.4); background: var(--accent-gold-light); }
+
+        .footer-tag { font-family: var(--font-sans); font-size: 0.75rem; color: rgba(255,255,255,0.3); letter-spacing: 2px; margin-top: 4rem; text-transform: uppercase; }
+
+        /* ==========================================================================
+           12. LIGHTWEIGHT CINEMATIC TRANSITIONS
+           ========================================================================== */
+        .cinematic-pop { opacity: 0; transform: scale(0.95) translateY(20px); transition: opacity 1s ease, transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.1); will-change: transform, opacity; }
+        .cinematic-pop.is-visible { opacity: 1; transform: scale(1) translateY(0); }
+        .blur-reveal { opacity: 0; filter: blur(5px); transform: translateY(15px); transition: all 1s ease; will-change: transform, opacity, filter; }
         .blur-reveal.is-visible { opacity: 1; filter: blur(0px); transform: translateY(0); }
 
         /* ==========================================================================
-           8. LIGHTWEIGHT DATE ENGINE (11 APRIL 2026)
-           ========================================================================== */
-        .epic-date-container { width: 100%; display: flex; justify-content: center; align-items: center; position: relative; margin: 3rem 0; }
-        
-        .final-date-wrapper {
-            position: relative; display: flex; flex-direction: column; align-items: center;
-            opacity: 0; transform: scale(0.9) translateY(20px);
-            transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            will-change: transform, opacity;
-        }
-        .final-date-wrapper.is-visible { opacity: 1; transform: scale(1) translateY(0); }
-
-        .date-number { font-family: var(--font-elegant); font-size: 8rem; color: var(--nature-sky); line-height: 0.8; text-shadow: 2px 2px 0 rgba(0,0,0,0.05); }
-        .date-month { font-family: var(--font-title); font-size: 1.8rem; letter-spacing: 6px; color: var(--nature-mountain); text-transform: uppercase; margin-top: 1rem; background: rgba(255, 250, 245, 0.9); padding: 5px 20px; border-radius: 30px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-
-        .date-line { position: absolute; top: 45%; left: -10%; width: 120%; height: 2px; background: linear-gradient(90deg, transparent, var(--nature-grass), var(--nature-sun), transparent); z-index: 1; transform: scaleX(0); transition: transform 1.5s ease 0.3s; transform-origin: center; }
-        .final-date-wrapper.is-visible .date-line { transform: scaleX(1); }
-
-        .draw-circle { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); opacity: 0.5; width: 200px; height: 200px; z-index: 1; }
-        .draw-circle path { stroke: var(--nature-sun); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 2000; stroke-dashoffset: 2000; transition: stroke-dashoffset 2s ease 0.5s; fill: none; filter: drop-shadow(0 0 5px rgba(255, 143, 0, 0.4)); }
-        .final-date-wrapper.is-visible .draw-circle path { stroke-dashoffset: 0; }
-
-        /* ==========================================================================
-           9. OTHER SECTIONS (LETTER, LIST, GALLERY)
-           ========================================================================== */
-        .love-letter {
-            background: linear-gradient(135deg, #FFF5E6 0%, #FFE0B2 100%); padding: 3.5rem 2.5rem;
-            box-shadow: 0 10px 30px rgba(93, 64, 55, 0.15);
-            position: relative; margin: 3rem 0; border-radius: 8px 25px 8px 25px; border: 1px solid rgba(216, 67, 21, 0.2);
-        }
-        .love-letter p { font-family: var(--font-hand); font-size: 1.9rem; color: var(--nature-mountain); line-height: 1.5; text-align: center; }
-
-        .sweet-list { width: 100%; display: flex; flex-direction: column; gap: 2rem; margin-top: 3rem; position: relative; }
-        .sweet-list::before { content: ''; position: absolute; left: 24px; top: 15px; bottom: 15px; width: 2px; background: linear-gradient(to bottom, transparent, var(--nature-sky), var(--nature-grass), transparent); opacity: 0.5; }
-        
-        .sweet-item { position: relative; padding-left: 5rem; background: rgba(255,255,255,0.8); padding-top: 15px; padding-bottom: 15px; padding-right: 15px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.8); transition: transform 0.3s ease; }
-        .sweet-item:hover { transform: translateX(5px); }
-        .sweet-item h4 { font-size: 1.3rem; margin-bottom: 0.3rem; font-family: var(--font-title); color: var(--nature-mountain); }
-        .sweet-item p { font-size: 1rem; font-style: italic; text-align: left; }
-        
-        .sweet-pin { 
-            position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 24px; height: 24px; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; z-index: 2; border: 2px solid #FFF; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        .gallery-collage { position: relative; width: 100%; height: 750px; margin-top: 4rem; }
-        .gallery-collage .polaroid { position: absolute; width: 75%; max-width: 300px; margin: 0; }
-        .gal-1 { top: 0; left: 0; --rot: -6deg; z-index: 2;}
-        .gal-2 { top: 150px; right: -5%; --rot: 8deg; z-index: 3;}
-        .gal-3 { bottom: 0; left: 12%; --rot: -3deg; z-index: 4;}
-
-        .btn-aesthetic {
-            display: inline-flex; align-items: center; justify-content: center;
-            background: linear-gradient(45deg, var(--nature-mountain), var(--nature-grass)); color: white;
-            padding: 1.2rem 3rem; border-radius: 30px; text-decoration: none; font-family: var(--font-sans); font-weight: 600; letter-spacing: 2px; margin-top: 4rem;
-            transition: transform 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 10px 20px rgba(93, 64, 55, 0.3); border: none;
-        }
-        .btn-aesthetic:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 25px rgba(93, 64, 55, 0.4); color: #E8F4E8; }
-
-        .divider { width: 80%; height: 2px; background: linear-gradient(90deg, transparent, var(--nature-sky), transparent); margin: 3rem auto; opacity: 0.5; }
-
-        /* ==========================================================================
-           10. MUSIC PLAYER
+           13. MUSIC PLAYER
            ========================================================================== */
         .vinyl-player {
-            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background-color: #222; border-radius: 50%;
+            position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px; background-color: #111; border-radius: 50%;
             display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 1000;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3), inset 0 0 0 4px var(--nature-sky), inset 0 0 0 10px #333; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.8), inset 0 0 0 2px var(--accent-gold), inset 0 0 0 8px #222; 
             opacity: 0; pointer-events: none; transition: opacity 1s ease;
         }
-        .vinyl-player::after { content: ''; width: 12px; height: 12px; background: var(--nature-grass); border-radius: 50%; position: absolute; }
+        .vinyl-player::after { content: ''; width: 10px; height: 10px; background: var(--accent-gold); border-radius: 50%; position: absolute; }
         .vinyl-player.playing { animation: spin-vinyl 3s linear infinite; }
         @keyframes spin-vinyl { 100% { transform: rotate(360deg); } }
 
-        /* ==========================================================================
-           11. RESPONSIVE MOBILE
-           ========================================================================== */
         @media (max-width: 768px) {
-            h1 { font-size: 1.8rem; } h2 { font-size: 1.4rem; } .calligraphy { font-size: 3rem; } .handwriting { font-size: 1.6rem; }
-            section { padding: 4rem 1.2rem; }
-            .scrapbook-container { border-radius: 0; border: none; }
-            .polaroid { max-width: 280px; padding: 10px 10px 45px 10px; margin: 2rem auto; }
-            .img-container { height: 360px; } 
-            .love-letter { padding: 2rem 1.2rem; }
-            .love-letter p { font-size: 1.3rem; }
-            .date-number { font-size: 5rem; } .date-month { font-size: 1rem; letter-spacing: 4px; }
-            .sweet-item { padding-left: 4.5rem; } .sweet-pin { left: 10px; }
-            .gallery-collage { height: 600px; } 
-            .gal-1 { left: 5%; } .gal-2 { right: 5%; top: 180px; } .gal-3 { left: 15%; top: 350px;}
-            .vinyl-player { bottom: 20px; right: 20px; width: 50px; height: 50px; } 
-            .cine-text { font-size: 1.4rem; width: 90%; }
+            section { padding: 3rem 1.5rem; }
+            .s-script { font-size: 3.5rem; } .s-serif { font-size: 2.2rem; }
+            .polaroid { padding: 10px 10px 40px 10px; max-width: 280px; } .card-img-wrapper { height: 320px; }
+            .c-num { font-size: 1.8rem; } .c-label { font-size: 0.55rem; }
+            .a-num { font-size: 8rem; } .a-month { font-size: 3.8rem; }
+            .vinyl-player { bottom: 20px; right: 20px; width: 45px; height: 45px; } 
         }
 
     </style>
@@ -459,7 +426,7 @@
     <audio id="sfx-flash" src="https://actions.google.com/sounds/v1/science_fiction/force_field_power_up.ogg" preload="auto"></audio>
     
     <audio id="bg-music" loop>
-        <source src="https://image2url.com/r2/default/audio/1774761920277-d342019f-c196-4c82-a840-7f80bc625172.mp3" type="audio/mpeg">
+        <source src="https://image2url.com/r2/default/audio/1775883067162-80ccad99-32c9-4ec5-8779-b1c8d4c98e5a.mp3" type="audio/mpeg">
     </audio>
 
     <!-- START SCREEN -->
@@ -467,220 +434,266 @@
         <div class="start-btn">AWALI KISAH<br><span style="font-size: 1rem; opacity: 0.8; font-family: var(--font-sans); letter-spacing: 2px; text-shadow: none; text-transform: none;">(Nyalakan Suara 🔊)</span></div>
     </div>
 
-    <!-- 5-SCENE EPIC SUNSET INTRO (UPGRADED FULLSCREEN 2.5D MULTI-POV) -->
+    <!-- 5-SCENE EPIC SUNSET INTRO -->
     <div id="sunset-intro">
-
-        <!-- Cinematic Vignette Overlay -->
         <div class="intro-vignette"></div>
         <div class="film-grain"></div>
 
-        <!-- Camera Drone Rig untuk POV Berubah-ubah tanpa Bolong -->
         <div class="camera-rig" id="camera-rig">
-            
-            <!-- Drone Float Animation Wrapper -->
             <div class="camera-float">
-                
-                <!-- S1: Wide Shot Horizon (Sky) -->
                 <div class="s-sky"></div>
-                
-                <!-- Moving Clouds -->
                 <div class="s-clouds"></div>
-
-                <!-- Flying Birds -->
                 <div class="s-birds" id="intro-birds">
                     <svg class="bird-svg" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
                     <svg class="bird-svg" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
                     <svg class="bird-svg" viewBox="0 0 24 24"><path d="M2.9,13.6c-0.6,0.3-1.1,0.6-1.5,0.9c0,0,3.6-2.5,7.5-3.3c3.9-0.8,6.8-0.2,6.8-0.2s-2.1,0.2-5.4,1.4C7,13.7,5.1,14.6,2.9,13.6z M22.5,12.2c-0.4,0.1-0.9,0.3-1.4,0.5c0,0,1.2-4.3-1.8-6.9c-3-2.6-6.4-1.2-6.4-1.2s1.4-1.5,5.3-0.2C22.1,5.7,23.3,10.6,22.5,12.2z"/></svg>
                 </div>
-
-                <!-- Sun Rays (God Rays) -->
+                
                 <div class="sun-rays"></div>
-
-                <!-- S4: Glowing Sun -->
                 <div class="s-sun" id="epic-sun"></div>
-                
-                <!-- S3: Lens Flares -->
                 <div class="lens-flare"></div>
                 <div class="lens-flare"></div>
-                
-                <!-- Anamorphic Flare & Halo -->
                 <div class="lens-flare-anamorphic"></div>
                 <div class="lens-flare-halo"></div>
 
-                <!-- S2: The Tide (Ocean with SVG Waves, Using 2.5D Scale to prevent clipping) -->
                 <div class="s-ocean">
                     <div class="s-reflection"></div>
                     <div class="s-wave w-back"></div>
                     <div class="s-wave w-mid"></div>
                     <div class="s-wave w-front"></div>
                 </div>
-            
-            </div> <!-- End Drone Float -->
-        </div> <!-- End Camera Rig -->
+            </div> 
+        </div> 
 
-        <!-- Texts Storyboard (Di luar rig agar tidak terdistorsi saat kamera bergerak) -->
         <div class="cine-text" id="tx1">Semesta menyambut dengan tenang...</div>
         <div class="cine-text" id="tx2">Di mana setiap deburan adalah doa...</div>
         <div class="cine-text" id="tx3">Mengukir jejak di atas lautan waktu...</div>
         <div class="cine-text" id="tx4">Menuju satu titik terang...</div>
         
-        <!-- S5: White/Golden Flash -->
-        <div class="whiteout" id="flash-overlay"></div>
+        <div class="whiteout" id="flash-overlay" style="background: #FFF; opacity: 0; z-index: 250000; position: absolute; top:0; left:0; width: 100vw; height: 100vh; transition: opacity 1.5s ease; pointer-events: none;"></div>
     </div>
 
-    <!-- CANVAS BACKGROUND DUST (Lightweight for Scrapbook) -->
-    <canvas id="nature-dust"></canvas>
+    <!-- THE NEW DARK NAVY BACKGROUND -->
+    <div id="navy-bg">
+        <div class="navy-noise"></div>
+        <canvas id="sparkles-canvas"></canvas>
+    </div>
 
-    <!-- OPTIMIZED SCRAPBOOK UNIVERSE -->
+    <!-- NAVY SCRAPBOOK UNIVERSE -->
     <div class="scrapbook-wrapper" id="smooth-wrapper">
-        <div class="scrapbook-container" id="scrapbook-main">
+        <div class="scrapbook-content">
 
-            <!-- SECTION 1: INTRO -->
-            <section id="intro">
-                <svg class="ornament blur-reveal" style="top: 30px; left: 20px; width: 60px; height: 60px;" viewBox="0 0 24 24">
-                    <path d="M17,8 C8,10 5.9,16.17 3.82,21.34 L5.71,22 L6.66,19.7 C7.14,19.87 7.64,20 8,20 C19,20 22,3 22,3 C21,5 14,5.25 9,6.25 C10,5 12,4 16,4 C16,4 18,2 17,2 C17,2 12,2 8,5 C6,6.5 4.5,9 4.5,9 C4.5,9 7,7.5 10,7 C12.5,6.5 17,8 17,8 Z"/>
+            <!-- SLIDE 1: HERO & CAKE -->
+            <section id="hero" style="padding-top: 5rem;">
+                <!-- Elegant Glass SVG (Gold) -->
+                <svg class="svg-glass blur-reveal" viewBox="0 0 100 150">
+                    <path d="M48,140 L52,140 L52,80 L80,20 L20,20 L48,80 Z" fill="none" stroke="var(--accent-gold)" stroke-width="2"/>
+                    <path d="M25,30 L75,30 L55,70 L45,70 Z" fill="rgba(212, 175, 55, 0.4)" opacity="0.8"/>
+                    <ellipse cx="50" cy="20" rx="30" ry="5" fill="none" stroke="var(--accent-gold)" stroke-width="2"/>
+                    <path d="M30,140 L70,140" stroke="var(--accent-gold)" stroke-width="2" stroke-linecap="round"/>
                 </svg>
 
-                <span class="uppercase-sub blur-reveal">Edisi Spesial | Agronity25</span>
+                <h1 class="s-script blur-reveal" style="transition-delay: 0.2s; margin-top: 15px;">time to<br>celebrate!</h1>
                 
-                <div class="hero-title-container blur-reveal" style="width: 100%;">
-                    <h1>Happy Birthday</h1>
-                    <h1 class="calligraphy">Muhammad Nabil Rafif Firdaus</h1>
-                </div>
-                
-                <!-- Polaroid Dipaksa Portrait Melalui CSS -->
-                <div class="polaroid cinematic-pop" style="--rot: 2deg;">
-                    <div class="tape tape-1"></div>
-                    <div class="img-container">
-                        <img src="https://image2url.com/r2/default/images/1775861155197-bc6d8276-846e-4060-a9a7-fc1edca16a00.jpg" alt="Nabil Hero" class="polaroid-img">
-                    </div>
-                    <div class="tape tape-2"></div>
-                    <div class="polaroid-caption">Ketua Hebat Kita</div>
-                </div>
+                <svg viewBox="0 0 50 50" width="30" height="30" class="blur-reveal" style="transition-delay: 0.3s; fill: var(--accent-gold); margin: 10px 0;">
+                    <path d="M25,0 L30,20 L50,25 L30,30 L25,50 L20,30 L0,25 L20,20 Z" />
+                </svg>
 
-                <p class="blur-reveal" style="margin-top: 2rem; font-style: italic;">"Hari ini spesial buat ngerayain hari lahir kamu. Tambah usia, tambah mantap kepemimpinannya ya, Nabil!"</p>
-            </section>
-
-            <!-- SECTION 2: MAKNA ALAM -->
-            <section id="meaning">
-                <div class="divider"></div>
-                
-                <h2 class="blur-reveal">TENANG TAPI MENGHANYUTKAN...</h2>
-                <p class="blur-reveal" style="margin: 1.5rem 0;">Sama seperti lautan yang tenang saat senja, kehadiranmu sebagai ketua selalu bawa kedamaian dan solusi yang solid buat angkatan kita. Tetep jadi Nabil yang bijaksana!</p>
-                
-                <div class="polaroid cinematic-pop" style="--rot: -3deg; margin-top: 1rem;">
+                <!-- PHOTO 1 -->
+                <div class="polaroid cinematic-pop" style="--rot: -3deg; transition-delay: 0.4s; margin-top: 1rem;">
                     <div class="tape tape-center"></div>
-                    <div class="img-container">
-                        <img src="https://image2url.com/r2/default/images/1775861202596-deb921f3-8380-4e01-8bec-614d3cb75551.jpg" alt="Nabil Makna" class="polaroid-img">
+                    <div class="card-img-wrapper">
+                        <img src="https://image2url.com/r2/default/images/1775861155197-bc6d8276-846e-4060-a9a7-fc1edca16a00.jpg" alt="Nabil Hero" class="card-img">
                     </div>
                 </div>
 
-                <span class="handwriting blur-reveal" style="margin-top: 2rem;">Leader for real.</span>
-                <div class="divider" style="margin-top: 3rem;"></div>
+                <!-- BIRTHDAY CAKE SVG -->
+                <svg class="svg-cake blur-reveal" viewBox="0 0 100 100" style="margin-top: 2rem; transition-delay: 0.6s;">
+                    <!-- Flame -->
+                    <path d="M50,15 Q55,25 50,35 Q45,25 50,15 Z" fill="#FF5722" filter="drop-shadow(0 0 5px #FFEB3B)"/>
+                    <path d="M50,20 Q52,25 50,30 Q48,25 50,20 Z" fill="#FFEB3B"/>
+                    <!-- Candle -->
+                    <rect x="48" y="35" width="4" height="15" fill="#FFF" stroke="var(--accent-gold)" stroke-width="1"/>
+                    <!-- Cake Top Tier -->
+                    <path d="M35,50 L65,50 L65,65 L35,65 Z" fill="none" stroke="var(--accent-gold)" stroke-width="2"/>
+                    <path d="M35,50 Q50,55 65,50" fill="none" stroke="var(--accent-gold)" stroke-width="2"/>
+                    <!-- Cake Bottom Tier -->
+                    <path d="M25,65 L75,65 L75,85 L25,85 Z" fill="none" stroke="var(--accent-gold)" stroke-width="2"/>
+                    <path d="M25,65 Q50,70 75,65" fill="none" stroke="var(--accent-gold)" stroke-width="2"/>
+                    <!-- Plate -->
+                    <ellipse cx="50" cy="85" rx="35" ry="5" fill="none" stroke="var(--accent-gold)" stroke-width="2"/>
+                </svg>
             </section>
 
-            <!-- SECTION 3: PESAN -->
-            <section id="message" style="padding: 3rem 1.5rem;">
-                <span class="uppercase-sub blur-reveal">Wishes Dari Kita</span>
+            <!-- SLIDE 2: TIME LIVED COUNTER -->
+            <section id="time-lived" style="padding: 1rem 1.5rem;">
+                <h2 class="s-serif blur-reveal" style="font-size: 1.5rem; letter-spacing: 0;">kamu sudah hidup selama...</h2>
                 
-                <div class="love-letter cinematic-pop" style="--rot: 1deg;">
-                    <p>
-                        "Happy level up, Nabil! Semoga di umur yang baru ini kamu makin sukses, kuat jadi sandaran angkatan, dan semua target tercapai. Ditunggu traktirannya, Pak Ketua!"
-                    </p>
-                </div>
-
-                <span class="calligraphy blur-reveal" style="font-size: 3.5rem; transform: rotate(-5deg); margin-top: -1rem;">Stay Awesome ✨</span>
-            </section>
-
-            <!-- SECTION 4: EPIC DATE ENGINE (11 APRIL 2026) -->
-            <section id="mark">
-                <div class="epic-date-container">
-                    <div class="final-date-wrapper blur-reveal" id="date-final">
-                        <div class="date-line"></div>
-                        <svg class="draw-circle" viewBox="0 0 100 100">
-                            <path d="M 50,10 C 70,10 90,30 90,50 C 90,75 65,90 40,85 C 15,80 10,50 20,30 C 30,15 40,10 50,10" fill="none"/>
-                        </svg>
-                        
-                        <span class="date-number" style="font-size: 7rem;">11</span>
-                        <span class="date-month">APRIL 2026</span>
+                <div class="live-counter-box blur-reveal" style="transition-delay: 0.2s;">
+                    <div class="counter-grid">
+                        <div class="c-item"><span id="c-years" class="c-num">00</span><span class="c-label">Tahun</span></div>
+                        <div class="c-item"><span id="c-months" class="c-num">00</span><span class="c-label">Bulan</span></div>
+                        <div class="c-item"><span id="c-days" class="c-num">00</span><span class="c-label">Hari</span></div>
+                        <div class="c-item"><span id="c-hours" class="c-num">00</span><span class="c-label">Jam</span></div>
+                        <div class="c-item"><span id="c-minutes" class="c-num">00</span><span class="c-label">Menit</span></div>
+                        <div class="c-item"><span id="c-seconds" class="c-num">00</span><span class="c-label">Detik</span></div>
                     </div>
                 </div>
-                <p class="blur-reveal" style="font-size: 1.15rem; color: var(--nature-mountain); margin-top: 1rem;">Hari di mana sosok ketua andalan kita resmi nambah umur!</p>
+
+                <p class="s-text blur-reveal" style="transition-delay: 0.3s;">...sejak saat kamu dilahirkan ke dunia.</p>
+                <div class="s-divider blur-reveal"></div>
             </section>
 
-            <!-- SECTION 5: 4 HAL (LIST VERTIKAL STABIL) -->
-            <section id="things">
-                <h2 class="blur-reveal" style="font-size: 2rem;">4 HAL SERU TENTANGMU</h2>
+            <!-- SLIDE 3: SIDE-BY-SIDE DATE & HELLO -->
+            <section id="hello" style="padding: 1rem 1.5rem;">
                 
-                <div class="sweet-list">
-                    <div class="sweet-item blur-reveal">
-                        <div class="sweet-pin" style="background: radial-gradient(circle at 30% 30%, #FFD700, #FF8C00);"></div>
-                        <h4>Jiwa Kepemimpinan</h4>
-                        <p>Selalu bisa diandalkan untuk merangkul dan mengarahkan angkatan Agronity25.</p>
+                <!-- AESTHETIC DATE HEADER -->
+                <div class="aesthetic-date-header blur-reveal">
+                    <div class="a-num">11</div>
+                    <div class="a-month">April</div>
+                </div>
+                
+                <div class="blur-reveal" style="transition-delay: 0.2s;">
+                    <h3 class="s-serif" style="margin-top: 1rem;">hello nabil.</h3>
+                    <p class="s-text" style="margin-top: 1.5rem;">Hari ini kita merayakan momen istimewamu. Sosok pemimpin yang tenang, tangguh, dan selalu bisa diandalkan oleh kita semua.</p>
+                    <br>
+                    <p class="s-text">Semoga di usia yang baru ini, setiap langkahmu selalu dipenuhi kemudahan dan keberkahan. Teruslah menjadi sandaran yang kuat bagi angkatan Agronity25!</p>
+                </div>
+            </section>
+
+            <!-- SLIDE 3.5: TEAR-OFF CALENDAR -->
+            <section id="calendar" style="padding: 1rem 1.5rem;">
+                <div class="calendar-leaf cinematic-pop">
+                    <div class="cal-top">2026</div>
+                    <div class="cal-mid">11</div>
+                    <div class="cal-bot">APRIL</div>
+                </div>
+            </section>
+
+            <!-- SLIDE 4: DUAL PHOTOS & WAX SEAL -->
+            <section id="photo2" style="padding: 2rem 1.5rem;">
+                <h2 class="s-serif blur-reveal" style="color: var(--accent-gold); font-size: 1.8rem; margin-bottom: 2rem;">the leader.</h2>
+                
+                <!-- PHOTO 2 -->
+                <div class="polaroid cinematic-pop" style="--rot: 4deg; margin-bottom: -40px; z-index: 1;">
+                    <div class="card-img-wrapper">
+                        <img src="https://image2url.com/r2/default/images/1775861202596-deb921f3-8380-4e01-8bec-614d3cb75551.jpg" alt="Nabil Photo 2" class="card-img">
                     </div>
-                    <div class="sweet-item blur-reveal">
-                        <div class="sweet-pin" style="background: radial-gradient(circle at 30% 30%, #6A5ACD, #4A90E2);"></div>
-                        <h4>Bijaksana & Tenang</h4>
-                        <p>Nggak gampang panik, selalu ngasih jalan keluar yang jernih waktu ada masalah.</p>
-                    </div>
-                    <div class="sweet-item blur-reveal">
-                        <div class="sweet-pin" style="background: radial-gradient(circle at 30% 30%, #F9C03F, #D32F2F);"></div>
-                        <h4>Tawa Lepas</h4>
-                        <p>Walau kelihatan serius, kalo udah becanda ketawanya nular banget ke yang lain.</p>
-                    </div>
-                    <div class="sweet-item blur-reveal">
-                        <div class="sweet-pin" style="background: radial-gradient(circle at 30% 30%, #4A9E73, #1B402E);"></div>
-                        <h4>Support System</h4>
-                        <p>Teman cerita yang solid, selalu dengerin dan kasih *support* maksimal ke sahabatnya.</p>
+                </div>
+                
+                <!-- PHOTO 3 (Overlapping with Wax Seal) -->
+                <div class="polaroid cinematic-pop" style="--rot: -2deg; margin-top: 0; z-index: 2;">
+                    <div class="tape tape-center"></div>
+                    <!-- Wax Seal SVG -->
+                    <svg class="svg-wax" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="45" fill="#8B0000" filter="drop-shadow(0 2px 2px rgba(0,0,0,0.5))"/>
+                        <circle cx="50" cy="50" r="35" fill="none" stroke="var(--accent-gold)" stroke-width="2" opacity="0.6"/>
+                        <path d="M40,30 L60,30 L50,70 Z" fill="var(--accent-gold)" opacity="0.8"/>
+                    </svg>
+                    
+                    <div class="card-img-wrapper">
+                        <img src="https://image2url.com/r2/default/images/1775861275871-0ac9d890-3b98-4817-b0cd-364c779d2733.jpg" alt="Nabil Photo 3" class="card-img">
                     </div>
                 </div>
             </section>
 
-            <!-- SECTION 6: COLLAGE (GALERI KOLASE STATIS STABIL) -->
-            <section id="memories">
-                <div class="divider"></div>
-                <h2 class="blur-reveal" style="font-size: 2.2rem; line-height: 1.1;">MEMORI DI BAWAH<br>SENJA</h2>
-                <p class="blur-reveal" style="margin-top: 1rem;">Perjalanan kita masih panjang, mari terus ukir cerita bareng-bareng!</p>
+            <!-- SLIDE 4.5: STICKY NOTE -->
+            <section id="note" style="padding: 1rem 1.5rem;">
+                <div class="sticky-note cinematic-pop">
+                    <div class="pushpin"></div>
+                    <p class="sticky-text">"Memimpin dengan tenang, melangkah dengan pasti. Gaya kepemimpinanmu adalah inspirasi bagi kami."</p>
+                </div>
+            </section>
 
-                <div class="gallery-collage">
-                    <div class="polaroid gal-1 cinematic-pop" style="--rot: -6deg;">
-                        <div class="tape tape-1"></div>
-                        <div class="img-container">
-                            <img src="https://image2url.com/r2/default/images/1775861275871-0ac9d890-3b98-4817-b0cd-364c779d2733.jpg" alt="Memori 1" class="polaroid-img">
-                        </div>
+            <!-- SLIDE 5: PHOTO GRID -->
+            <section id="grid" style="padding: 3rem 1.5rem;">
+                <h2 class="s-serif blur-reveal" style="font-size: 1.8rem; margin-bottom: 1rem;">memories.</h2>
+                
+                <!-- 2x2 Photo Grid containing all 4 photos -->
+                <div class="photo-grid cinematic-pop">
+                    <!-- Added a Film Strip/Vintage Border overlay inside the grid wrapper -->
+                    <div class="grid-img-wrap"><img src="https://image2url.com/r2/default/images/1775861155197-bc6d8276-846e-4060-a9a7-fc1edca16a00.jpg" class="grid-img"></div>
+                    <div class="grid-img-wrap"><img src="https://image2url.com/r2/default/images/1775861202596-deb921f3-8380-4e01-8bec-614d3cb75551.jpg" class="grid-img"></div>
+                    <div class="grid-img-wrap"><img src="https://image2url.com/r2/default/images/1775861275871-0ac9d890-3b98-4817-b0cd-364c779d2733.jpg" class="grid-img"></div>
+                    <div class="grid-img-wrap"><img src="https://image2url.com/r2/default/images/1775861320014-ecf4dd42-2b29-4877-8782-faff1a04b385.jpg" class="grid-img"></div>
+                </div>
+
+                <p class="s-text blur-reveal" style="margin-top: 1.5rem; font-size: 0.85rem; font-style: italic;">Kami bangga bisa mengukir cerita di bawah kepemimpinanmu. Mari buat lebih banyak kenangan hebat ke depannya!</p>
+            </section>
+
+            <!-- SLIDE 6: TRAITS -->
+            <section id="traits" style="padding: 3rem 1.5rem;">
+                <h2 class="s-serif blur-reveal" style="color: var(--accent-gold); font-size: 2rem;">traits.</h2>
+                <p class="s-text blur-reveal" style="font-size: 0.9rem; margin-bottom: 2rem;">Karakter yang membuatmu berharga bagi kami:</p>
+                
+                <div class="traits-container">
+                    <div class="trait-item blur-reveal">
+                        <h4 class="trait-title">Kepemimpinan</h4>
+                        <p class="trait-desc">Mampu merangkul dan mengarahkan angkatan dengan sangat bijak.</p>
+                        <div class="trait-dot"></div>
                     </div>
-                    <div class="polaroid gal-2 cinematic-pop" style="--rot: 8deg;">
-                        <div class="tape tape-2" style="top:-15px; bottom:auto;"></div>
-                        <div class="img-container">
-                            <img src="https://image2url.com/r2/default/images/1775861320014-ecf4dd42-2b29-4877-8782-faff1a04b385.jpg" alt="Memori 2" class="polaroid-img">
-                        </div>
+                    <div class="trait-item blur-reveal">
+                        <h4 class="trait-title">Ketenangan</h4>
+                        <p class="trait-desc">Tidak mudah panik, selalu memberi jalan keluar yang jernih.</p>
+                        <div class="trait-dot"></div>
                     </div>
-                    <div class="polaroid gal-3 cinematic-pop" style="--rot: -3deg;">
-                        <div class="img-container">
-                            <img src="https://image2url.com/r2/default/images/1775861155197-bc6d8276-846e-4060-a9a7-fc1edca16a00.jpg" alt="Memori 3" class="polaroid-img">
-                        </div>
-                        <div class="polaroid-caption" style="font-size: 1.4rem;">Moments</div>
+                    <div class="trait-item blur-reveal">
+                        <h4 class="trait-title">Tawa Lepas</h4>
+                        <p class="trait-desc">Wibawanya kuat, namun tawanya selalu menghangatkan suasana.</p>
+                        <div class="trait-dot"></div>
+                    </div>
+                    <div class="trait-item blur-reveal">
+                        <h4 class="trait-title">Support System</h4>
+                        <p class="trait-desc">Sahabat dan pendengar yang solid untuk sekitarnya.</p>
                     </div>
                 </div>
             </section>
 
-            <!-- SECTION 7: CLOSING -->
+            <!-- SLIDE 7: WISHES -->
+            <section id="wishes" style="padding: 2rem 1.5rem;">
+                <h2 class="s-serif blur-reveal" style="font-size: 2.2rem;">wishes.</h2>
+                <p class="s-text blur-reveal" style="margin-top: 1.5rem; text-align: center; padding: 0 10px;">
+                    Untuk sang ketua terbaik. Tidak ada kata yang cukup untuk menggambarkan betapa bangganya kami memilikimu. <br><br>Teruslah melangkah maju, kejar impianmu, dan ingatlah bahwa kami di sini akan selalu mendukungmu dalam setiap keadaan.
+                </p>
+                
+                <!-- Clinking Glasses SVG (Gold) -->
+                <svg class="svg-clink blur-reveal" viewBox="0 0 200 150" style="margin-top: 3rem;">
+                    <!-- Left Glass -->
+                    <g transform="rotate(15 70 75)">
+                        <path d="M50,130 L55,130 L55,80 L80,30 L20,30 L45,80 Z" fill="none" stroke="var(--accent-gold)" stroke-width="3"/>
+                        <path d="M25,40 L75,40 L55,75 L45,75 Z" fill="rgba(212, 175, 55, 0.5)"/>
+                        <ellipse cx="50" cy="30" rx="30" ry="5" fill="none" stroke="var(--accent-gold)" stroke-width="3"/>
+                        <path d="M30,130 L70,130" stroke="var(--accent-gold)" stroke-width="3" stroke-linecap="round"/>
+                    </g>
+                    <!-- Right Glass -->
+                    <g transform="rotate(-15 130 75)">
+                        <path d="M150,130 L145,130 L145,80 L120,30 L180,30 L155,80 Z" fill="none" stroke="var(--accent-gold)" stroke-width="3"/>
+                        <path d="M125,40 L175,40 L155,75 L145,75 Z" fill="rgba(212, 175, 55, 0.5)"/>
+                        <ellipse cx="150" cy="30" rx="30" ry="5" fill="none" stroke="var(--accent-gold)" stroke-width="3"/>
+                        <path d="M130,130 L170,130" stroke="var(--accent-gold)" stroke-width="3" stroke-linecap="round"/>
+                    </g>
+                    <!-- Sparkles -->
+                    <path d="M100,20 L105,40 L125,45 L105,50 L100,70 L95,50 L75,45 L95,40 Z" fill="var(--accent-silver)"/>
+                </svg>
+            </section>
+
+            <!-- SLIDE 8: CLOSING -->
             <section id="closing" style="padding-bottom: 8rem; text-align: center;">
-                <div class="polaroid cinematic-pop" style="--rot: 1.5deg; margin-bottom: 2rem;">
+                <h1 class="s-script blur-reveal" style="font-size: 3.5rem; margin-bottom: 1rem;">Stay awesome!</h1>
+                
+                <!-- PHOTO 4 -->
+                <div class="polaroid cinematic-pop" style="--rot: 2deg; margin-bottom: 2rem;">
                     <div class="tape tape-center"></div>
-                    <div class="img-container">
-                        <img src="https://image2url.com/r2/default/images/1775861202596-deb921f3-8380-4e01-8bec-614d3cb75551.jpg" alt="Nabil Closing" class="polaroid-img">
+                    <div class="card-img-wrapper">
+                        <img src="https://image2url.com/r2/default/images/1775861320014-ecf4dd42-2b29-4877-8782-faff1a04b385.jpg" alt="Nabil Closing" class="card-img">
                     </div>
                 </div>
-
-                <span class="uppercase-sub blur-reveal">Sekali Lagi, Happy Birthday!</span>
-                <h1 class="calligraphy blur-reveal" style="font-size: 3rem; color: var(--nature-sky);">Dari Agronity25,</h1>
-                <p class="handwriting blur-reveal" style="font-size: 2.2rem; transform: rotate(0); color: var(--ink-black); margin-top: -1rem;">Buat Muhammad Nabil</p>
-
-                <!-- NOMOR WA TELAH DIUPDATE KE +62 858-2764-2170 -->
-                <a href="https://wa.me/6285827642170?text=HBD%20Pak%20Ketua%20Nabil!%20Wish%20you%20all%20the%20best%20ya,%20jangan%20lupa%20makan-makan!%20%F0%9F%8E%89" class="btn-aesthetic blur-reveal" target="_blank">
+                
+                <a href="https://wa.me/6285827642170?text=HBD%20Pak%20Ketua%20Nabil!%20Wish%20you%20all%20the%20best%20ya,%20jangan%20lupa%20makan-makan!%20%F0%9F%8E%89" class="btn-gold blur-reveal" target="_blank">
                     KIRIM UCAPAN HBD
                 </a>
+
+                <div class="footer-tag blur-reveal">@agronity25</div>
             </section>
 
         </div>
@@ -720,18 +733,19 @@
                 sfxWaves.volume = 0.5; 
                 sfxWaves.play().catch(()=>{});
                 
-                sfxRumble.volume = 0.3; 
+                sfxRumble.volume = 0.2; 
                 sfxRumble.play().catch(()=>{});
 
                 runSunsetIntro();
             });
 
             /* ==========================================================================
-               1. EPIC SUNSET INTRO TIMELINE (DYNAMIC 2.5D PARALLAX RIG)
+               1. EPIC SUNSET INTRO TIMELINE (Dipertahankan 100%)
                ========================================================================== */
             const introContainer = document.getElementById('sunset-intro');
             const camRig = document.getElementById('camera-rig');
             const flashOverlay = document.getElementById('flash-overlay');
+            const navyBg = document.getElementById('navy-bg');
             const scrapbookWrapper = document.getElementById('smooth-wrapper');
             const birds = document.getElementById('intro-birds');
             
@@ -743,27 +757,27 @@
             function runSunsetIntro() {
                 birds.classList.add('fly'); 
 
-                // T=0s: Scene 1 (POV 1: Wide Horizon, Kamera Tinggi)
+                // T=0s: Scene 1
                 camRig.classList.add('pov-1');
-                setTimeout(() => { tx[0].classList.add('show'); }, 500);
+                setTimeout(() => { tx[0].style.opacity = '1'; tx[0].style.filter = 'blur(0)'; tx[0].style.transform = 'translate(-50%, -50%) scale(1)'; tx[0].style.letterSpacing = '5px'; }, 500);
 
-                // T=4.5s: Scene 2 (POV 2: Low Tide, Kamera Menukik ke Air)
+                // T=4.5s: Scene 2
                 setTimeout(() => {
-                    tx[0].classList.remove('show');
+                    tx[0].style.opacity = '0';
                     camRig.classList.replace('pov-1', 'pov-2');
-                    setTimeout(() => { tx[1].classList.add('show'); }, 800);
+                    setTimeout(() => { tx[1].style.opacity = '1'; tx[1].style.filter = 'blur(0)'; tx[1].style.transform = 'translate(-50%, -50%) scale(1)'; tx[1].style.letterSpacing = '5px'; }, 800);
                 }, 4500);
 
-                // T=9s: Scene 3 (POV 3: Dutch Angle, Kamera Miring)
+                // T=9s: Scene 3
                 setTimeout(() => {
-                    tx[1].classList.remove('show');
+                    tx[1].style.opacity = '0';
                     camRig.classList.replace('pov-2', 'pov-3');
-                    setTimeout(() => { tx[2].classList.add('show'); }, 800);
+                    setTimeout(() => { tx[2].style.opacity = '1'; tx[2].style.filter = 'blur(0)'; tx[2].style.transform = 'translate(-50%, -50%) scale(1)'; tx[2].style.letterSpacing = '5px'; }, 800);
                 }, 9000);
 
-                // T=13.5s: Scene 4 (POV 4: Center Lock, Kamera Lurus ke Matahari)
+                // T=13.5s: Scene 4
                 setTimeout(() => {
-                    tx[2].classList.remove('show');
+                    tx[2].style.opacity = '0';
                     camRig.classList.replace('pov-3', 'pov-4');
 
                     let rumbleUp = setInterval(() => {
@@ -771,51 +785,43 @@
                         else clearInterval(rumbleUp);
                     }, 200);
 
-                    setTimeout(() => { tx[3].classList.add('show'); }, 1000);
+                    setTimeout(() => { tx[3].style.opacity = '1'; tx[3].style.filter = 'blur(0)'; tx[3].style.transform = 'translate(-50%, -50%) scale(1)'; tx[3].style.letterSpacing = '5px'; }, 1000);
                 }, 13500);
 
-                // T=18s: Scene 5 (POV ZOOM: Lelesatan Ekstrem ke Matahari)
+                // T=18s: Scene 5 (POV ZOOM)
                 setTimeout(() => {
-                    tx[3].classList.remove('show');
-                    
-                    // Tambahkan getaran ekstrem sebelum melesat
+                    tx[3].style.opacity = '0';
                     camRig.classList.add('hyper-shake');
                     
-                    // Delay sebentar untuk getaran, lalu melesat (Hyper Zoom)
                     setTimeout(() => {
                         camRig.classList.remove('hyper-shake');
                         camRig.classList.replace('pov-4', 'pov-zoom');
                         
-                        introContainer.style.background = '#FFD700'; 
-                        
                         sfxFlash.volume = 1.0; sfxFlash.play().catch(()=>{});
                         flashOverlay.style.opacity = '1';
-                        flashOverlay.style.background = '#FFD700'; 
 
                         let fadeOut = setInterval(() => {
                             if(sfxWaves.volume > 0.05) sfxWaves.volume -= 0.05;
                             if(sfxRumble.volume > 0.05) sfxRumble.volume -= 0.05;
-                            else { 
-                                clearInterval(fadeOut); 
-                                sfxWaves.pause(); sfxRumble.pause(); 
-                            }
+                            else { clearInterval(fadeOut); sfxWaves.pause(); sfxRumble.pause(); }
                         }, 100);
 
-                        // Reveal Scrapbook
+                        // Reveal Navy Blue Theme
                         setTimeout(() => {
-                            flashOverlay.style.background = 'rgba(255, 250, 245, 1)'; 
+                            flashOverlay.style.background = 'var(--paper-bg)'; 
                             
                             introContainer.style.display = 'none';
                             document.body.classList.remove('locked');
                             
+                            navyBg.style.opacity = '1';
                             scrapbookWrapper.style.display = 'block';
                             
                             musicToggle.style.opacity = "1";
                             musicToggle.style.pointerEvents = "auto";
                             musicToggle.classList.add('playing');
                             
-                            document.getElementById('nature-dust').style.opacity = '1';
                             initScrollAnimations();
+                            initSparkles(); 
 
                             setTimeout(() => { flashOverlay.style.opacity = '0'; }, 500);
                         }, 1500); 
@@ -825,42 +831,50 @@
             }
 
             /* ==========================================================================
-               2. OPTIMIZED CANVAS ENGINE (BACKGROUND DUST ONLY)
+               2. GOLD SPARKLES ENGINE (BACKGROUND)
                ========================================================================== */
-            const cDust = document.getElementById('nature-dust');
-            const ctxDust = cDust.getContext('2d');
+            const cSparkles = document.getElementById('sparkles-canvas');
+            const ctxSparkles = cSparkles.getContext('2d');
             
             let w, h; 
             function resizeCanvas() {
                 w = window.innerWidth; h = window.innerHeight;
-                cDust.width = w; cDust.height = h;
+                cSparkles.width = w; cSparkles.height = h;
             }
             window.addEventListener('resize', resizeCanvas); resizeCanvas();
 
-            let particlesDust = [];
-            for(let i=0; i<30; i++) { 
-                particlesDust.push({
-                    x: Math.random() * w, y: Math.random() * h,
-                    s: Math.random() * 2 + 1,
-                    vx: Math.random() * 0.5 + 0.1, vy: Math.random() * -0.5,
-                    o: Math.random() * 0.3 + 0.1
+            let particlesSparkles = [];
+            for(let i=0; i<40; i++) { 
+                particlesSparkles.push({
+                    x: Math.random() * w, 
+                    y: Math.random() * h,
+                    s: Math.random() * 2 + 1, 
+                    vx: (Math.random() - 0.5) * 0.5, 
+                    vy: Math.random() * -0.5 - 0.1, 
+                    o: Math.random() * 0.5 + 0.1,
+                    blink: Math.random() * 0.03
                 });
             }
 
-            function animateCanvases() {
-                ctxDust.clearRect(0, 0, w, h);
-                particlesDust.forEach(p => {
-                    p.x += p.vx; p.y += p.vy;
-                    p.y += Math.sin(p.x * 0.01) * 0.5;
-                    if(p.x > w+10) p.x = -10; if(p.y < -10) p.y = h+10;
+            function animateSparkles() {
+                ctxSparkles.clearRect(0, 0, w, h);
+                particlesSparkles.forEach(p => {
+                    p.x += p.vx; p.y += p.vy; 
+                    p.o += Math.sin(Date.now() * p.blink) * 0.02; 
+                    if(p.o < 0.1) p.o = 0.1; if(p.o > 0.8) p.o = 0.8;
+
+                    if(p.y < -10) { p.y = h + 10; p.x = Math.random() * w; }
                     
-                    ctxDust.beginPath(); ctxDust.arc(p.x, p.y, p.s, 0, Math.PI*2);
-                    ctxDust.fillStyle = `rgba(255, 140, 0, ${p.o})`; 
-                    ctxDust.fill();
+                    ctxSparkles.beginPath();
+                    ctxSparkles.ellipse(p.x, p.y, p.s, p.s*3, 0, 0, Math.PI*2);
+                    ctxSparkles.ellipse(p.x, p.y, p.s*3, p.s, 0, 0, Math.PI*2);
+                    ctxSparkles.fillStyle = `rgba(212, 175, 55, ${p.o})`; 
+                    ctxSparkles.fill();
                 });
-                requestAnimationFrame(animateCanvases);
+                requestAnimationFrame(animateSparkles);
             }
-            animateCanvases();
+
+            function initSparkles() { animateSparkles(); }
 
             /* ==========================================================================
                3. SCROLL ANIMATIONS (INTERSECTION OBSERVER)
@@ -876,11 +890,53 @@
                     });
                 }, obsOpt);
 
-                document.querySelectorAll('.blur-reveal, .cinematic-pop, .final-date-wrapper').forEach(el => observer.observe(el));
+                document.querySelectorAll('.blur-reveal, .cinematic-pop').forEach(el => observer.observe(el));
             }
 
             /* ==========================================================================
-               4. MUSIC PLAYER LOGIC
+               4. LIVE TIME LIVED COUNTER LOGIC
+               ========================================================================== */
+            // TAHUN LAHIR DIUPDATE KE 2006
+            const birthDate = new Date('2006-04-11T00:00:00'); 
+            
+            function updateCounter() {
+                const now = new Date();
+                
+                let years = now.getFullYear() - birthDate.getFullYear();
+                let months = now.getMonth() - birthDate.getMonth();
+                let days = now.getDate() - birthDate.getDate();
+
+                if (days < 0) {
+                    months--;
+                    let prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                    days += prevMonth.getDate();
+                }
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+
+                let hours = now.getHours() - birthDate.getHours();
+                if (hours < 0) { days--; hours += 24; }
+                
+                let minutes = now.getMinutes() - birthDate.getMinutes();
+                if (minutes < 0) { hours--; minutes += 60; }
+                
+                let seconds = now.getSeconds() - birthDate.getSeconds();
+                if (seconds < 0) { minutes--; seconds += 60; }
+
+                document.getElementById('c-years').innerText = years;
+                document.getElementById('c-months').innerText = months;
+                document.getElementById('c-days').innerText = days;
+                document.getElementById('c-hours').innerText = hours.toString().padStart(2, '0');
+                document.getElementById('c-minutes').innerText = minutes.toString().padStart(2, '0');
+                document.getElementById('c-seconds').innerText = seconds.toString().padStart(2, '0');
+            }
+            setInterval(updateCounter, 1000);
+            updateCounter(); // Eksekusi saat awal
+
+            /* ==========================================================================
+               5. MUSIC PLAYER LOGIC
                ========================================================================== */
             musicToggle.addEventListener('click', () => {
                 if (isPlaying) { 
