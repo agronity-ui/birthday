@@ -32,7 +32,7 @@
             
             --paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
             
-            /* Tipografi */
+            /* Tipografi Elegan */
             --font-script: 'Great Vibes', cursive;
             --font-serif: 'Playfair Display', serif;
             --font-sans: 'Montserrat', sans-serif;
@@ -57,48 +57,97 @@
         canvas { position: fixed; top: 0; left: 0; pointer-events: none; }
 
         /* ==========================================================================
-           3. EPIC CINEMATIC BEACH SUNSET INTRO (FULL 18s MULTI-POV 3D RIG)
+           3. CANDLE INTRO & EPIC CINEMATIC BEACH SUNSET INTRO
            ========================================================================== */
         #start-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; z-index: 300000;
             display: flex; justify-content: center; align-items: center; flex-direction: column;
-            cursor: pointer; transition: opacity 1s ease;
+            perspective: 1200px;
+            /* Kita hapus transition default agar bisa dikontrol keyframe zoom nanti */
         }
-        .start-btn {
-            font-family: var(--font-title); font-size: 2.5rem; color: var(--sun-gold);
-            letter-spacing: 8px; text-align: center; text-transform: uppercase;
-            animation: pulse-start 2s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate;
-        }
-        @keyframes pulse-start { 0% { opacity: 0.5; filter: blur(2px); transform: scale(0.98); } 100% { opacity: 1; filter: blur(0px); transform: scale(1.02); text-shadow: 0 0 20px var(--sun-gold); } }
 
+        /* --- THE MAGIC CANDLE CSS --- */
+        .candle-wrapper {
+            position: relative;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 2; transition: transform 0.5s ease;
+        }
+        .candle-glow {
+            position: absolute; top: -80px; width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(255, 170, 0, 0.4) 0%, rgba(255, 100, 0, 0.1) 40%, transparent 70%);
+            border-radius: 50%; opacity: 0; transition: opacity 1s ease; pointer-events: none;
+        }
+        .candle-body {
+            width: 45px; height: 140px;
+            background: linear-gradient(to right, #2a2a2a 0%, #444 30%, #333 70%, #1a1a1a 100%);
+            border-radius: 4px 4px 8px 8px; position: relative;
+            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.8);
+            transition: background 1.5s ease;
+        }
+        .candle-top {
+            position: absolute; top: -8px; left: 0; width: 45px; height: 16px;
+            background: #333; border-radius: 50%;
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.8);
+            transition: background 1.5s ease, box-shadow 1.5s ease;
+        }
+        .candle-wick {
+            position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+            width: 4px; height: 18px; background: #111; border-radius: 2px 2px 0 0;
+        }
+        .candle-flame {
+            position: absolute; top: -65px; left: 50%; transform: translateX(-50%) scale(0);
+            width: 24px; height: 45px; background: #FFF;
+            border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
+            box-shadow: 0 0 15px 5px #FFF, 0 0 30px 15px #FFD700, 0 0 60px 30px #FF8C00;
+            opacity: 0; transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease;
+            transform-origin: bottom center; z-index: 10;
+        }
+
+        /* LIT STATE (Kondisi Nyala) */
+        .candle-wrapper.lit .candle-flame { opacity: 1; transform: translateX(-50%) scale(1); animation: flame-flicker 0.1s infinite alternate; }
+        .candle-wrapper.lit .candle-glow { opacity: 1; animation: glow-pulse 2s infinite alternate; }
+        .candle-wrapper.lit .candle-body { background: linear-gradient(to right, #f4e8c1 0%, #fff 30%, #e8d5a5 70%, #b5985a 100%); }
+        .candle-wrapper.lit .candle-top { background: #fff; box-shadow: inset 0 2px 10px rgba(255, 140, 0, 0.8); }
+
+        @keyframes flame-flicker {
+            0% { transform: translateX(-50%) scale(1) rotate(-1deg); opacity: 0.9; }
+            100% { transform: translateX(-50%) scale(1.05) rotate(1deg); opacity: 1; }
+        }
+        @keyframes glow-pulse { 0% { transform: scale(0.95); opacity: 0.8; } 100% { transform: scale(1.05); opacity: 1; } }
+
+        /* BUTTON CANDLE */
+        .btn-light-candle {
+            margin-top: 60px; font-family: var(--font-title); color: var(--accent-gold);
+            background: transparent; border: 1px solid rgba(212, 175, 55, 0.5);
+            padding: 15px 30px; border-radius: 30px; font-size: 1.1rem; letter-spacing: 2px;
+            cursor: pointer; text-transform: uppercase; transition: all 0.4s ease;
+            animation: pulse-border 2s infinite alternate; text-align: center; line-height: 1.4; outline: none; z-index: 20;
+        }
+        .btn-light-candle span { font-size: 0.7rem; font-family: var(--font-sans); letter-spacing: 4px; color: var(--text-muted); display: block; margin-top: 5px; }
+        .btn-light-candle:hover { background: rgba(212, 175, 55, 0.1); transform: scale(1.05); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); border-color: var(--accent-gold); }
+        @keyframes pulse-border { 0% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.1); } 100% { box-shadow: 0 0 25px rgba(212, 175, 55, 0.5); } }
+
+        /* HYPER ZOOM INTO FLAME ANIMATION */
+        #start-screen.zoom-in { animation: screen-hyper-zoom 1.5s cubic-bezier(0.8, 0, 0.2, 1) forwards; transform-origin: center 40%; }
+        @keyframes screen-hyper-zoom {
+            0% { transform: scale(1); filter: brightness(1); opacity: 1; }
+            50% { filter: brightness(2); }
+            100% { transform: scale(40); filter: brightness(4); opacity: 0; }
+        }
+
+        /* --- THE 2.5D SUNSET SCENE --- */
         #sunset-intro {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; z-index: 200000; overflow: hidden;
             transition: background 2s ease, opacity 1.5s ease; perspective: 1200px;
         }
 
-        .intro-vignette {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            box-shadow: inset 0 0 250px rgba(0,0,0,0.95); pointer-events: none; z-index: 25;
-        }
-        .film-grain {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
-            pointer-events: none; z-index: 26; mix-blend-mode: overlay;
-        }
+        .intro-vignette { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; box-shadow: inset 0 0 250px rgba(0,0,0,0.95); pointer-events: none; z-index: 25; }
+        .film-grain { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E"); pointer-events: none; z-index: 26; mix-blend-mode: overlay; }
 
-        .camera-rig {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            transform-origin: 50% 55%; 
-            will-change: transform;
-            transition: transform 4.5s cubic-bezier(0.45, 0, 0.15, 1);
-        }
-
-        .camera-float {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            animation: drone-float 6s ease-in-out infinite alternate;
-        }
+        .camera-rig { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transform-origin: 50% 55%; will-change: transform; transition: transform 4.5s cubic-bezier(0.45, 0, 0.15, 1); }
+        .camera-float { position: absolute; top: 0; left: 0; width: 100%; height: 100%; animation: drone-float 6s ease-in-out infinite alternate; }
         @keyframes drone-float { 0% { transform: translateY(-1vh); } 100% { transform: translateY(1vh); } }
 
         .pov-1 { transform: scale(1) translateY(2vh); }
@@ -108,312 +157,215 @@
         .pov-zoom { transform: scale(80) translate(0, 0) !important; transition: transform 3.5s cubic-bezier(0.85, 0, 0.15, 1) !important; }
 
         .hyper-shake { animation: hyper-shake 0.1s infinite; filter: contrast(1.2) saturate(1.3); }
-        @keyframes hyper-shake {
-            0%, 100% { transform: translate(0, 0); }
-            20% { transform: translate(-5px, 4px); }
-            40% { transform: translate(5px, -4px); }
-            60% { transform: translate(-4px, -5px); }
-            80% { transform: translate(4px, 5px); }
-        }
-
-        .s-sky {
-            position: absolute; top: -30vh; left: -30vw; width: 160vw; height: 100vh;
-            background: linear-gradient(to bottom, var(--sun-purple) 0%, var(--sun-deep-red) 50%, var(--sun-orange) 100%);
-            z-index: 1; transition: filter 4.5s ease;
-        }
-        .s-clouds {
-            position: absolute; top: -20vh; left: -50vw; width: 200vw; height: 80vh;
-            background-image: radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, transparent 70%);
-            background-size: 50vw 100%; animation: cloud-pan 50s linear infinite; z-index: 2; opacity: 0.7; mix-blend-mode: overlay;
-        }
+        
+        .s-sky { position: absolute; top: -30vh; left: -30vw; width: 160vw; height: 100vh; background: linear-gradient(to bottom, var(--sun-purple) 0%, var(--sun-deep-red) 50%, var(--sun-orange) 100%); z-index: 1; transition: filter 4.5s ease; }
+        .s-clouds { position: absolute; top: -20vh; left: -50vw; width: 200vw; height: 80vh; background-image: radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, transparent 70%); background-size: 50vw 100%; animation: cloud-pan 50s linear infinite; z-index: 2; opacity: 0.7; mix-blend-mode: overlay; }
         @keyframes cloud-pan { 0% { background-position: 0 0; } 100% { background-position: 100vw 0; } }
 
-        .s-birds {
-            position: absolute; top: 20vh; left: -20vw; display: flex; gap: 20px; z-index: 5; opacity: 0; transition: opacity 2s ease;
-        }
+        .s-birds { position: absolute; top: 20vh; left: -20vw; display: flex; gap: 20px; z-index: 5; opacity: 0; transition: opacity 2s ease; }
         .s-birds.fly { animation: fly-birds 20s linear forwards; opacity: 0.85; }
         @keyframes fly-birds { 0% { transform: translateX(0) translateY(0) scale(0.5); } 100% { transform: translateX(150vw) translateY(-20vh) scale(1.5); } }
         .bird-svg { width: 35px; fill: #110300; animation: flap 0.8s ease-in-out infinite alternate; }
         .bird-svg:nth-child(2) { transform: translateY(-20px) scale(0.7); animation-delay: 0.3s; }
         .bird-svg:nth-child(3) { transform: translateY(15px) scale(1.2); animation-delay: 0.6s; }
 
-        .sun-rays {
-            position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%);
-            width: 1200px; height: 1200px; border-radius: 50%;
-            background: repeating-conic-gradient(from 0deg, transparent 0deg 10deg, rgba(255, 200, 0, 0.1) 10deg 20deg);
-            mask-image: radial-gradient(circle, black 20%, transparent 70%);
-            -webkit-mask-image: radial-gradient(circle, black 20%, transparent 70%);
-            z-index: 2; animation: spin-rays 60s linear infinite;
-        }
+        .sun-rays { position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%); width: 1200px; height: 1200px; border-radius: 50%; background: repeating-conic-gradient(from 0deg, transparent 0deg 10deg, rgba(255, 200, 0, 0.1) 10deg 20deg); mask-image: radial-gradient(circle, black 20%, transparent 70%); -webkit-mask-image: radial-gradient(circle, black 20%, transparent 70%); z-index: 2; animation: spin-rays 60s linear infinite; }
         @keyframes spin-rays { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
 
-        .s-sun {
-            position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%);
-            width: 300px; height: 300px; border-radius: 50%;
-            background: radial-gradient(circle, #FFF 0%, var(--sun-gold) 35%, var(--sun-orange) 80%);
-            box-shadow: 0 0 200px 100px rgba(255, 140, 0, 0.9), 0 0 450px 250px rgba(255, 215, 0, 0.6), inset 0 0 80px #FFF;
-            z-index: 3; transition: all 3s ease;
-        }
-        
-        .lens-flare {
-            position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%);
-            width: 250vw; height: 20px; background: rgba(255, 255, 255, 0.25);
-            filter: blur(5px); transform-origin: center; z-index: 6; animation: flare-rotate 15s linear infinite; mix-blend-mode: screen;
-        }
+        .s-sun { position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, #FFF 0%, var(--sun-gold) 35%, var(--sun-orange) 80%); box-shadow: 0 0 200px 100px rgba(255, 140, 0, 0.9), 0 0 450px 250px rgba(255, 215, 0, 0.6), inset 0 0 80px #FFF; z-index: 3; transition: all 3s ease; }
+        .lens-flare { position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%); width: 250vw; height: 20px; background: rgba(255, 255, 255, 0.25); filter: blur(5px); transform-origin: center; z-index: 6; animation: flare-rotate 15s linear infinite; mix-blend-mode: screen; }
         .lens-flare:nth-child(2) { width: 180vw; height: 40px; filter: blur(8px); animation-duration: 25s; animation-direction: reverse; }
-        .lens-flare-anamorphic {
-            position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%);
-            width: 350vw; height: 4px; background: rgba(255, 230, 150, 0.9);
-            box-shadow: 0 0 30px 10px rgba(255, 140, 0, 0.9);
-            filter: blur(1px); z-index: 7; mix-blend-mode: screen;
-        }
-        .lens-flare-halo {
-            position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%);
-            width: 600px; height: 600px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.05);
-            box-shadow: inset 0 0 50px rgba(255, 140, 0, 0.2), 0 0 50px rgba(255, 140, 0, 0.2);
-            z-index: 7; mix-blend-mode: screen;
-        }
+        .lens-flare-anamorphic { position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%); width: 350vw; height: 4px; background: rgba(255, 230, 150, 0.9); box-shadow: 0 0 30px 10px rgba(255, 140, 0, 0.9); filter: blur(1px); z-index: 7; mix-blend-mode: screen; }
+        .lens-flare-halo { position: absolute; top: 55vh; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.05); box-shadow: inset 0 0 50px rgba(255, 140, 0, 0.2), 0 0 50px rgba(255, 140, 0, 0.2); z-index: 7; mix-blend-mode: screen; }
         @keyframes flare-rotate { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
 
-        .s-ocean {
-            position: absolute; top: 55vh; left: -20vw; width: 140vw; height: 60vh;
-            background: linear-gradient(to bottom, #8A2B06 0%, #3a0d00 40%, var(--ocean-dark) 100%);
-            z-index: 4; overflow: hidden; transition: filter 4.5s ease;
-        }
-        .s-reflection {
-            position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 250px; height: 100%;
-            background: linear-gradient(to bottom, rgba(255, 215, 0, 0.9) 0%, rgba(255, 140, 0, 0.6) 40%, transparent 100%); 
-            filter: blur(15px); z-index: 5; mix-blend-mode: overlay; animation: shimmer 1.5s infinite alternate;
-        }
+        .s-ocean { position: absolute; top: 55vh; left: -20vw; width: 140vw; height: 60vh; background: linear-gradient(to bottom, #8A2B06 0%, #3a0d00 40%, var(--ocean-dark) 100%); z-index: 4; overflow: hidden; transition: filter 4.5s ease; }
+        .s-reflection { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 250px; height: 100%; background: linear-gradient(to bottom, rgba(255, 215, 0, 0.9) 0%, rgba(255, 140, 0, 0.6) 40%, transparent 100%); filter: blur(15px); z-index: 5; mix-blend-mode: overlay; animation: shimmer 1.5s infinite alternate; }
         @keyframes shimmer { 0% { opacity: 0.7; transform: translateX(-50%) scaleX(0.85); } 100% { opacity: 1; transform: translateX(-50%) scaleX(1.3); } }
 
         .s-wave { position: absolute; left: 0; width: 300vw; background-repeat: repeat-x; will-change: transform; }
         .w-back { top: -10px; height: 100px; background-size: 50vw 100px; opacity: 0.8; z-index: 6; animation: wave-move 16s linear infinite; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%236e1c00' fill-opacity='1' d='M0,160L48,170.7C96,181,192,203,288,202.7C384,203,480,181,576,149.3C672,117,768,75,864,80C960,85,1056,139,1152,165.3C1248,192,1344,192,1392,192L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); }
         .w-mid { top: 20px; height: 150px; background-size: 50vw 150px; z-index: 7; animation: wave-move 10s linear infinite reverse; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%238A2B06' fill-opacity='1' d='M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,250.7C960,235,1056,181,1152,149.3C1248,117,1344,107,1392,101.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); }
         .w-front { top: 60px; height: 250px; background-size: 50vw 250px; z-index: 8; animation: wave-move 7s linear infinite; filter: drop-shadow(0 -10px 20px rgba(255,215,0,0.15)); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23b83600' fill-opacity='1' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"); }
-        
-        .w-front::after {
-            content: ''; position: absolute; top: 240px; left: 0; width: 100%; height: 8000vh;
-            background: linear-gradient(to bottom, #b83600 0%, #3a0d00 15vh, var(--ocean-dark) 40vh, #000 100vh, #000 100%);
-        }
+        .w-front::after { content: ''; position: absolute; top: 240px; left: 0; width: 100%; height: 8000vh; background: linear-gradient(to bottom, #b83600 0%, #3a0d00 15vh, var(--ocean-dark) 40vh, #000 100vh, #000 100%); }
         @keyframes wave-move { 0% { transform: translateX(0); } 100% { transform: translateX(-50vw); } }
+        .pov-1 .w-front { filter: blur(2px); } .pov-2 .s-sky { filter: blur(3px); } .pov-3 .s-ocean { filter: blur(3px); }
 
-        .pov-1 .w-front { filter: blur(2px); }
-        .pov-2 .s-sky { filter: blur(3px); }
-        .pov-3 .s-ocean { filter: blur(3px); }
-
-        .cine-text {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-family: var(--font-title); color: #FFF; font-size: 2rem; letter-spacing: 2px;
-            text-align: center; text-shadow: 0 5px 20px rgba(0,0,0,0.9), 0 0 15px rgba(255,140,0,0.8);
-            opacity: 0; filter: blur(15px) contrast(2); 
-            transition: opacity 1.2s ease, filter 1.5s ease, transform 4.5s cubic-bezier(0.16, 1, 0.3, 1), letter-spacing 4.5s ease-out;
-            will-change: transform, opacity, filter, letter-spacing; width: 90%; z-index: 200;
-        }
+        .cine-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: var(--font-title); color: #FFF; font-size: 2.2rem; letter-spacing: 2px; text-align: center; text-shadow: 0 5px 20px rgba(0,0,0,0.9), 0 0 15px rgba(255,140,0,0.8); opacity: 0; filter: blur(15px) contrast(2); transition: opacity 1.2s ease, filter 1.5s ease, transform 4.5s cubic-bezier(0.16, 1, 0.3, 1), letter-spacing 4.5s ease-out; will-change: transform, opacity, filter, letter-spacing; width: 90%; z-index: 200; }
         .cine-text.show { opacity: 1; filter: blur(0px) contrast(1); transform: translate(-50%, -50%) scale(1.1); letter-spacing: 8px; }
 
-        .whiteout {
-            position: absolute; top:0; left:0; width: 100vw; height: 100vh;
-            background: #FFF; opacity: 0; z-index: 250000; transition: opacity 1.5s ease; pointer-events: none;
-            will-change: opacity;
-        }
+        .whiteout { position: absolute; top:0; left:0; width: 100vw; height: 100vh; background: #FFF; opacity: 0; z-index: 250000; transition: opacity 1.5s ease; pointer-events: none; will-change: opacity; }
 
         /* ==========================================================================
-           4. NEW THEME: NAVY BLUE & GOLD BACKGROUND
+           4. NAVY BLUE & GOLD BACKGROUND (SCRAPBOOK)
            ========================================================================== */
-        #navy-bg {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(180deg, var(--paper-bg) 0%, var(--paper-bg-light) 100%);
-            z-index: 0; opacity: 0; transition: opacity 2s ease; pointer-events: none; overflow: hidden;
-        }
-        .navy-noise {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: var(--paper-texture);
-            opacity: 0.8; mix-blend-mode: multiply; z-index: 1;
-        }
-        #sparkles-canvas { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 2; opacity: 0.5; }
+        #navy-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, var(--paper-bg) 0%, var(--paper-bg-light) 100%); z-index: 0; opacity: 0; transition: opacity 2s ease; pointer-events: none; overflow: hidden; }
+        .navy-noise { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: var(--paper-texture); opacity: 0.5; mix-blend-mode: multiply; z-index: 1; }
+        .glow-orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; z-index: 1; }
+        .orb-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: var(--accent-gold); animation: float-orb 20s infinite alternate; }
+        .orb-2 { bottom: -20%; right: -10%; width: 60vw; height: 60vw; background: #3b82f6; animation: float-orb 25s infinite alternate-reverse; }
+        @keyframes float-orb { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(10vw, 10vh) scale(1.2); } }
+        #sparkles-canvas { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 2; opacity: 0.7; }
 
         /* ==========================================================================
-           5. NAVY SCRAPBOOK CONTAINER 
+           5. AESTHETIC SCRAPBOOK CONTAINER 
            ========================================================================== */
         .scrapbook-wrapper { position: relative; z-index: 10; padding: 0; display: none; } 
-        
-        .scrapbook-content { 
-            position: relative; z-index: 20; width: 100%; max-width: 500px; margin: 0 auto; 
-            background: transparent; overflow: hidden;
-        }
-
-        section {
-            min-height: auto; padding: 3rem 1.5rem;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative;
-        }
+        .scrapbook-content { position: relative; z-index: 20; width: 100%; max-width: 550px; margin: 0 auto; background: transparent; overflow: hidden; }
+        section { min-height: auto; padding: 4rem 1.5rem; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
 
         /* ==========================================================================
-           6. TYPOGRAPHY & ASSETS (NAVY/GOLD)
+           6. TYPOGRAPHY & ASSETS
            ========================================================================== */
-        .s-script { font-family: var(--font-script); font-size: 4rem; line-height: 1; color: var(--accent-gold); text-align: center; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); transform: rotate(-5deg); margin-bottom: 1rem; }
-        .s-serif { font-family: var(--font-serif); font-weight: 700; font-size: 2.5rem; line-height: 1; color: var(--accent-silver); text-align: center; letter-spacing: -1px; margin-bottom: 10px;}
-        .s-text { font-family: var(--font-sans); font-size: 0.95rem; font-weight: 400; letter-spacing: 0.5px; line-height: 1.6; text-align: center; color: var(--text-muted); }
+        .s-script { font-family: var(--font-script); font-size: 4.5rem; line-height: 1.1; color: var(--accent-gold); text-align: center; text-shadow: 0 4px 15px rgba(0,0,0,0.5); transform: rotate(-5deg); margin-bottom: 1rem; }
+        .s-serif { font-family: var(--font-serif); font-weight: 700; font-size: 2.5rem; line-height: 1.2; color: var(--accent-silver); text-align: center; letter-spacing: -0.5px; margin-bottom: 10px;}
+        .s-text { font-family: var(--font-sans); font-size: 1rem; font-weight: 400; letter-spacing: 0.5px; line-height: 1.8; text-align: center; color: var(--accent-silver); opacity: 0.9;}
         
-        .s-divider { width: 50px; height: 1px; background: var(--accent-gold); margin: 2rem auto; }
+        .s-divider { width: 100%; display: flex; align-items: center; justify-content: center; margin: 3rem 0; opacity: 0.6; }
+        .s-divider::before, .s-divider::after { content: ''; height: 1px; flex: 1; background: linear-gradient(to right, transparent, var(--accent-gold)); }
+        .s-divider::after { background: linear-gradient(to left, transparent, var(--accent-gold)); }
+        .s-divider span { margin: 0 15px; color: var(--accent-gold); font-size: 1.5rem; }
 
-        /* SVGs (Champagne, Clink, Cake, Seals) */
         .svg-glass { width: 100px; height: auto; margin-bottom: -10px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); z-index: 2; position: relative; }
         .svg-clink { width: 150px; height: auto; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); margin: 2rem 0; }
-        .svg-cake { width: 100px; height: auto; filter: drop-shadow(0 5px 15px rgba(212, 175, 55, 0.4)); margin-bottom: 1rem; }
-        .svg-wax { width: 50px; height: auto; position: absolute; top: -20px; right: -20px; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); transform: rotate(15deg); z-index: 10;}
+        .svg-cake { width: 120px; height: auto; filter: drop-shadow(0 10px 20px rgba(212, 175, 55, 0.3)); margin-bottom: 1rem; }
+        .svg-wax { width: 60px; height: auto; position: absolute; top: -25px; right: -25px; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.6)); transform: rotate(15deg); z-index: 10;}
 
         /* ==========================================================================
-           7. POLAROIDS & PHOTO GRIDS
+           7. AESTHETIC POLAROIDS & PHOTO COLLAGE
            ========================================================================== */
         .polaroid {
-            background: #FFFFFF; 
-            padding: 10px 10px 35px 10px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-            position: relative; margin: 2rem auto; z-index: 2; border-radius: 2px;
-            transition: transform 0.4s ease, box-shadow 0.4s ease; 
-            transform: rotateZ(var(--rot, 0deg)); 
-            width: 90%; max-width: 320px; 
+            background: rgba(255, 255, 255, 0.95); padding: 12px 12px 40px 12px; border-radius: 8px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(212, 175, 55, 0.3);
+            position: relative; margin: 2rem auto; z-index: 2; 
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.5s ease; 
+            transform: rotateZ(var(--rot, 0deg)); width: 85%; max-width: 300px; 
         }
-        .polaroid:hover { transform: translateY(-10px) scale(1.03) rotateZ(0deg); box-shadow: 0 25px 45px rgba(0,0,0,0.8); z-index: 10; }
+        .polaroid:hover { transform: translateY(-15px) scale(1.05) rotateZ(0deg); box-shadow: 0 30px 60px rgba(0,0,0,0.7); z-index: 20; }
+        .card-img-wrapper { width: 100%; height: 350px; overflow: hidden; position: relative; background: #0B192C; border-radius: 4px; box-shadow: inset 0 0 15px rgba(0,0,0,0.2); }
+        .card-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.8s ease; filter: contrast(1.1) saturate(1.1); }
+        .polaroid:hover .card-img { transform: scale(1.08); }
+        .tape { position: absolute; width: 110px; height: 30px; background-color: rgba(255, 255, 255, 0.6); box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 5; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border-radius: 2px; }
+        .tape-center { top: -12px; left: 50%; transform: translateX(-50%) rotate(-2deg); }
 
-        .card-img-wrapper { 
-            width: 100%; height: 350px; 
-            overflow: hidden; position: relative; background: #0B192C; border-radius: 1px; 
-        }
-        .card-img { 
-            width: 100%; height: 100%; object-fit: cover; 
-            display: block; transition: transform 0.6s ease; filter: contrast(1.1);
-        }
-        .polaroid:hover .card-img { transform: scale(1.05); }
-
-        .tape {
-            position: absolute; width: 100px; height: 25px; background-color: rgba(255,255,255,0.8);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.3); z-index: 5; backdrop-filter: blur(2px);
-        }
-        .tape-center { top: -10px; left: 50%; transform: translateX(-50%) rotate(-2deg); }
-
-        .photo-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-            background: #FFF; padding: 10px; box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-            width: 90%; max-width: 340px; margin: 2rem auto; transform: rotate(2deg);
-            transition: transform 0.4s ease; position: relative;
-        }
-        .photo-grid:hover { transform: rotate(0deg) scale(1.02); }
-        .grid-img-wrap { width: 100%; aspect-ratio: 1/1; overflow: hidden; background: #0B192C; }
-        .grid-img { width: 100%; height: 100%; object-fit: cover; filter: contrast(1.1); transition: transform 0.5s ease; }
-        .grid-img-wrap:hover .grid-img { transform: scale(1.1); }
+        .photo-collage { position: relative; width: 100%; height: 600px; margin: 3rem 0; display: flex; justify-content: center; align-items: center; }
+        .photo-collage .polaroid { position: absolute; margin: 0; animation: float-polaroid 6s ease-in-out infinite alternate; }
+        .pc-1 { top: 0; left: 5%; --rot: -8deg; z-index: 1; animation-delay: 0s; width: 70%; max-width: 240px; }
+        .pc-2 { top: 120px; right: 5%; --rot: 12deg; z-index: 2; animation-delay: -2s; width: 70%; max-width: 240px;}
+        .pc-3 { top: 280px; left: 15%; --rot: -4deg; z-index: 3; animation-delay: -4s; width: 75%; max-width: 260px;}
+        .photo-collage .polaroid:hover { animation-play-state: paused; z-index: 10; }
+        @keyframes float-polaroid { 0% { transform: translateY(0px) rotateZ(var(--rot)); } 100% { transform: translateY(-15px) rotateZ(calc(var(--rot) + 2deg)); } }
 
         /* ==========================================================================
-           8. NEW AESTHETIC ELEMENTS (CALENDAR, STICKY NOTE)
+           8. AESTHETIC ELEMENTS (CALENDAR, STICKY NOTE)
            ========================================================================== */
-        /* Tear-off Calendar */
         .calendar-leaf {
-            background: #FFF; width: 140px; border-radius: 6px; overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6); margin: 2rem auto; transform: rotate(-4deg);
-            transition: transform 0.3s;
+            background: linear-gradient(to bottom, #FFF, #F0F0F0); width: 160px; border-radius: 8px; overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(0,0,0,0.05); 
+            margin: 3rem auto; transform: rotate(-3deg); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative;
         }
-        .calendar-leaf:hover { transform: rotate(0deg) scale(1.05); }
-        .cal-top { background: var(--accent-gold); color: #000; padding: 8px; font-family: var(--font-sans); font-weight: 800; text-align: center; font-size: 0.9rem; letter-spacing: 2px;}
-        .cal-mid { font-family: var(--font-serif); font-size: 5.5rem; color: var(--paper-bg); line-height: 1; text-align: center; padding: 15px 0 5px 0; font-weight: 700; }
-        .cal-bot { font-family: var(--font-sans); font-size: 0.9rem; color: #666; text-align: center; padding-bottom: 15px; font-weight: 600; text-transform: uppercase;}
+        .calendar-leaf::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 15px; background: repeating-linear-gradient(to right, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px); }
+        .calendar-leaf:hover { transform: rotate(0deg) scale(1.08) translateY(-10px); }
+        .cal-top { background: linear-gradient(135deg, var(--accent-gold), #B8860B); color: #FFF; padding: 15px 8px 8px 8px; font-family: var(--font-sans); font-weight: 800; text-align: center; font-size: 1rem; letter-spacing: 3px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);}
+        .cal-mid { font-family: var(--font-serif); font-size: 6rem; color: var(--paper-bg); line-height: 1; text-align: center; padding: 20px 0 5px 0; font-weight: 700; text-shadow: 2px 4px 10px rgba(0,0,0,0.1);}
+        .cal-bot { font-family: var(--font-sans); font-size: 1rem; color: #555; text-align: center; padding-bottom: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;}
 
-        /* Sticky Note */
         .sticky-note {
-            background: linear-gradient(135deg, #FDFBF7, #F3E9D2);
-            padding: 30px 25px; width: 85%; max-width: 320px; margin: 3rem auto;
-            transform: rotate(3deg); box-shadow: 5px 15px 25px rgba(0,0,0,0.5);
-            position: relative; border-bottom-right-radius: 20px; /* Slight curl effect */
+            background: linear-gradient(135deg, #FDFBF7 0%, #EAE0C8 100%);
+            padding: 40px 30px 35px 30px; width: 90%; max-width: 360px; margin: 4rem auto;
+            transform: rotate(2deg); box-shadow: 5px 20px 40px rgba(0,0,0,0.6); position: relative; border-bottom-right-radius: 30px 5px;
         }
-        .pushpin {
-            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-            width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #FF5252, #B71C1C);
-            box-shadow: inset -3px -3px 5px rgba(0,0,0,0.4), 0 5px 10px rgba(0,0,0,0.6);
-            z-index: 10;
-        }
-        .pushpin::after { /* The pin shadow */
-            content: ''; position: absolute; top: 100%; left: 50%; width: 2px; height: 15px;
-            background: rgba(0,0,0,0.3); transform: rotate(45deg); transform-origin: top; z-index: -1;
-        }
-        .sticky-text { font-family: var(--font-hand); font-size: 1.8rem; color: #333; line-height: 1.4; text-align: center; }
+        .pushpin { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 26px; height: 26px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #FF5252, #8B0000); box-shadow: inset -4px -4px 8px rgba(0,0,0,0.5), 0 8px 15px rgba(0,0,0,0.6); z-index: 10; }
+        .pushpin::after { content: ''; position: absolute; top: 80%; left: 50%; width: 2px; height: 18px; background: rgba(0,0,0,0.4); transform: rotate(40deg); transform-origin: top; z-index: -1; }
+        .sticky-text { font-family: var(--font-serif); font-size: 1.6rem; font-style: italic; color: #2C1810; line-height: 1.4; text-align: center; text-shadow: 0 1px 1px rgba(255,255,255,0.5);}
 
         /* ==========================================================================
-           9. LIVE TIME COUNTER & DATE STYLE
+           9. GLASSMORPHISM LIVE COUNTER & GIANT DATE
            ========================================================================== */
         .live-counter-box {
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 8px; padding: 20px 10px; margin: 1.5rem 0; width: 90%;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 16px; padding: 25px 15px; margin: 2rem 0; width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3), inset 0 0 20px rgba(255,255,255,0.05);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
         }
-        .counter-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px 5px; }
+        .counter-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 10px; }
         .c-item { display: flex; flex-direction: column; align-items: center; }
-        .c-num { font-family: var(--font-serif); font-size: 2.2rem; color: var(--accent-gold); font-weight: 700; line-height: 1; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
-        .c-label { font-family: var(--font-sans); font-size: 0.65rem; color: var(--accent-silver); text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+        .c-num { font-family: var(--font-serif); font-size: 2.5rem; color: var(--accent-gold); font-weight: 700; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.8); }
+        .c-label { font-family: var(--font-sans); font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-top: 8px; font-weight: 600;}
 
-        /* NEW SIDE-BY-SIDE DATE HEADER */
-        .aesthetic-date-header {
-            display: flex; align-items: center; justify-content: center; gap: 15px; margin: 2rem 0;
-            position: relative; z-index: 5;
-        }
-        .a-num { 
-            font-family: var(--font-serif); font-size: 10rem; color: #FFFFFF; 
-            line-height: 0.75; text-shadow: 0 15px 30px rgba(0,0,0,0.8); font-weight: 700; 
-        }
-        .a-month { 
-            font-family: var(--font-script); font-size: 4.5rem; color: var(--accent-gold); 
-            transform: rotate(-5deg) translateY(-20px); text-shadow: 2px 2px 10px rgba(0,0,0,0.6);
-        }
+        .aesthetic-date-header { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 3rem 0; position: relative; z-index: 5; }
+        .a-num { font-family: var(--font-serif); font-size: 11rem; color: #FFFFFF; line-height: 0.75; text-shadow: 0 20px 50px rgba(0,0,0,0.9); font-weight: 700; }
+        .a-month { font-family: var(--font-script); font-size: 5rem; color: var(--accent-gold); transform: rotate(-8deg) translateY(-25px); text-shadow: 2px 4px 15px rgba(0,0,0,0.8); }
 
         /* ==========================================================================
-           10. THE LIST / TRAITS 
+           10. THE LIST / TRAITS (GLASS CARDS)
            ========================================================================== */
-        .traits-container { width: 100%; padding: 1rem 0; }
-        .trait-item { text-align: center; margin-bottom: 2.5rem; }
-        .trait-title { font-family: var(--font-serif); font-size: 1.3rem; color: var(--accent-gold); font-style: italic; margin-bottom: 0.5rem; }
-        .trait-desc { font-family: var(--font-sans); font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; padding: 0 20px; }
-        .trait-dot { width: 4px; height: 4px; background: var(--accent-gold); border-radius: 50%; margin: 1.5rem auto; }
+        .traits-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; width: 100%; margin-top: 2rem; }
+        .trait-card {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 30px 20px; text-align: center;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3); transition: all 0.4s ease;
+        }
+        .trait-card:hover { transform: translateY(-10px); background: rgba(255,255,255,0.05); border-color: rgba(212, 175, 55, 0.5); box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        .trait-icon { font-size: 2.5rem; margin-bottom: 15px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));}
+        .trait-title { font-family: var(--font-serif); font-size: 1.5rem; color: var(--accent-gold); margin-bottom: 10px; font-weight: 700;}
+        .trait-desc { font-family: var(--font-sans); font-size: 0.95rem; color: var(--accent-silver); line-height: 1.6; opacity: 0.9; }
 
         /* ==========================================================================
-           11. BUTTONS & FOOTER
+           11. WISHES ENVELOPE
+           ========================================================================== */
+        .wishes-envelope {
+            background: linear-gradient(135deg, rgba(26, 54, 93, 0.8) 0%, rgba(11, 25, 44, 0.9) 100%);
+            border: 1px solid var(--accent-gold); border-radius: 12px; padding: 40px 30px; position: relative; margin-top: 3rem;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 0 30px rgba(212, 175, 55, 0.1); backdrop-filter: blur(10px);
+        }
+        .wishes-envelope::before { content: ''; position: absolute; top: 15px; left: 15px; right: 15px; bottom: 15px; border: 1px dashed rgba(212, 175, 55, 0.4); border-radius: 8px; pointer-events: none; }
+
+        /* ==========================================================================
+           12. BUTTONS & FOOTER
            ========================================================================== */
         .btn-gold {
             display: inline-flex; align-items: center; justify-content: center;
-            background: var(--accent-gold); color: #000;
-            padding: 1rem 2.5rem; border-radius: 30px; text-decoration: none; font-family: var(--font-sans); font-weight: 700; letter-spacing: 2px; font-size: 0.85rem;
-            margin-top: 2rem; transition: all 0.3s ease; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+            background-size: 200% auto; color: #000;
+            padding: 1.2rem 3rem; border-radius: 50px; text-decoration: none; font-family: var(--font-sans); font-weight: 800; letter-spacing: 3px; font-size: 0.9rem;
+            margin-top: 3rem; transition: all 0.4s ease; box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+            animation: shine-bg 4s linear infinite; border: 1px solid rgba(255,255,255,0.5); cursor: pointer;
         }
-        .btn-gold:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 15px 25px rgba(212, 175, 55, 0.4); background: var(--accent-gold-light); }
-
-        .footer-tag { font-family: var(--font-sans); font-size: 0.75rem; color: rgba(255,255,255,0.3); letter-spacing: 2px; margin-top: 4rem; text-transform: uppercase; }
+        @keyframes shine-bg { to { background-position: 200% center; } }
+        .btn-gold:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 25px 40px rgba(212, 175, 55, 0.4); }
+        .footer-tag { font-family: var(--font-sans); font-size: 0.8rem; color: rgba(255,255,255,0.2); letter-spacing: 4px; margin-top: 5rem; text-transform: uppercase; }
 
         /* ==========================================================================
-           12. LIGHTWEIGHT CINEMATIC TRANSITIONS
+           13. LIGHTWEIGHT CINEMATIC TRANSITIONS
            ========================================================================== */
-        .cinematic-pop { opacity: 0; transform: scale(0.95) translateY(20px); transition: opacity 1s ease, transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.1); will-change: transform, opacity; }
+        .cinematic-pop { opacity: 0; transform: scale(0.9) translateY(40px); transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.1); will-change: transform, opacity; }
         .cinematic-pop.is-visible { opacity: 1; transform: scale(1) translateY(0); }
-        .blur-reveal { opacity: 0; filter: blur(5px); transform: translateY(15px); transition: all 1s ease; will-change: transform, opacity, filter; }
+        .blur-reveal { opacity: 0; filter: blur(8px); transform: translateY(20px); transition: all 1.2s ease; will-change: transform, opacity, filter; }
         .blur-reveal.is-visible { opacity: 1; filter: blur(0px); transform: translateY(0); }
 
         /* ==========================================================================
-           13. MUSIC PLAYER
+           14. MUSIC PLAYER
            ========================================================================== */
         .vinyl-player {
-            position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px; background-color: #111; border-radius: 50%;
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background-color: #111; border-radius: 50%;
             display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 1000;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.8), inset 0 0 0 2px var(--accent-gold), inset 0 0 0 8px #222; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8), inset 0 0 0 2px var(--accent-gold), inset 0 0 0 8px #222; 
             opacity: 0; pointer-events: none; transition: opacity 1s ease;
         }
-        .vinyl-player::after { content: ''; width: 10px; height: 10px; background: var(--accent-gold); border-radius: 50%; position: absolute; }
-        .vinyl-player.playing { animation: spin-vinyl 3s linear infinite; }
+        .vinyl-player::after { content: ''; width: 14px; height: 14px; background: var(--accent-gold); border-radius: 50%; position: absolute; box-shadow: 0 0 10px rgba(212, 175, 55, 0.8);}
+        .vinyl-player.playing { animation: spin-vinyl 3s linear infinite; box-shadow: 0 10px 30px rgba(212, 175, 55, 0.5), inset 0 0 0 2px var(--accent-gold), inset 0 0 0 8px #222;}
         @keyframes spin-vinyl { 100% { transform: rotate(360deg); } }
 
         @media (max-width: 768px) {
-            section { padding: 3rem 1.5rem; }
+            section { padding: 4rem 1.5rem; }
             .s-script { font-size: 3.5rem; } .s-serif { font-size: 2.2rem; }
-            .polaroid { padding: 10px 10px 40px 10px; max-width: 280px; } .card-img-wrapper { height: 320px; }
-            .c-num { font-size: 1.8rem; } .c-label { font-size: 0.55rem; }
-            .a-num { font-size: 8rem; } .a-month { font-size: 3.8rem; }
-            .vinyl-player { bottom: 20px; right: 20px; width: 45px; height: 45px; } 
+            .polaroid { padding: 12px 12px 45px 12px; max-width: 290px; } .card-img-wrapper { height: 340px; }
+            .c-num { font-size: 1.8rem; } .c-label { font-size: 0.6rem; }
+            .a-num { font-size: 8rem; } .a-month { font-size: 4rem; }
+            .photo-collage { height: 500px; }
+            .vinyl-player { bottom: 20px; right: 20px; width: 50px; height: 50px; } 
+            .cine-text { font-size: 1.3rem; width: 90%; }
         }
 
     </style>
@@ -423,18 +375,28 @@
     <!-- AUDIO ENGINE -->
     <audio id="sfx-waves" src="https://actions.google.com/sounds/v1/water/waves_crashing_on_rock_beach.ogg" preload="auto" loop></audio>
     <audio id="sfx-rumble" src="https://actions.google.com/sounds/v1/science_fiction/deep_space_engine_rumble.ogg" preload="auto" loop></audio>
-    <audio id="sfx-flash" src="https://actions.google.com/sounds/v1/science_fiction/force_field_power_up.ogg" preload="auto"></audio>
     
     <audio id="bg-music" loop>
         <source src="https://image2url.com/r2/default/audio/1775883067162-80ccad99-32c9-4ec5-8779-b1c8d4c98e5a.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- START SCREEN -->
+    <!-- THE CANDLE START SCREEN -->
     <div id="start-screen">
-        <div class="start-btn">AWALI KISAH<br><span style="font-size: 1rem; opacity: 0.8; font-family: var(--font-sans); letter-spacing: 2px; text-shadow: none; text-transform: none;">(Nyalakan Suara 🔊)</span></div>
+        <div class="candle-wrapper">
+            <div class="candle-glow"></div>
+            <div class="candle-flame"></div>
+            <div class="candle-wick"></div>
+            <div class="candle-top"></div>
+            <div class="candle-body"></div>
+        </div>
+
+        <button class="btn-light-candle">
+            Nyalakan Api Lilin
+            <span>UNTUK TEMAN AGRONITY25 KITA</span>
+        </button>
     </div>
 
-    <!-- 5-SCENE EPIC SUNSET INTRO -->
+    <!-- 5-SCENE EPIC SUNSET INTRO (Dipertahankan 100%) -->
     <div id="sunset-intro">
         <div class="intro-vignette"></div>
         <div class="film-grain"></div>
@@ -469,67 +431,56 @@
         <div class="cine-text" id="tx2">Di mana setiap deburan adalah doa...</div>
         <div class="cine-text" id="tx3">Mengukir jejak di atas lautan waktu...</div>
         <div class="cine-text" id="tx4">Menuju satu titik terang...</div>
-        
-        <div class="whiteout" id="flash-overlay" style="background: #FFF; opacity: 0; z-index: 250000; position: absolute; top:0; left:0; width: 100vw; height: 100vh; transition: opacity 1.5s ease; pointer-events: none;"></div>
     </div>
 
-    <!-- THE NEW DARK NAVY BACKGROUND -->
+    <!-- THE AESTHETIC MIDNIGHT BACKGROUND -->
     <div id="navy-bg">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
         <div class="navy-noise"></div>
         <canvas id="sparkles-canvas"></canvas>
     </div>
 
-    <!-- NAVY SCRAPBOOK UNIVERSE -->
+    <!-- AESTHETIC SCRAPBOOK UNIVERSE -->
     <div class="scrapbook-wrapper" id="smooth-wrapper">
         <div class="scrapbook-content">
 
             <!-- SLIDE 1: HERO & CAKE -->
             <section id="hero" style="padding-top: 5rem;">
-                <!-- Elegant Glass SVG (Gold) -->
-                <svg class="svg-glass blur-reveal" viewBox="0 0 100 150">
-                    <path d="M48,140 L52,140 L52,80 L80,20 L20,20 L48,80 Z" fill="none" stroke="var(--accent-gold)" stroke-width="2"/>
-                    <path d="M25,30 L75,30 L55,70 L45,70 Z" fill="rgba(212, 175, 55, 0.4)" opacity="0.8"/>
-                    <ellipse cx="50" cy="20" rx="30" ry="5" fill="none" stroke="var(--accent-gold)" stroke-width="2"/>
-                    <path d="M30,140 L70,140" stroke="var(--accent-gold)" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-
-                <h1 class="s-script blur-reveal" style="transition-delay: 0.2s; margin-top: 15px;">time to<br>celebrate!</h1>
                 
-                <svg viewBox="0 0 50 50" width="30" height="30" class="blur-reveal" style="transition-delay: 0.3s; fill: var(--accent-gold); margin: 10px 0;">
-                    <path d="M25,0 L30,20 L50,25 L30,30 L25,50 L20,30 L0,25 L20,20 Z" />
+                <h2 class="s-serif blur-reveal" style="transition-delay: 0.2s; margin-top: 15px; font-size: 1.2rem; letter-spacing: 4px; text-transform: uppercase; color: var(--accent-silver);">Selamat Ulang Tahun</h2>
+                <h1 class="s-script blur-reveal" style="transition-delay: 0.3s; font-size: 4rem; color: var(--accent-gold); line-height: 1.1; margin-top: 10px; text-shadow: 2px 2px 10px rgba(0,0,0,0.5);">Muhammad Nabil<br>Rafif Firdaus</h1>
+                
+                <div class="s-divider blur-reveal" style="transition-delay: 0.4s;"><span>✦</span></div>
+
+                <!-- BIRTHDAY CAKE SVG (AESTHETIC GOLD) -->
+                <svg class="svg-cake blur-reveal" viewBox="0 0 100 100" style="transition-delay: 0.5s;">
+                    <path d="M50,15 Q55,25 50,35 Q45,25 50,15 Z" fill="#F9E596" filter="drop-shadow(0 0 8px #FFD700)"/>
+                    <path d="M50,20 Q52,25 50,30 Q48,25 50,20 Z" fill="#FFF"/>
+                    <rect x="48" y="35" width="4" height="15" fill="#E2E8F0" stroke="var(--accent-gold)" stroke-width="1"/>
+                    <path d="M35,50 L65,50 L65,65 L35,65 Z" fill="rgba(212, 175, 55, 0.1)" stroke="var(--accent-gold)" stroke-width="2"/>
+                    <path d="M35,50 Q50,55 65,50" fill="none" stroke="var(--accent-gold)" stroke-width="2"/>
+                    <path d="M25,65 L75,65 L75,85 L25,85 Z" fill="rgba(212, 175, 55, 0.2)" stroke="var(--accent-gold)" stroke-width="2"/>
+                    <path d="M25,65 Q50,70 75,65" fill="none" stroke="var(--accent-gold)" stroke-width="2"/>
+                    <path d="M25,75 Q50,80 75,75" fill="none" stroke="var(--accent-gold)" stroke-width="1" stroke-dasharray="4 4"/>
+                    <ellipse cx="50" cy="85" rx="35" ry="5" fill="none" stroke="var(--accent-gold)" stroke-width="2"/>
                 </svg>
 
                 <!-- PHOTO 1 -->
-                <div class="polaroid cinematic-pop" style="--rot: -3deg; transition-delay: 0.4s; margin-top: 1rem;">
+                <div class="polaroid cinematic-pop" style="--rot: -2deg; transition-delay: 0.6s;">
                     <div class="tape tape-center"></div>
                     <div class="card-img-wrapper">
                         <img src="https://image2url.com/r2/default/images/1775861155197-bc6d8276-846e-4060-a9a7-fc1edca16a00.jpg" alt="Nabil Hero" class="card-img">
                     </div>
                 </div>
-
-                <!-- BIRTHDAY CAKE SVG -->
-                <svg class="svg-cake blur-reveal" viewBox="0 0 100 100" style="margin-top: 2rem; transition-delay: 0.6s;">
-                    <!-- Flame -->
-                    <path d="M50,15 Q55,25 50,35 Q45,25 50,15 Z" fill="#FF5722" filter="drop-shadow(0 0 5px #FFEB3B)"/>
-                    <path d="M50,20 Q52,25 50,30 Q48,25 50,20 Z" fill="#FFEB3B"/>
-                    <!-- Candle -->
-                    <rect x="48" y="35" width="4" height="15" fill="#FFF" stroke="var(--accent-gold)" stroke-width="1"/>
-                    <!-- Cake Top Tier -->
-                    <path d="M35,50 L65,50 L65,65 L35,65 Z" fill="none" stroke="var(--accent-gold)" stroke-width="2"/>
-                    <path d="M35,50 Q50,55 65,50" fill="none" stroke="var(--accent-gold)" stroke-width="2"/>
-                    <!-- Cake Bottom Tier -->
-                    <path d="M25,65 L75,65 L75,85 L25,85 Z" fill="none" stroke="var(--accent-gold)" stroke-width="2"/>
-                    <path d="M25,65 Q50,70 75,65" fill="none" stroke="var(--accent-gold)" stroke-width="2"/>
-                    <!-- Plate -->
-                    <ellipse cx="50" cy="85" rx="35" ry="5" fill="none" stroke="var(--accent-gold)" stroke-width="2"/>
-                </svg>
             </section>
 
-            <!-- SLIDE 2: TIME LIVED COUNTER -->
-            <section id="time-lived" style="padding: 1rem 1.5rem;">
-                <h2 class="s-serif blur-reveal" style="font-size: 1.5rem; letter-spacing: 0;">kamu sudah hidup selama...</h2>
+            <!-- SLIDE 2: TIME LIVED COUNTER (GLASSMORPHISM) -->
+            <section id="time-lived">
+                <h2 class="s-serif blur-reveal">waktu berlalu...</h2>
+                <p class="s-text blur-reveal" style="margin-bottom: 1rem;">Sejak langkah pertamamu menapaki bumi.</p>
                 
-                <div class="live-counter-box blur-reveal" style="transition-delay: 0.2s;">
+                <div class="live-counter-box cinematic-pop" style="transition-delay: 0.2s;">
                     <div class="counter-grid">
                         <div class="c-item"><span id="c-years" class="c-num">00</span><span class="c-label">Tahun</span></div>
                         <div class="c-item"><span id="c-months" class="c-num">00</span><span class="c-label">Bulan</span></div>
@@ -539,13 +490,10 @@
                         <div class="c-item"><span id="c-seconds" class="c-num">00</span><span class="c-label">Detik</span></div>
                     </div>
                 </div>
-
-                <p class="s-text blur-reveal" style="transition-delay: 0.3s;">...sejak saat kamu dilahirkan ke dunia.</p>
-                <div class="s-divider blur-reveal"></div>
             </section>
 
             <!-- SLIDE 3: SIDE-BY-SIDE DATE & HELLO -->
-            <section id="hello" style="padding: 1rem 1.5rem;">
+            <section id="hello">
                 
                 <!-- AESTHETIC DATE HEADER -->
                 <div class="aesthetic-date-header blur-reveal">
@@ -553,16 +501,16 @@
                     <div class="a-month">April</div>
                 </div>
                 
-                <div class="blur-reveal" style="transition-delay: 0.2s;">
-                    <h3 class="s-serif" style="margin-top: 1rem;">hello nabil.</h3>
+                <div class="blur-reveal" style="transition-delay: 0.2s; width: 100%; text-align: center;">
+                    <h3 class="s-serif" style="margin-top: 1rem; color: var(--accent-gold);">hello nabil.</h3>
                     <p class="s-text" style="margin-top: 1.5rem;">Hari ini kita merayakan momen istimewamu. Sosok pemimpin yang tenang, tangguh, dan selalu bisa diandalkan oleh kita semua.</p>
                     <br>
                     <p class="s-text">Semoga di usia yang baru ini, setiap langkahmu selalu dipenuhi kemudahan dan keberkahan. Teruslah menjadi sandaran yang kuat bagi angkatan Agronity25!</p>
                 </div>
             </section>
 
-            <!-- SLIDE 3.5: TEAR-OFF CALENDAR -->
-            <section id="calendar" style="padding: 1rem 1.5rem;">
+            <!-- SLIDE 4: TEAR-OFF CALENDAR -->
+            <section id="calendar" style="padding-top: 1rem;">
                 <div class="calendar-leaf cinematic-pop">
                     <div class="cal-top">2026</div>
                     <div class="cal-mid">11</div>
@@ -570,20 +518,19 @@
                 </div>
             </section>
 
-            <!-- SLIDE 4: DUAL PHOTOS & WAX SEAL -->
-            <section id="photo2" style="padding: 2rem 1.5rem;">
-                <h2 class="s-serif blur-reveal" style="color: var(--accent-gold); font-size: 1.8rem; margin-bottom: 2rem;">the leader.</h2>
+            <!-- SLIDE 5: STICKY NOTE & LEADER PHOTO -->
+            <section id="photo2">
                 
-                <!-- PHOTO 2 -->
-                <div class="polaroid cinematic-pop" style="--rot: 4deg; margin-bottom: -40px; z-index: 1;">
-                    <div class="card-img-wrapper">
-                        <img src="https://image2url.com/r2/default/images/1775861202596-deb921f3-8380-4e01-8bec-614d3cb75551.jpg" alt="Nabil Photo 2" class="card-img">
-                    </div>
+                <!-- STICKY NOTE -->
+                <div class="sticky-note cinematic-pop" style="margin-bottom: 4rem;">
+                    <div class="pushpin"></div>
+                    <p class="sticky-text">"Memimpin dengan tenang, melangkah dengan pasti. Gaya kepemimpinanmu adalah inspirasi bagi kami."</p>
                 </div>
+
+                <h2 class="s-serif blur-reveal" style="color: var(--accent-gold); font-size: 2rem; margin-bottom: 1rem;">the leader.</h2>
                 
-                <!-- PHOTO 3 (Overlapping with Wax Seal) -->
-                <div class="polaroid cinematic-pop" style="--rot: -2deg; margin-top: 0; z-index: 2;">
-                    <div class="tape tape-center"></div>
+                <!-- PHOTO 2 DENGAN WAX SEAL -->
+                <div class="polaroid cinematic-pop" style="--rot: 3deg;">
                     <!-- Wax Seal SVG -->
                     <svg class="svg-wax" viewBox="0 0 100 100">
                         <circle cx="50" cy="50" r="45" fill="#8B0000" filter="drop-shadow(0 2px 2px rgba(0,0,0,0.5))"/>
@@ -592,102 +539,82 @@
                     </svg>
                     
                     <div class="card-img-wrapper">
-                        <img src="https://image2url.com/r2/default/images/1775861275871-0ac9d890-3b98-4817-b0cd-364c779d2733.jpg" alt="Nabil Photo 3" class="card-img">
+                        <img src="https://image2url.com/r2/default/images/1775861202596-deb921f3-8380-4e01-8bec-614d3cb75551.jpg" alt="Nabil Photo 2" class="card-img">
                     </div>
                 </div>
             </section>
 
-            <!-- SLIDE 4.5: STICKY NOTE -->
-            <section id="note" style="padding: 1rem 1.5rem;">
-                <div class="sticky-note cinematic-pop">
-                    <div class="pushpin"></div>
-                    <p class="sticky-text">"Memimpin dengan tenang, melangkah dengan pasti. Gaya kepemimpinanmu adalah inspirasi bagi kami."</p>
-                </div>
-            </section>
-
-            <!-- SLIDE 5: PHOTO GRID -->
-            <section id="grid" style="padding: 3rem 1.5rem;">
-                <h2 class="s-serif blur-reveal" style="font-size: 1.8rem; margin-bottom: 1rem;">memories.</h2>
+            <!-- SLIDE 6: TRAITS (GLASS CARDS) -->
+            <section id="traits">
+                <h2 class="s-serif blur-reveal" style="color: var(--accent-gold); font-size: 2.2rem;">traits.</h2>
+                <p class="s-text blur-reveal" style="margin-bottom: 1rem;">Karakter yang membuatmu sangat berharga:</p>
                 
-                <!-- 2x2 Photo Grid containing all 4 photos -->
-                <div class="photo-grid cinematic-pop">
-                    <!-- Added a Film Strip/Vintage Border overlay inside the grid wrapper -->
-                    <div class="grid-img-wrap"><img src="https://image2url.com/r2/default/images/1775861155197-bc6d8276-846e-4060-a9a7-fc1edca16a00.jpg" class="grid-img"></div>
-                    <div class="grid-img-wrap"><img src="https://image2url.com/r2/default/images/1775861202596-deb921f3-8380-4e01-8bec-614d3cb75551.jpg" class="grid-img"></div>
-                    <div class="grid-img-wrap"><img src="https://image2url.com/r2/default/images/1775861275871-0ac9d890-3b98-4817-b0cd-364c779d2733.jpg" class="grid-img"></div>
-                    <div class="grid-img-wrap"><img src="https://image2url.com/r2/default/images/1775861320014-ecf4dd42-2b29-4877-8782-faff1a04b385.jpg" class="grid-img"></div>
-                </div>
-
-                <p class="s-text blur-reveal" style="margin-top: 1.5rem; font-size: 0.85rem; font-style: italic;">Kami bangga bisa mengukir cerita di bawah kepemimpinanmu. Mari buat lebih banyak kenangan hebat ke depannya!</p>
-            </section>
-
-            <!-- SLIDE 6: TRAITS -->
-            <section id="traits" style="padding: 3rem 1.5rem;">
-                <h2 class="s-serif blur-reveal" style="color: var(--accent-gold); font-size: 2rem;">traits.</h2>
-                <p class="s-text blur-reveal" style="font-size: 0.9rem; margin-bottom: 2rem;">Karakter yang membuatmu berharga bagi kami:</p>
-                
-                <div class="traits-container">
-                    <div class="trait-item blur-reveal">
+                <div class="traits-grid">
+                    <div class="trait-card cinematic-pop" style="transition-delay: 0.1s;">
+                        <div class="trait-icon">👑</div>
                         <h4 class="trait-title">Kepemimpinan</h4>
                         <p class="trait-desc">Mampu merangkul dan mengarahkan angkatan dengan sangat bijak.</p>
-                        <div class="trait-dot"></div>
                     </div>
-                    <div class="trait-item blur-reveal">
+                    <div class="trait-card cinematic-pop" style="transition-delay: 0.3s;">
+                        <div class="trait-icon">🌊</div>
                         <h4 class="trait-title">Ketenangan</h4>
                         <p class="trait-desc">Tidak mudah panik, selalu memberi jalan keluar yang jernih.</p>
-                        <div class="trait-dot"></div>
                     </div>
-                    <div class="trait-item blur-reveal">
+                    <div class="trait-card cinematic-pop" style="transition-delay: 0.5s;">
+                        <div class="trait-icon">✨</div>
                         <h4 class="trait-title">Tawa Lepas</h4>
                         <p class="trait-desc">Wibawanya kuat, namun tawanya selalu menghangatkan suasana.</p>
-                        <div class="trait-dot"></div>
                     </div>
-                    <div class="trait-item blur-reveal">
+                    <div class="trait-card cinematic-pop" style="transition-delay: 0.7s;">
+                        <div class="trait-icon">🛡️</div>
                         <h4 class="trait-title">Support System</h4>
                         <p class="trait-desc">Sahabat dan pendengar yang solid untuk sekitarnya.</p>
                     </div>
                 </div>
             </section>
 
-            <!-- SLIDE 7: WISHES -->
-            <section id="wishes" style="padding: 2rem 1.5rem;">
-                <h2 class="s-serif blur-reveal" style="font-size: 2.2rem;">wishes.</h2>
-                <p class="s-text blur-reveal" style="margin-top: 1.5rem; text-align: center; padding: 0 10px;">
-                    Untuk sang ketua terbaik. Tidak ada kata yang cukup untuk menggambarkan betapa bangganya kami memilikimu. <br><br>Teruslah melangkah maju, kejar impianmu, dan ingatlah bahwa kami di sini akan selalu mendukungmu dalam setiap keadaan.
-                </p>
+            <!-- SLIDE 7: AESTHETIC PHOTO COLLAGE -->
+            <section id="grid" style="padding-top: 5rem;">
+                <h2 class="s-serif blur-reveal" style="font-size: 2.2rem;">memories.</h2>
+                <p class="s-text blur-reveal" style="font-style: italic;">Kami bangga bisa mengukir cerita di bawah kepemimpinanmu.</p>
                 
-                <!-- Clinking Glasses SVG (Gold) -->
-                <svg class="svg-clink blur-reveal" viewBox="0 0 200 150" style="margin-top: 3rem;">
-                    <!-- Left Glass -->
-                    <g transform="rotate(15 70 75)">
-                        <path d="M50,130 L55,130 L55,80 L80,30 L20,30 L45,80 Z" fill="none" stroke="var(--accent-gold)" stroke-width="3"/>
-                        <path d="M25,40 L75,40 L55,75 L45,75 Z" fill="rgba(212, 175, 55, 0.5)"/>
-                        <ellipse cx="50" cy="30" rx="30" ry="5" fill="none" stroke="var(--accent-gold)" stroke-width="3"/>
-                        <path d="M30,130 L70,130" stroke="var(--accent-gold)" stroke-width="3" stroke-linecap="round"/>
-                    </g>
-                    <!-- Right Glass -->
-                    <g transform="rotate(-15 130 75)">
-                        <path d="M150,130 L145,130 L145,80 L120,30 L180,30 L155,80 Z" fill="none" stroke="var(--accent-gold)" stroke-width="3"/>
-                        <path d="M125,40 L175,40 L155,75 L145,75 Z" fill="rgba(212, 175, 55, 0.5)"/>
-                        <ellipse cx="150" cy="30" rx="30" ry="5" fill="none" stroke="var(--accent-gold)" stroke-width="3"/>
-                        <path d="M130,130 L170,130" stroke="var(--accent-gold)" stroke-width="3" stroke-linecap="round"/>
-                    </g>
-                    <!-- Sparkles -->
-                    <path d="M100,20 L105,40 L125,45 L105,50 L100,70 L95,50 L75,45 L95,40 Z" fill="var(--accent-silver)"/>
-                </svg>
-            </section>
-
-            <!-- SLIDE 8: CLOSING -->
-            <section id="closing" style="padding-bottom: 8rem; text-align: center;">
-                <h1 class="s-script blur-reveal" style="font-size: 3.5rem; margin-bottom: 1rem;">Stay awesome!</h1>
-                
-                <!-- PHOTO 4 -->
-                <div class="polaroid cinematic-pop" style="--rot: 2deg; margin-bottom: 2rem;">
-                    <div class="tape tape-center"></div>
-                    <div class="card-img-wrapper">
-                        <img src="https://image2url.com/r2/default/images/1775861320014-ecf4dd42-2b29-4877-8782-faff1a04b385.jpg" alt="Nabil Closing" class="card-img">
+                <!-- Floating Overlapping Collage -->
+                <div class="photo-collage">
+                    <div class="polaroid pc-1 blur-reveal">
+                        <div class="tape tape-1"></div>
+                        <div class="card-img-wrapper"><img src="https://image2url.com/r2/default/images/1775861155197-bc6d8276-846e-4060-a9a7-fc1edca16a00.jpg" class="card-img"></div>
+                    </div>
+                    <div class="polaroid pc-2 blur-reveal">
+                        <div class="tape tape-center"></div>
+                        <div class="card-img-wrapper"><img src="https://image2url.com/r2/default/images/1775861275871-0ac9d890-3b98-4817-b0cd-364c779d2733.jpg" class="card-img"></div>
+                    </div>
+                    <div class="polaroid pc-3 blur-reveal">
+                        <div class="tape tape-2"></div>
+                        <div class="card-img-wrapper"><img src="https://image2url.com/r2/default/images/1775861320014-ecf4dd42-2b29-4877-8782-faff1a04b385.jpg" class="card-img"></div>
                     </div>
                 </div>
+            </section>
+
+            <!-- SLIDE 8: WISHES ENVELOPE & CLOSING -->
+            <section id="wishes" style="padding-bottom: 8rem;">
+                
+                <!-- WISHES ENVELOPE -->
+                <div class="wishes-envelope cinematic-pop">
+                    <svg class="svg-clink" viewBox="0 0 200 150" style="position: absolute; top: -60px; left: 50%; transform: translateX(-50%); width: 120px;">
+                        <g transform="rotate(15 70 75)"><path d="M50,130 L55,130 L55,80 L80,30 L20,30 L45,80 Z" fill="rgba(11,25,44,0.9)" stroke="var(--accent-gold)" stroke-width="3"/><path d="M25,40 L75,40 L55,75 L45,75 Z" fill="rgba(212, 175, 55, 0.5)"/><ellipse cx="50" cy="30" rx="30" ry="5" fill="none" stroke="var(--accent-gold)" stroke-width="3"/><path d="M30,130 L70,130" stroke="var(--accent-gold)" stroke-width="3" stroke-linecap="round"/></g>
+                        <g transform="rotate(-15 130 75)"><path d="M150,130 L145,130 L145,80 L120,30 L180,30 L155,80 Z" fill="rgba(11,25,44,0.9)" stroke="var(--accent-gold)" stroke-width="3"/><path d="M125,40 L175,40 L155,75 L145,75 Z" fill="rgba(212, 175, 55, 0.5)"/><ellipse cx="150" cy="30" rx="30" ry="5" fill="none" stroke="var(--accent-gold)" stroke-width="3"/><path d="M130,130 L170,130" stroke="var(--accent-gold)" stroke-width="3" stroke-linecap="round"/></g>
+                        <path d="M100,20 L105,40 L125,45 L105,50 L100,70 L95,50 L75,45 L95,40 Z" fill="var(--accent-gold-light)"/>
+                    </svg>
+
+                    <h2 class="s-serif" style="font-size: 2.2rem; margin-top: 40px; margin-bottom: 1.5rem; color: var(--accent-gold);">wishes.</h2>
+                    <p class="s-text" style="font-size: 1.1rem; line-height: 1.7;">
+                        Untuk sang ketua terbaik. Tidak ada kata yang cukup untuk menggambarkan betapa bangganya kami memilikimu. <br><br>Teruslah melangkah maju, kejar impianmu, dan ingatlah bahwa kami di sini akan selalu mendukungmu dalam setiap keadaan.
+                    </p>
+                </div>
+
+                <div class="s-divider blur-reveal" style="margin-top: 5rem;"><span>✦</span></div>
+
+                <h1 class="s-script blur-reveal" style="font-size: 4.5rem; margin-bottom: 2rem;">Stay awesome!</h1>
                 
                 <a href="https://wa.me/6285827642170?text=HBD%20Pak%20Ketua%20Nabil!%20Wish%20you%20all%20the%20best%20ya,%20jangan%20lupa%20makan-makan!%20%F0%9F%8E%89" class="btn-gold blur-reveal" target="_blank">
                     KIRIM UCAPAN HBD
@@ -714,18 +641,16 @@
                ========================================================================== */
             const sfxWaves = document.getElementById('sfx-waves'); 
             const sfxRumble = document.getElementById('sfx-rumble');
-            const sfxFlash = document.getElementById('sfx-flash');
             const bgMusic = document.getElementById('bg-music');
             
             const startScreen = document.getElementById('start-screen');
+            const btnLightCandle = document.querySelector('.btn-light-candle');
+            const candleWrapper = document.querySelector('.candle-wrapper');
             const musicToggle = document.getElementById('music-toggle');
             let isPlaying = false;
 
-            startScreen.addEventListener('click', () => {
-                startScreen.style.opacity = '0';
-                setTimeout(() => { startScreen.style.display = 'none'; }, 500);
-                
-                // NYALAKAN SEMUA MUSIK DI AWAL PAS TAP
+            btnLightCandle.addEventListener('click', () => {
+                // 1. Play audio synchronously inside user interaction
                 bgMusic.volume = 0.6; 
                 bgMusic.play().catch(()=>{});
                 isPlaying = true;
@@ -736,15 +661,28 @@
                 sfxRumble.volume = 0.2; 
                 sfxRumble.play().catch(()=>{});
 
-                runSunsetIntro();
+                // 2. Light the candle visually
+                candleWrapper.classList.add('lit');
+                btnLightCandle.style.opacity = '0'; 
+                btnLightCandle.style.pointerEvents = 'none';
+
+                // 3. Wait, then hyper-zoom into the flame
+                setTimeout(() => {
+                    startScreen.classList.add('zoom-in');
+                }, 1500); // Wait 1.5s to admire the candle
+
+                // 4. Start the sunset intro after zooming
+                setTimeout(() => {
+                    startScreen.style.display = 'none';
+                    runSunsetIntro();
+                }, 3000); // 1.5s + 1.5s zoom
             });
 
             /* ==========================================================================
-               1. EPIC SUNSET INTRO TIMELINE (Dipertahankan 100%)
+               1. EPIC SUNSET INTRO TIMELINE
                ========================================================================== */
             const introContainer = document.getElementById('sunset-intro');
             const camRig = document.getElementById('camera-rig');
-            const flashOverlay = document.getElementById('flash-overlay');
             const navyBg = document.getElementById('navy-bg');
             const scrapbookWrapper = document.getElementById('smooth-wrapper');
             const birds = document.getElementById('intro-birds');
@@ -757,25 +695,21 @@
             function runSunsetIntro() {
                 birds.classList.add('fly'); 
 
-                // T=0s: Scene 1
                 camRig.classList.add('pov-1');
                 setTimeout(() => { tx[0].style.opacity = '1'; tx[0].style.filter = 'blur(0)'; tx[0].style.transform = 'translate(-50%, -50%) scale(1)'; tx[0].style.letterSpacing = '5px'; }, 500);
 
-                // T=4.5s: Scene 2
                 setTimeout(() => {
                     tx[0].style.opacity = '0';
                     camRig.classList.replace('pov-1', 'pov-2');
                     setTimeout(() => { tx[1].style.opacity = '1'; tx[1].style.filter = 'blur(0)'; tx[1].style.transform = 'translate(-50%, -50%) scale(1)'; tx[1].style.letterSpacing = '5px'; }, 800);
                 }, 4500);
 
-                // T=9s: Scene 3
                 setTimeout(() => {
                     tx[1].style.opacity = '0';
                     camRig.classList.replace('pov-2', 'pov-3');
                     setTimeout(() => { tx[2].style.opacity = '1'; tx[2].style.filter = 'blur(0)'; tx[2].style.transform = 'translate(-50%, -50%) scale(1)'; tx[2].style.letterSpacing = '5px'; }, 800);
                 }, 9000);
 
-                // T=13.5s: Scene 4
                 setTimeout(() => {
                     tx[2].style.opacity = '0';
                     camRig.classList.replace('pov-3', 'pov-4');
@@ -788,7 +722,6 @@
                     setTimeout(() => { tx[3].style.opacity = '1'; tx[3].style.filter = 'blur(0)'; tx[3].style.transform = 'translate(-50%, -50%) scale(1)'; tx[3].style.letterSpacing = '5px'; }, 1000);
                 }, 13500);
 
-                // T=18s: Scene 5 (POV ZOOM)
                 setTimeout(() => {
                     tx[3].style.opacity = '0';
                     camRig.classList.add('hyper-shake');
@@ -797,8 +730,11 @@
                         camRig.classList.remove('hyper-shake');
                         camRig.classList.replace('pov-4', 'pov-zoom');
                         
-                        sfxFlash.volume = 1.0; sfxFlash.play().catch(()=>{});
-                        flashOverlay.style.opacity = '1';
+                        // Create a blinding white flash programmatically to replace sfxFlash if not loading
+                        let flashDiv = document.createElement('div');
+                        flashDiv.style.position = 'fixed'; flashDiv.style.inset = '0'; flashDiv.style.background = '#fff'; flashDiv.style.zIndex = '999999'; flashDiv.style.opacity = '0'; flashDiv.style.transition = 'opacity 0.2s';
+                        document.body.appendChild(flashDiv);
+                        setTimeout(()=> flashDiv.style.opacity = '1', 50);
 
                         let fadeOut = setInterval(() => {
                             if(sfxWaves.volume > 0.05) sfxWaves.volume -= 0.05;
@@ -806,10 +742,7 @@
                             else { clearInterval(fadeOut); sfxWaves.pause(); sfxRumble.pause(); }
                         }, 100);
 
-                        // Reveal Navy Blue Theme
                         setTimeout(() => {
-                            flashOverlay.style.background = 'var(--paper-bg)'; 
-                            
                             introContainer.style.display = 'none';
                             document.body.classList.remove('locked');
                             
@@ -823,7 +756,9 @@
                             initScrollAnimations();
                             initSparkles(); 
 
-                            setTimeout(() => { flashOverlay.style.opacity = '0'; }, 500);
+                            flashDiv.style.transition = 'opacity 1.5s ease';
+                            flashDiv.style.opacity = '0';
+                            setTimeout(() => flashDiv.remove(), 1500);
                         }, 1500); 
                     }, 300);
 
@@ -896,7 +831,6 @@
             /* ==========================================================================
                4. LIVE TIME LIVED COUNTER LOGIC
                ========================================================================== */
-            // TAHUN LAHIR DIUPDATE KE 2006
             const birthDate = new Date('2006-04-11T00:00:00'); 
             
             function updateCounter() {
@@ -933,7 +867,7 @@
                 document.getElementById('c-seconds').innerText = seconds.toString().padStart(2, '0');
             }
             setInterval(updateCounter, 1000);
-            updateCounter(); // Eksekusi saat awal
+            updateCounter();
 
             /* ==========================================================================
                5. MUSIC PLAYER LOGIC
