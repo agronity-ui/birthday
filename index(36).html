@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0b63f6" />
+  <title>BaturBank</title>
+
+  <!-- PWA: installable app metadata -->
+  <meta name="application-name" content="BaturBank" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="BaturBank" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="msapplication-TileColor" content="#0b63f6" />
+  <!-- Single-file PWA metadata. Manifest, icons, and install helper dibuat langsung dari file ini. -->
+  <script>
+    (function(){
+      const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#0b63f6"/>
+            <stop offset="1" stop-color="#003aab"/>
+          </linearGradient>
+          <filter id="s" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="#003aab" flood-opacity=".35"/>
+          </filter>
+        </defs>
+        <rect width="512" height="512" rx="118" fill="url(#g)"/>
+        <circle cx="414" cy="95" r="56" fill="#53b7ff" opacity=".35"/>
+        <path d="M104 220h304v174a22 22 0 0 1-22 22H126a22 22 0 0 1-22-22V220Z" fill="#fff" filter="url(#s)"/>
+        <path d="M84 194 256 82l172 112v34H84v-34Z" fill="#ddecff"/>
+        <path d="M256 118 128 202h256L256 118Z" fill="#fff"/>
+        <rect x="132" y="256" width="44" height="106" rx="16" fill="#0b63f6"/>
+        <rect x="210" y="256" width="44" height="106" rx="16" fill="#0b63f6"/>
+        <rect x="288" y="256" width="44" height="106" rx="16" fill="#0b63f6"/>
+        <rect x="96" y="390" width="320" height="42" rx="21" fill="#ddecff"/>
+        <text x="256" y="475" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="54" font-weight="900" fill="#fff">BANK</text>
+      </svg>`;
+      const iconUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(iconSvg);
+      const manifest = {
+        name: 'BaturBank', short_name: 'BaturBank', description: 'BaturBank mobile banking property app',
+        start_url: '.', scope: '.', display: 'standalone', orientation: 'portrait',
+        background_color: '#f7fbff', theme_color: '#0b63f6',
+        icons: [
+          { src: iconUrl, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
+          { src: iconUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
+        ]
+      };
+      const manifestUrl = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
+      const addLink = (rel, href, attrs={}) => {
+        const link = document.createElement('link'); link.rel = rel; link.href = href;
+        Object.entries(attrs).forEach(([k,v]) => link.setAttribute(k,v)); document.head.appendChild(link);
+      };
+      addLink('manifest', manifestUrl);
+      addLink('icon', iconUrl, { type: 'image/svg+xml', sizes: 'any' });
+      addLink('apple-touch-icon', iconUrl);
+      window.__BATURBANK_ICON_URL__ = iconUrl;
+    })();
+  </script>
+  <style>
+    :root{
+      --blue:#0b63f6;
+      --blue2:#004adf;
+      --sky:#eaf3ff;
+      --soft:#f5f8ff;
+      --white:#fff;
+      --ink:#101828;
+      --muted:#667085;
+      --line:#e4eaf4;
+      --green:#16a34a;
+      --red:#ef4444;
+      --yellow:#f59e0b;
+      --shadow:0 20px 60px rgba(11,99,246,.18);
+      --radius:28px;
+      --ease:cubic-bezier(.2,.8,.2,1);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%}
+    body{
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 12% 12%, rgba(50,128,255,.18), transparent 34%),
+        radial-gradient(circle at 90% 10%, rgba(0,91,255,.14), transparent 30%),
+        linear-gradient(135deg,#f7fbff 0%,#edf5ff 45%,#ffffff 100%);
+      min-height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    button,input,select,textarea{font-family:inherit;border:0;outline:none}
+    button{cursor:pointer;background:none;color:inherit}
+    .phone{
+      width:min(430px,100vw);
+      height:min(932px,100vh);
+      background:#fff;
+      position:relative;
+      overflow:hidden;
+      box-shadow:0 30px 90px rgba(23,39,78,.28);
+      border-radius:38px;
+      border:10px solid rgba(255,255,255,.85);
+      isolation:isolate;
+    }
+    @media(max-width:520px){.phone{width:100vw;height:100vh;border-radius:0;border:0}.statusbar{padding-top:12px}}
+    .screen{
+      position:absolute;inset:0;
+      background:linear-gradient(180deg,#f7fbff,#fff 35%,#f9fbff);
+      transform:translateX(100%);
+      opacity:0;
+      pointer-events:none;
+      transition:.36s var(--ease);
+      overflow-y:auto;
+      scrollbar-width:none;
+      padding-bottom:96px;
+    }
+    .screen::-webkit-scrollbar{display:none}
+    .screen.active{transform:translateX(0);opacity:1;pointer-events:auto}
+    .screen.back{transform:translateX(-18%);opacity:.4}
+    .statusbar{height:42px;padding:14px 23px 0;display:flex;align-items:flex-start;justify-content:space-between;font-size:13px;font-weight:800;letter-spacing:-.02em;position:sticky;top:0;z-index:40;background:linear-gradient(180deg,rgba(247,251,255,.98),rgba(247,251,255,.72),transparent)}
+    .status-icons{display:flex;gap:6px;align-items:center}.pill-signal{width:17px;height:10px;display:flex;align-items:flex-end;gap:2px}.pill-signal i{display:block;width:3px;background:#111;border-radius:3px}.pill-signal i:nth-child(1){height:4px}.pill-signal i:nth-child(2){height:6px}.pill-signal i:nth-child(3){height:8px}.pill-signal i:nth-child(4){height:10px}.battery{width:23px;height:11px;border:2px solid #111;border-radius:4px;position:relative}.battery:after{content:"";position:absolute;right:-5px;top:2px;width:3px;height:5px;border-radius:0 4px 4px 0;background:#111}.battery:before{content:"";position:absolute;inset:2px 3px 2px 2px;background:#111;border-radius:2px}
+    .pad{padding:0 22px}.hero-top{padding:8px 22px 18px;position:relative}.appbar{display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px;user-select:none}.brand-mark{width:42px;height:42px;border-radius:15px;background:linear-gradient(135deg,var(--blue),#1da1ff);display:grid;place-items:center;color:#fff;box-shadow:0 13px 28px rgba(11,99,246,.24);position:relative;overflow:hidden}.brand-mark:before{content:"";width:18px;height:18px;border-radius:999px;border:3px solid rgba(255,255,255,.92);position:absolute}.brand-mark:after{content:"";width:8px;height:8px;background:#fff;border-radius:999px;position:absolute;right:10px;bottom:10px}.brand-title h1{font-size:20px;letter-spacing:-.04em;line-height:1}.brand-title p{font-size:11px;color:var(--muted);font-weight:650;margin-top:4px}.icon-btn{width:42px;height:42px;border-radius:15px;background:#fff;display:grid;place-items:center;border:1px solid var(--line);box-shadow:0 10px 24px rgba(15,23,42,.05);position:relative}.dot{position:absolute;right:9px;top:9px;width:8px;height:8px;border-radius:999px;background:#ff4757;border:2px solid #fff}.avatar{width:44px;height:44px;border-radius:16px;background:linear-gradient(140deg,#0b63f6,#063490);color:#fff;display:grid;place-items:center;font-weight:900;font-size:17px}.greeting{margin-top:18px;display:flex;align-items:center;justify-content:space-between;gap:10px}.greeting h2{font-size:25px;line-height:1.08;letter-spacing:-.055em}.greeting span{color:var(--blue)}.greeting p{font-size:12px;color:var(--muted);font-weight:650;margin-top:5px}.balance-card{margin-top:18px;background:radial-gradient(circle at 90% 10%,rgba(255,255,255,.36),transparent 28%),linear-gradient(145deg,#0d6efd,#043fb5 74%);border-radius:31px;padding:21px;color:#fff;box-shadow:var(--shadow);position:relative;overflow:hidden}.balance-card:before{content:"";position:absolute;right:-65px;top:-65px;width:170px;height:170px;border-radius:50%;background:rgba(255,255,255,.12)}.balance-card:after{content:"";position:absolute;left:-95px;bottom:-120px;width:250px;height:250px;border-radius:50%;border:1px solid rgba(255,255,255,.13)}.balance-head{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}.balance-head small{font-size:12px;color:rgba(255,255,255,.74);font-weight:700}.eye{width:34px;height:34px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.22);border-radius:13px;display:grid;place-items:center}.balance-value{position:relative;z-index:1;margin-top:12px;font-size:32px;font-weight:900;letter-spacing:-.06em}.account-row{position:relative;z-index:1;margin-top:15px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.82);font-weight:750}.chip{padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18)}.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}.quick button{background:#fff;border:1px solid var(--line);border-radius:22px;padding:13px 6px;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:0 12px 30px rgba(15,23,42,.05);font-size:11px;color:#344054;font-weight:800;transition:.2s}.quick button:active{transform:scale(.96)}.qicon{width:38px;height:38px;border-radius:15px;background:linear-gradient(180deg,#edf5ff,#dcecff);display:grid;place-items:center;color:var(--blue);font-size:18px}.promo{margin-top:18px;background:linear-gradient(105deg,#eff6ff,#fff);border:1px solid #d8e8ff;border-radius:24px;padding:15px;display:flex;align-items:center;gap:13px;box-shadow:0 10px 26px rgba(11,99,246,.06)}.promo-ill{width:58px;height:58px;border-radius:19px;background:linear-gradient(135deg,#0b63f6,#49b1ff);display:grid;place-items:center;color:#fff;font-size:25px}.promo h3{font-size:14px;letter-spacing:-.02em}.promo p{font-size:11px;color:var(--muted);font-weight:650;margin-top:3px}.section-title{display:flex;align-items:center;justify-content:space-between;margin:24px 0 12px}.section-title h3{font-size:17px;letter-spacing:-.03em}.section-title button{font-size:12px;color:var(--blue);font-weight:850}.tx-list{display:flex;flex-direction:column;gap:10px}.tx{background:#fff;border:1px solid var(--line);border-radius:20px;padding:13px;display:flex;align-items:center;gap:12px;box-shadow:0 10px 24px rgba(15,23,42,.04)}.tx-icon{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;font-size:18px;background:#eef5ff;color:var(--blue);flex:0 0 auto}.tx.out .tx-icon{background:#fff4f4;color:var(--red)}.tx.mid .tx-icon{background:#fff8e8;color:var(--yellow)}.tx-info{flex:1;min-width:0}.tx-title{font-size:13px;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tx-sub{font-size:11px;color:var(--muted);font-weight:650;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tx-amount{font-size:13px;font-weight:900;letter-spacing:-.02em}.tx.in .tx-amount{color:var(--green)}.tx.out .tx-amount{color:var(--red)}.tx-actions{display:flex;gap:6px;align-items:center}.mini-btn{height:33px;padding:0 10px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:11px;font-weight:900;color:var(--blue)}.mini-btn.danger{color:var(--red)}.sync-note{font-size:11px;color:var(--muted);font-weight:650;line-height:1.45;margin-top:8px}.bottom-nav{position:absolute;left:16px;right:16px;bottom:16px;height:68px;background:rgba(255,255,255,.92);backdrop-filter:blur(18px);border:1px solid rgba(218,228,244,.9);border-radius:26px;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:8px;z-index:70;box-shadow:0 22px 55px rgba(23,39,78,.16)}.bottom-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:19px;color:#98a2b3;font-size:10px;font-weight:850;transition:.2s}.bottom-nav button.active{background:#eaf3ff;color:var(--blue)}.bottom-nav b{font-size:19px;line-height:1}.topbar-page{padding:8px 22px 15px;display:flex;align-items:center;gap:13px;position:sticky;top:42px;z-index:30;background:linear-gradient(180deg,#f7fbff 70%,rgba(247,251,255,.82))}.back-btn{width:40px;height:40px;border-radius:15px;background:#fff;border:1px solid var(--line);box-shadow:0 8px 20px rgba(15,23,42,.05);display:grid;place-items:center;font-size:20px}.page-title{font-size:20px;font-weight:900;letter-spacing:-.04em}.card-panel{margin:0 22px 14px;background:#fff;border:1px solid var(--line);border-radius:25px;padding:16px;box-shadow:0 12px 30px rgba(15,23,42,.05)}.form-group{margin-bottom:13px}.label{font-size:12px;color:#475467;font-weight:850;margin-bottom:8px;display:block}.input,.select,.textarea{width:100%;border:1px solid var(--line);background:#f9fbff;border-radius:16px;padding:14px 14px;font-size:14px;color:var(--ink);font-weight:700}.textarea{min-height:90px;resize:none}.input:focus,.select:focus,.textarea:focus{border-color:#8dbbff;box-shadow:0 0 0 4px rgba(11,99,246,.08)}.primary-btn{width:100%;height:52px;border-radius:18px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;font-size:15px;font-weight:900;box-shadow:0 14px 28px rgba(11,99,246,.22);display:flex;align-items:center;justify-content:center;gap:9px}.ghost-btn{width:100%;height:50px;border-radius:18px;border:1px solid var(--line);background:#fff;color:var(--blue);font-size:14px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:9px}.actions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 22px 18px}.action-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:16px 9px;text-align:center;box-shadow:0 10px 24px rgba(15,23,42,.04);font-size:11px;font-weight:850;color:#344054}.action-card b{display:grid;place-items:center;margin:0 auto 9px;width:40px;height:40px;border-radius:16px;background:#edf5ff;color:var(--blue);font-size:20px}.recipients{display:flex;gap:12px;overflow-x:auto;padding:0 22px 8px;scrollbar-width:none}.recipients::-webkit-scrollbar{display:none}.person{min-width:74px;text-align:center}.person .pic{width:58px;height:58px;border-radius:22px;background:linear-gradient(135deg,#eaf3ff,#cfe2ff);display:grid;place-items:center;margin:0 auto 7px;font-weight:900;color:var(--blue);border:1px solid #d9e8ff}.person p{font-size:11px;font-weight:850;white-space:nowrap}.tab-row{display:flex;gap:8px;margin:0 22px 15px;overflow-x:auto;scrollbar-width:none}.tab-row::-webkit-scrollbar{display:none}.tab{padding:10px 15px;border-radius:999px;border:1px solid var(--line);background:#fff;color:#667085;font-weight:850;font-size:12px;white-space:nowrap}.tab.active{background:var(--blue);border-color:var(--blue);color:#fff}.card-virtual{margin:0 22px 18px;height:216px;border-radius:30px;background:radial-gradient(circle at 88% 20%,rgba(255,255,255,.38),transparent 33%),linear-gradient(145deg,#0b63f6,#072f85);padding:22px;color:#fff;position:relative;overflow:hidden;box-shadow:var(--shadow)}.card-virtual:before{content:"";position:absolute;right:-46px;bottom:-46px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.1)}.card-virtual .bank{font-size:18px;font-weight:950;letter-spacing:-.04em}.card-virtual .chip-sim{position:absolute;left:22px;top:76px;width:45px;height:33px;border-radius:9px;background:linear-gradient(135deg,#ffe6a3,#d7a92d)}.card-virtual .num{position:absolute;left:22px;bottom:60px;font-size:18px;letter-spacing:.12em;font-weight:800}.card-virtual .name{position:absolute;left:22px;bottom:28px;font-size:12px;font-weight:900;letter-spacing:.08em;color:rgba(255,255,255,.82)}.card-virtual .visa{position:absolute;right:22px;bottom:25px;font-size:25px;font-weight:950;font-style:italic}.searchbox{margin:0 22px 15px;position:relative}.searchbox input{padding-left:45px}.searchbox:before{content:"⌕";position:absolute;left:17px;top:50%;transform:translateY(-50%);font-size:22px;color:#98a2b3;z-index:1}.modal{position:absolute;inset:0;z-index:100;background:rgba(7,18,38,.35);backdrop-filter:blur(12px);display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:.25s}.modal.active{opacity:1;pointer-events:auto}.sheet{width:100%;max-height:88%;background:#fff;border-radius:34px 34px 0 0;padding:16px 22px 24px;box-shadow:0 -18px 60px rgba(15,23,42,.18);overflow:auto;animation:slideUp .28s var(--ease)}@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}.handle{width:48px;height:5px;background:#d0d5dd;border-radius:999px;margin:0 auto 16px}.sheet-title{font-size:21px;font-weight:950;letter-spacing:-.04em;margin-bottom:12px}.login{position:absolute;inset:0;background:radial-gradient(circle at 50% 10%,rgba(83,158,255,.26),transparent 35%),linear-gradient(180deg,#f8fbff,#fff);z-index:200;display:flex;flex-direction:column;padding:58px 28px 26px;transition:.35s}.login.hide{opacity:0;pointer-events:none;transform:scale(1.03)}.login-logo{width:84px;height:84px;border-radius:30px;background:linear-gradient(135deg,var(--blue),#1da1ff);margin:0 auto 18px;box-shadow:0 20px 44px rgba(11,99,246,.24);position:relative}.login-logo:before{content:"";position:absolute;inset:23px;border:5px solid #fff;border-radius:50%}.login-logo:after{content:"";position:absolute;width:14px;height:14px;border-radius:50%;right:21px;bottom:21px;background:#fff}.login h1{text-align:center;font-size:34px;letter-spacing:-.07em}.login p{text-align:center;margin-top:7px;color:var(--muted);font-size:13px;font-weight:650}.pin-dots{display:flex;justify-content:center;gap:12px;margin:44px 0 22px}.pin-dot{width:13px;height:13px;border-radius:50%;background:#e3e9f5}.pin-dot.filled{background:var(--blue);box-shadow:0 0 0 7px rgba(11,99,246,.08)}.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:auto}.key{height:62px;border-radius:24px;background:#fff;border:1px solid var(--line);box-shadow:0 10px 22px rgba(15,23,42,.04);font-size:22px;font-weight:900;color:#1d2939}.key:active{transform:scale(.96);background:#edf5ff}.helper-row{display:flex;justify-content:space-between;align-items:center;margin:25px 0 0}.helper-row button{color:var(--blue);font-size:13px;font-weight:900}.toast{position:absolute;left:22px;right:22px;bottom:98px;z-index:150;background:#101828;color:#fff;border-radius:19px;padding:13px 15px;display:flex;gap:10px;align-items:center;box-shadow:0 18px 40px rgba(16,24,40,.28);transform:translateY(30px);opacity:0;pointer-events:none;transition:.25s}.toast.show{transform:translateY(0);opacity:1}.toast b{font-size:16px}.toast p{font-size:12px;font-weight:750}.receipt{display:none}.receipt.active{display:block}.receipt-card{text-align:center}.success-icon{width:76px;height:76px;border-radius:26px;background:#ecfdf3;color:var(--green);display:grid;place-items:center;font-size:38px;margin:4px auto 15px}.receipt-card h2{font-size:22px;letter-spacing:-.04em}.receipt-card .big{font-size:30px;font-weight:950;color:var(--blue);letter-spacing:-.05em;margin:11px 0}.details{background:#f7faff;border-radius:20px;padding:14px;margin-top:16px;text-align:left}.detail-row{display:flex;justify-content:space-between;gap:14px;border-bottom:1px dashed #d7e2f2;padding:10px 0;font-size:12px}.detail-row:last-child{border-bottom:0}.detail-row span:first-child{color:var(--muted);font-weight:750}.detail-row span:last-child{font-weight:900;text-align:right}.editor-lock{display:none}.editor-lock.active{display:block}.switch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.switch-row:last-child{border-bottom:0}.mini{font-size:11px;color:var(--muted);font-weight:650}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.danger-btn{background:#fff1f3;color:#d92d20;border:1px solid #ffd1d6}.hide-balance .balance-value,.hide-balance #navSaldo{filter:blur(8px)}.empty{padding:28px 10px;text-align:center;color:var(--muted);font-weight:750}.watermark{position:absolute;top:62px;right:-36px;rotate:45deg;font-size:11px;font-weight:950;color:rgba(11,99,246,.06);letter-spacing:.18em;pointer-events:none;z-index:0}.pulse{animation:pulse .6s var(--ease)}@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.025)}100%{transform:scale(1)}}
+  </style>
+</head>
+<body>
+  <div class="phone" id="phone">
+    <div class="watermark">BATURBANK MOBILE</div>
+    <div class="statusbar"><div id="clock">09:41</div><div class="status-icons"><div class="pill-signal"><i></i><i></i><i></i><i></i></div><span style="font-size:12px">5G</span><div class="battery"></div></div></div>
+
+    <div class="login" id="loginScreen">
+      <div class="login-logo"></div>
+      <h1>BaturBank</h1>
+      <p>Mobile banking premium untuk aktivitas harian.</p>
+      <div class="pin-dots" id="pinDots"><span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span></div>
+      <div class="helper-row"><button onclick="app.toast('Face ID aktif', 'Memverifikasi wajah Azra...'); setTimeout(app.unlock,700)">Face ID</button><button onclick="app.toast('Petunjuk', 'Masukkan PIN apa saja 6 digit.')">Lupa PIN?</button></div>
+      <div class="keypad" id="keypad"></div>
+    </div>
+
+    <section class="screen active" id="home">
+      <div class="hero-top">
+        <div class="appbar">
+          <div class="brand" id="hiddenTrigger" title="BaturBank"><div class="brand-mark"></div><div class="brand-title"><h1>BaturBank</h1><p>Secure Mobile Banking</p></div></div>
+          <div style="display:flex;gap:10px"><button class="icon-btn" onclick="app.openSheet('notifSheet')">🔔<i class="dot"></i></button><button class="avatar" onclick="app.go('profile')" id="avatarText">A</button></div>
+        </div>
+        <div class="greeting">
+          <div><h2>Halo, <span id="userName">Azra</span></h2><p id="subGreeting">Siap cek transaksi hari ini?</p></div>
+          <button class="icon-btn" onclick="app.toggleBalance()" aria-label="Sembunyikan saldo">👁</button>
+        </div>
+        <div class="balance-card" id="balanceCard">
+          <div class="balance-head"><small>Total Saldo</small><div class="eye">💎</div></div>
+          <div class="balance-value" id="balanceValue">Rp 2.500.000</div>
+          <div class="account-row"><span id="accountNo">1288 0906 7780</span><span class="chip">Batur Prioritas</span></div>
+        </div>
+        <div class="quick">
+          <button onclick="app.go('transfer')"><span class="qicon">⇄</span>Transfer</button>
+          <button onclick="app.go('pay')"><span class="qicon">⌁</span>Bayar</button>
+          <button onclick="app.go('qris')"><span class="qicon">▣</span>QRIS</button>
+          <button onclick="app.go('topup')"><span class="qicon">＋</span>Top Up</button>
+        </div>
+        <div class="promo" onclick="app.go('card')"><div class="promo-ill">💳</div><div><h3>Kartu Virtual Batur Debit</h3><p>Atur limit, blokir kartu, dan lihat nomor kartu.</p></div></div>
+      </div>
+      <div class="pad">
+        <div class="section-title"><h3>Riwayat Terbaru</h3><button onclick="app.go('history')">Lihat semua</button></div>
+        <div class="tx-list" id="homeTxList"></div>
+      </div>
+    </section>
+
+    <section class="screen" id="transfer">
+      <div class="topbar-page"><button class="back-btn" onclick="app.go('home')">‹</button><div class="page-title">Transfer</div></div>
+      <div class="recipients" id="recipientRow"></div>
+      <div class="card-panel">
+        <div class="form-group"><label class="label">Bank Tujuan</label><select class="select" id="tfBank"><option>BaturBank</option><option>Bank Nusantara</option><option>Bank Banjar</option><option>Bank Indonesia Digital</option><option>Dompet Digital</option></select></div>
+        <div class="form-group"><label class="label">Nomor Rekening / Tujuan</label><input class="input" id="tfAccount" placeholder="Masukkan nomor rekening" value="2899 4410 7781"></div>
+        <div class="form-group"><label class="label">Nama Penerima</label><input class="input" id="tfName" placeholder="Nama penerima" value="Ibu Tersayang"></div>
+        <div class="form-group"><label class="label">Nominal</label><input class="input" id="tfAmount" inputmode="numeric" placeholder="Rp 0" value="250000"></div>
+        <div class="form-group"><label class="label">Catatan</label><input class="input" id="tfNote" placeholder="Opsional" value="Kebutuhan harian"></div>
+        <button class="primary-btn" onclick="app.confirmTransfer()">Lanjutkan Transfer</button>
+      </div>
+      <div class="card-panel"><div class="section-title" style="margin:0 0 11px"><h3>Transfer Terjadwal</h3><button>Tambah</button></div><div class="tx mid"><div class="tx-icon">⏱</div><div class="tx-info"><div class="tx-title">Bayar Kos Bulanan</div><div class="tx-sub">Setiap tanggal 5 • 08:00</div></div><div class="tx-amount">Rp 750.000</div></div></div>
+    </section>
+
+    <section class="screen" id="pay">
+      <div class="topbar-page"><button class="back-btn" onclick="app.go('home')">‹</button><div class="page-title">Pembayaran</div></div>
+      <div class="actions-grid">
+        <button class="action-card" onclick="app.fakePay('PLN Token', 200000)"><b>⚡</b>PLN</button>
+        <button class="action-card" onclick="app.fakePay('Pulsa Data', 75000)"><b>📱</b>Pulsa</button>
+        <button class="action-card" onclick="app.fakePay('Air PDAM', 120000)"><b>💧</b>PDAM</button>
+        <button class="action-card" onclick="app.fakePay('Internet Rumah', 330000)"><b>🌐</b>Internet</button>
+        <button class="action-card" onclick="app.fakePay('BPJS', 150000)"><b>🛡</b>BPJS</button>
+        <button class="action-card" onclick="app.fakePay('Virtual Account', 500000)"><b>🏦</b>VA</button>
+      </div>
+      <div class="card-panel"><div class="form-group"><label class="label">Nomor Tagihan</label><input class="input" placeholder="Masukkan ID pelanggan / VA" value="8808 2201 7780"></div><div class="form-group"><label class="label">Pilih Pembayaran</label><select class="select"><option>Tagihan Internet Rumah</option><option>Tagihan Listrik</option><option>Virtual Account</option></select></div><button class="primary-btn" onclick="app.fakePay('Tagihan Internet Rumah', 330000)">Bayar Sekarang</button></div>
+    </section>
+
+    <section class="screen" id="qris">
+      <div class="topbar-page"><button class="back-btn" onclick="app.go('home')">‹</button><div class="page-title">QRIS</div></div>
+      <div class="card-panel" style="text-align:center;padding:24px">
+        <div style="width:238px;height:238px;margin:0 auto 18px;border-radius:28px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;box-shadow:inset 0 0 0 12px #f4f8ff">
+          <div style="width:176px;height:176px;background:conic-gradient(from 90deg,#0b63f6 0 25%,#fff 0 50%,#0b63f6 0 75%,#fff 0);display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);gap:7px;padding:9px;border-radius:10px">
+            <i style="background:#0b63f6;border-radius:3px"></i><i></i><i style="background:#0b63f6;border-radius:3px"></i><i></i><i style="background:#0b63f6;border-radius:3px"></i>
+            <i></i><i style="background:#0b63f6;border-radius:3px"></i><i></i><i style="background:#0b63f6;border-radius:3px"></i><i></i>
+            <i style="background:#0b63f6;border-radius:3px"></i><i></i><i style="background:#fff;border-radius:999px;box-shadow:0 0 0 8px #0b63f6"></i><i></i><i style="background:#0b63f6;border-radius:3px"></i>
+            <i></i><i style="background:#0b63f6;border-radius:3px"></i><i></i><i style="background:#0b63f6;border-radius:3px"></i><i></i>
+            <i style="background:#0b63f6;border-radius:3px"></i><i></i><i style="background:#0b63f6;border-radius:3px"></i><i></i><i style="background:#0b63f6;border-radius:3px"></i>
+          </div>
+        </div>
+        <h2 style="font-size:20px;letter-spacing:-.04em">QRIS Azra</h2><p style="font-size:12px;color:var(--muted);font-weight:650;margin:6px 0 17px">Arahkan kamera ke QR merchant untuk melakukan pembayaran.</p>
+        <button class="primary-btn" onclick="app.fakePay('QRIS Merchant', 125000)">Scan & Bayar Rp 125.000</button>
+      </div>
+    </section>
+
+    <section class="screen" id="topup">
+      <div class="topbar-page"><button class="back-btn" onclick="app.go('home')">‹</button><div class="page-title">Top Up</div></div>
+      <div class="actions-grid">
+        <button class="action-card" onclick="app.topup('DANA',100000)"><b>💙</b>DANA</button>
+        <button class="action-card" onclick="app.topup('OVO',100000)"><b>💜</b>OVO</button>
+        <button class="action-card" onclick="app.topup('GoPay',100000)"><b>💚</b>GoPay</button>
+        <button class="action-card" onclick="app.topup('ShopeePay',100000)"><b>🛍</b>ShopeePay</button>
+        <button class="action-card" onclick="app.topup('Pulsa',50000)"><b>📶</b>Pulsa</button>
+        <button class="action-card" onclick="app.topup('Game',75000)"><b>🎮</b>Game</button>
+      </div>
+      <div class="card-panel"><div class="form-group"><label class="label">Pilih nominal cepat</label><div class="two"><button class="ghost-btn" onclick="app.topup('DANA',50000)">Rp 50.000</button><button class="ghost-btn" onclick="app.topup('DANA',100000)">Rp 100.000</button><button class="ghost-btn" onclick="app.topup('DANA',250000)">Rp 250.000</button><button class="ghost-btn" onclick="app.topup('DANA',500000)">Rp 500.000</button></div></div></div>
+    </section>
+
+    <section class="screen" id="history">
+      <div class="topbar-page"><button class="back-btn" onclick="app.go('home')">‹</button><div class="page-title">Riwayat Transaksi</div></div>
+      <div class="searchbox"><input class="input" id="historySearch" placeholder="Cari transaksi" oninput="app.renderHistory()"></div>
+      <div class="tab-row" id="txTabs"><button class="tab active" data-filter="all" onclick="app.setTxFilter('all')">Semua</button><button class="tab" data-filter="in" onclick="app.setTxFilter('in')">Masuk</button><button class="tab" data-filter="out" onclick="app.setTxFilter('out')">Keluar</button><button class="tab" data-filter="mid" onclick="app.setTxFilter('mid')">Jadwal</button></div>
+      <div class="pad"><div class="tx-list" id="historyTxList"></div></div>
+    </section>
+
+    <section class="screen" id="card">
+      <div class="topbar-page"><button class="back-btn" onclick="app.go('home')">‹</button><div class="page-title">Kartu Saya</div></div>
+      <div class="card-virtual"><div class="bank">BaturBank</div><div style="font-size:11px;color:rgba(255,255,255,.7);font-weight:800;margin-top:4px">Virtual Debit Card</div><div class="chip-sim"></div><div class="num">4890  1288  7780  0906</div><div class="name" id="cardName">AZRA</div><div class="visa">VISA</div></div>
+      <div class="card-panel"><div class="switch-row"><div><b>Transaksi Online</b><p class="mini">Aktif untuk pembayaran online</p></div><input type="checkbox" checked></div><div class="switch-row"><div><b>Limit Harian</b><p class="mini">Rp 5.000.000 per hari</p></div><button style="color:var(--blue);font-weight:900">Ubah</button></div><div class="switch-row"><div><b>Status Kartu</b><p class="mini">Aktif dan aman</p></div><button style="color:var(--red);font-weight:900">Blokir</button></div></div>
+    </section>
+
+    <section class="screen" id="profile">
+      <div class="topbar-page"><button class="back-btn" onclick="app.go('home')">‹</button><div class="page-title">Profil</div></div>
+      <div class="card-panel" style="text-align:center"><div class="avatar" style="width:86px;height:86px;border-radius:30px;margin:0 auto 12px;font-size:34px" id="profileAvatar">A</div><h2 id="profileName" style="letter-spacing:-.04em">Azra</h2><p style="font-size:12px;color:var(--muted);font-weight:650;margin-top:4px">Nasabah Batur Prioritas</p></div>
+      <div class="card-panel"><div class="switch-row"><div><b>Nomor Rekening</b><p class="mini" id="profileAccount">1288 0906 7780</p></div><button style="color:var(--blue);font-weight:900" onclick="app.copyAccount()">Salin</button></div><div class="switch-row"><div><b>Keamanan</b><p class="mini">PIN, Face ID, dan notifikasi aktif</p></div><span>›</span></div><div class="switch-row"><div><b>Pengaturan Lanjutan</b><p class="mini">Ketuk logo BaturBank 5x untuk editor tersembunyi</p></div><span>•••</span></div></div>
+    </section>
+
+    <section class="screen" id="editor">
+      <div class="topbar-page"><button class="back-btn" onclick="app.go('home')">‹</button><div class="page-title">Editor Tersembunyi</div></div>
+
+      <div class="card-panel"><div class="section-title" style="margin:0 0 10px"><h3>PWA Homescreen</h3><button type="button" onclick="window.location.reload()">Refresh</button></div><p class="mini" style="margin-bottom:12px">Nama aplikasi di homescreen: <b>BaturBank</b>. Ikon aplikasi memakai logo BANK biru premium.</p><button class="primary-btn" onclick="window.installBaturBank && window.installBaturBank()">Install BaturBank ke Homescreen</button><button class="ghost-btn" style="margin-top:10px" onclick="app.toast('Cara install', 'Chrome: menu ⋮ > Add to Home screen. iPhone: Share > Add to Home Screen.')">Panduan Manual</button></div>
+      <div class="card-panel"><p class="mini" style="margin-bottom:12px">Panel ini tersimpan lokal di perangkat dan bisa diubah kapan saja tanpa kelihatan di layar utama.</p><div class="form-group"><label class="label">Nama pengguna</label><input class="input" id="edName"></div><div class="form-group"><label class="label">Saldo manual</label><input class="input" id="edBalance" inputmode="numeric"></div><div class="form-group"><label class="label">Nomor rekening</label><input class="input" id="edAccount"></div><div class="form-group"><label class="label">Sapaan kecil</label><input class="input" id="edGreeting"></div><button class="primary-btn" onclick="app.saveEditorMain()">Simpan Tampilan Utama</button><button class="ghost-btn" style="margin-top:10px" onclick="app.recalculateFromTx()">Hitung Ulang Saldo dari Riwayat</button><p class="sync-note">Mode sinkron aktif: transaksi masuk otomatis menambah saldo, transaksi keluar otomatis mengurangi saldo, dan jadwal tidak mengubah saldo.</p></div>
+      <div class="card-panel"><div class="section-title" style="margin:0 0 11px"><h3 id="txEditorTitle">Tambah Riwayat</h3><button onclick="app.resetData()">Reset</button></div><input type="hidden" id="edTxId"><div class="form-group"><label class="label">Judul transaksi</label><input class="input" id="edTxTitle" value="Kiriman Ibu"></div><div class="form-group"><label class="label">Keterangan</label><input class="input" id="edTxSub" value="Transfer masuk • BaturBank"></div><div class="two"><div class="form-group"><label class="label">Nominal</label><input class="input" id="edTxAmount" inputmode="numeric" value="2500000"></div><div class="form-group"><label class="label">Jenis</label><select class="select" id="edTxType"><option value="in">Masuk</option><option value="out">Keluar</option><option value="mid">Jadwal</option></select></div></div><button class="primary-btn" onclick="app.saveEditedTx()" id="saveTxBtn">Tambah & Sinkronkan Saldo</button><button class="ghost-btn" style="margin-top:10px" onclick="app.resetTxForm()">Kosongkan Form</button><p class="sync-note">Contoh: tambah “Masuk Rp 2.500.000” akan membuat saldo bertambah Rp 2.500.000. Edit/hapus transaksi juga langsung menyesuaikan saldo.</p></div>
+      <div class="pad"><div class="section-title"><h3>Data Riwayat</h3><button onclick="app.clearTransactions()">Hapus semua</button></div><div class="tx-list" id="editorTxList"></div></div>
+    </section>
+
+    <div class="bottom-nav" id="bottomNav">
+      <button class="active" data-target="home" onclick="app.go('home')"><b>⌂</b>Home</button>
+      <button data-target="transfer" onclick="app.go('transfer')"><b>⇄</b>Transfer</button>
+      <button data-target="qris" onclick="app.go('qris')"><b>▣</b>QRIS</button>
+      <button data-target="history" onclick="app.go('history')"><b>☰</b>Riwayat</button>
+      <button data-target="profile" onclick="app.go('profile')"><b>◉</b>Profil</button>
+    </div>
+
+    <div class="modal" id="confirmModal"><div class="sheet"><div class="handle"></div><div class="sheet-title">Konfirmasi Transaksi</div><div id="confirmContent"></div></div></div>
+    <div class="modal" id="notifSheet"><div class="sheet"><div class="handle"></div><div class="sheet-title">Notifikasi</div><div class="tx-list"><div class="tx in"><div class="tx-icon">✓</div><div class="tx-info"><div class="tx-title">Kiriman Ibu diterima</div><div class="tx-sub">Saldo berhasil bertambah Rp 2.500.000</div></div></div><div class="tx mid"><div class="tx-icon">🔐</div><div class="tx-info"><div class="tx-title">Login berhasil</div><div class="tx-sub">Perangkat Azra aktif hari ini</div></div></div><button class="ghost-btn" onclick="app.closeSheets()">Tutup</button></div></div></div>
+    <div class="modal" id="receiptModal"><div class="sheet"><div class="handle"></div><div class="receipt active"><div class="receipt-card"><div class="success-icon">✓</div><h2>Transaksi Berhasil</h2><div class="big" id="receiptAmount">Rp 0</div><div class="details" id="receiptDetails"></div><button class="primary-btn" style="margin-top:16px" onclick="app.closeSheets(); app.go('history')">Lihat Riwayat</button><button class="ghost-btn" style="margin-top:10px" onclick="app.closeSheets(); app.go('home')">Kembali ke Beranda</button></div></div></div></div>
+    <div class="toast" id="toast"><b id="toastIcon">✓</b><div><p id="toastTitle">Berhasil</p><p id="toastMsg">Data tersimpan</p></div></div>
+  </div>
+
+  <script>
+    const DEFAULT = {
+      name:'Azra', balance:2500000, account:'1288 0906 7780', greeting:'Siap cek transaksi hari ini?', filter:'all', hideBalance:false,
+      recipients:[['Ibu','I'],['Ibu Kos','K'],['Faris','F'],['Nafis','N'],['Toko Outfit','O'],['Admin','A']],
+      transactions:[
+        {id:1,type:'in',icon:'↙',title:'Kiriman Ibu',sub:'Transfer masuk • BaturBank • Hari ini 09:12',amount:2500000,date:'Hari ini'}
+      ]
+    };
+    const fmt = n => 'Rp ' + (Number(n)||0).toLocaleString('id-ID');
+    const onlyNum = v => String(v||'').replace(/[^0-9]/g,'');
+    const nowTime = () => new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}).replace('.',':');
+    const app = {
+      data:null, pin:'', current:'home', last:'home', txFilter:'all', hiddenCount:0, hiddenTimer:null,
+      init(){
+        try{this.data = JSON.parse(localStorage.getItem('baturbank-single-html-v4')) || structuredClone(DEFAULT)}catch(e){this.data = structuredClone(DEFAULT)}
+        this.data = {...structuredClone(DEFAULT),...this.data, transactions:this.data.transactions||DEFAULT.transactions};
+        document.getElementById('clock').textContent = nowTime(); setInterval(()=>document.getElementById('clock').textContent=nowTime(),30000);
+        this.renderKeypad(); this.renderAll(); this.bindHidden(); this.bindModalClose();
+        setTimeout(()=>this.toast('BaturBank siap', 'Masukkan PIN 6 digit untuk membuka.'),400);
+      },
+      save(){localStorage.setItem('baturbank-single-html-v4',JSON.stringify(this.data)); this.renderAll()},
+      renderKeypad(){
+        const pad=document.getElementById('keypad');
+        const keys=['1','2','3','4','5','6','7','8','9','Face','0','⌫'];
+        pad.innerHTML=keys.map(k=>`<button class="key" onclick="app.key('${k}')">${k}</button>`).join('');
+      },
+      key(k){
+        if(k==='Face'){this.toast('Face ID aktif','Memverifikasi wajah Azra...'); setTimeout(this.unlock,650); return}
+        if(k==='⌫') this.pin=this.pin.slice(0,-1); else if(this.pin.length<6) this.pin+=k;
+        this.drawPin(); if(this.pin.length===6) setTimeout(this.unlock,180);
+      },
+      drawPin(){document.querySelectorAll('.pin-dot').forEach((d,i)=>d.classList.toggle('filled',i<this.pin.length))},
+      unlock(){document.getElementById('loginScreen').classList.add('hide'); app.toast('Login berhasil','Selamat datang di BaturBank, Azra.')},
+      bindHidden(){
+        const tr=document.getElementById('hiddenTrigger');
+        tr.addEventListener('click',()=>{clearTimeout(this.hiddenTimer);this.hiddenCount++;this.hiddenTimer=setTimeout(()=>this.hiddenCount=0,1300); if(this.hiddenCount>=5){this.hiddenCount=0;this.openEditor()}});
+      },
+      bindModalClose(){document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)this.closeSheets()}))},
+      go(id){
+        this.last=this.current; this.current=id;
+        document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active','back'); if(s.id===this.last) s.classList.add('back')});
+        const el=document.getElementById(id); if(el){el.classList.add('active'); el.scrollTop=0}
+        document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.toggle('active',b.dataset.target===id));
+        if(id==='history') this.renderHistory(); if(id==='editor') this.renderEditor();
+      },
+      openEditor(){
+        document.getElementById('edName').value=this.data.name; document.getElementById('edBalance').value=this.data.balance; document.getElementById('edAccount').value=this.data.account; document.getElementById('edGreeting').value=this.data.greeting; this.go('editor'); this.toast('Editor terbuka','Panel tersembunyi berhasil dibuka.')
+      },
+      renderAll(){
+        document.getElementById('userName').textContent=this.data.name;
+        document.getElementById('subGreeting').textContent=this.data.greeting;
+        document.getElementById('avatarText').textContent=(this.data.name||'A')[0].toUpperCase();
+        document.getElementById('profileAvatar').textContent=(this.data.name||'A')[0].toUpperCase();
+        document.getElementById('profileName').textContent=this.data.name;
+        document.getElementById('cardName').textContent=(this.data.name||'AZRA').toUpperCase();
+        document.getElementById('balanceValue').textContent=fmt(this.data.balance);
+        document.getElementById('accountNo').textContent=this.data.account;
+        document.getElementById('profileAccount').textContent=this.data.account;
+        document.getElementById('phone').classList.toggle('hide-balance',!!this.data.hideBalance);
+        this.renderRecipients(); this.renderHomeTx(); this.renderHistory(); this.renderEditor();
+      },
+      renderRecipients(){document.getElementById('recipientRow').innerHTML=this.data.recipients.map(p=>`<button class="person" onclick="app.pickRecipient('${p[0]}')"><div class="pic">${p[1]}</div><p>${p[0]}</p></button>`).join('')},
+      pickRecipient(n){document.getElementById('tfName').value=n; if(n==='Ibu')document.getElementById('tfAccount').value='2899 4410 7781'; this.toast('Penerima dipilih',n)},
+      txHtml(t, withEditor=false){
+        const cls=t.type==='out'?'out':t.type==='mid'?'mid':'in'; const sign=t.type==='in'?'+':t.type==='out'?'-':'';
+        return `<div class="tx ${cls}"><div class="tx-icon">${t.icon|| (t.type==='in'?'↙':t.type==='out'?'⇄':'⏱')}</div><div class="tx-info"><div class="tx-title">${this.escape(t.title)}</div><div class="tx-sub">${this.escape(t.sub)}</div></div><div class="tx-amount">${sign}${fmt(t.amount)}</div>${withEditor?`<div class="tx-actions"><button class="mini-btn" onclick="app.loadTxEditor(${t.id})">Edit</button><button class="mini-btn danger" onclick="app.deleteTx(${t.id})">Hapus</button></div>`:''}</div>`
+      },
+      renderHomeTx(){document.getElementById('homeTxList').innerHTML=this.data.transactions.slice(0,4).map(t=>this.txHtml(t)).join('')},
+      renderHistory(){
+        const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
+        let arr=this.data.transactions.filter(t=>(this.txFilter==='all'||t.type===this.txFilter) && ((t.title+t.sub).toLowerCase().includes(q)));
+        document.getElementById('historyTxList').innerHTML=arr.length?arr.map(t=>this.txHtml(t)).join(''):'<div class="empty">Tidak ada transaksi.</div>';
+        document.querySelectorAll('#txTabs .tab').forEach(b=>b.classList.toggle('active',b.dataset.filter===this.txFilter));
+      },
+      renderEditor(){const el=document.getElementById('editorTxList'); if(el) el.innerHTML=this.data.transactions.length?this.data.transactions.map(t=>this.txHtml(t,true)).join(''):'<div class="empty">Belum ada riwayat.</div>'},
+      setTxFilter(f){this.txFilter=f; this.renderHistory()},
+      toggleBalance(){this.data.hideBalance=!this.data.hideBalance; this.save()},
+      txEffect(t){const amount=Number(t?.amount)||0; if(t?.type==='in')return amount; if(t?.type==='out')return -amount; return 0},
+      setSyncedBalance(next){this.data.balance=Math.max(0,Number(next)||0); document.getElementById('edBalance').value=this.data.balance},
+      saveEditorMain(){this.data.name=document.getElementById('edName').value||'Azra'; this.data.balance=Number(onlyNum(document.getElementById('edBalance').value)); this.data.account=document.getElementById('edAccount').value||'1288 0906 7780'; this.data.greeting=document.getElementById('edGreeting').value||DEFAULT.greeting; this.save(); this.toast('Tersimpan','Tampilan utama BaturBank sudah diperbarui.')},
+      buildTxFromForm(idOverride){const type=document.getElementById('edTxType').value; const amount=Number(onlyNum(document.getElementById('edTxAmount').value)); return {id:idOverride||Date.now(),type,icon:type==='in'?'↙':type==='out'?'⇄':'⏱',title:document.getElementById('edTxTitle').value||'Transaksi Baru',sub:document.getElementById('edTxSub').value||'Riwayat transaksi • Hari ini '+nowTime(),amount,date:type==='mid'?'Terjadwal':'Hari ini'}},
+      saveEditedTx(){
+        const id=Number(document.getElementById('edTxId').value||0); const tx=this.buildTxFromForm(id||Date.now());
+        if(!tx.amount){this.toast('Nominal kosong','Isi nominal transaksi terlebih dahulu.'); return}
+        if(id){
+          const idx=this.data.transactions.findIndex(t=>Number(t.id)===id); if(idx<0){this.toast('Data tidak ditemukan','Riwayat tidak bisa diedit.'); return}
+          const old=this.data.transactions[idx]; const baseBalance=(Number(this.data.balance)||0)-this.txEffect(old); const nextBalance=baseBalance+this.txEffect(tx);
+          if(nextBalance<0){this.toast('Saldo tidak cukup','Transaksi keluar melebihi saldo setelah edit.'); return}
+          this.data.transactions[idx]=tx; this.setSyncedBalance(nextBalance); this.save(); this.resetTxForm(); this.toast('Riwayat diedit','Saldo ikut tersinkron otomatis.');
+        }else{
+          const nextBalance=(Number(this.data.balance)||0)+this.txEffect(tx);
+          if(nextBalance<0){this.toast('Saldo tidak cukup','Transaksi keluar melebihi saldo saat ini.'); return}
+          this.data.transactions.unshift(tx); this.setSyncedBalance(nextBalance); this.save(); this.resetTxForm(); this.toast('Riwayat ditambah','Saldo ikut tersinkron otomatis.');
+        }
+      },
+      loadTxEditor(id){const t=this.data.transactions.find(x=>Number(x.id)===Number(id)); if(!t)return; document.getElementById('edTxId').value=t.id; document.getElementById('edTxTitle').value=t.title; document.getElementById('edTxSub').value=t.sub; document.getElementById('edTxAmount').value=t.amount; document.getElementById('edTxType').value=t.type; document.getElementById('txEditorTitle').textContent='Edit Riwayat'; document.getElementById('saveTxBtn').textContent='Simpan Edit & Sinkronkan Saldo'; document.getElementById('edTxTitle').scrollIntoView({behavior:'smooth',block:'center'}); this.toast('Mode edit aktif','Ubah riwayat lalu simpan.')},
+      resetTxForm(){document.getElementById('edTxId').value=''; document.getElementById('edTxTitle').value='Kiriman Ibu'; document.getElementById('edTxSub').value='Transfer masuk • BaturBank'; document.getElementById('edTxAmount').value='2500000'; document.getElementById('edTxType').value='in'; document.getElementById('txEditorTitle').textContent='Tambah Riwayat'; document.getElementById('saveTxBtn').textContent='Tambah & Sinkronkan Saldo'},
+      deleteTx(id){const idx=this.data.transactions.findIndex(t=>Number(t.id)===Number(id)); if(idx<0)return; const old=this.data.transactions[idx]; const nextBalance=(Number(this.data.balance)||0)-this.txEffect(old); this.data.transactions.splice(idx,1); this.setSyncedBalance(nextBalance); this.save(); this.resetTxForm(); this.toast('Riwayat dihapus','Saldo ikut disesuaikan.')},
+      clearTransactions(){if(confirm('Hapus semua riwayat dan sinkronkan saldo?')){const effect=this.data.transactions.reduce((s,t)=>s+this.txEffect(t),0); this.data.transactions=[]; this.setSyncedBalance((Number(this.data.balance)||0)-effect); this.save(); this.resetTxForm(); this.toast('Bersih','Semua riwayat dihapus dan saldo disinkronkan.')}},
+      recalculateFromTx(){const total=this.data.transactions.reduce((s,t)=>s+this.txEffect(t),0); this.setSyncedBalance(total); this.save(); this.toast('Saldo dihitung ulang','Saldo sekarang mengikuti total riwayat transaksi.')},
+      resetData(){if(confirm('Reset BaturBank ke data awal?')){this.data=structuredClone(DEFAULT); this.save(); this.openEditor(); this.resetTxForm(); this.toast('Reset berhasil','Saldo kembali Rp 2.500.000 dan kiriman ibu tampil.')}},
+      confirmTransfer(){
+        const amount=Number(onlyNum(document.getElementById('tfAmount').value)); const name=document.getElementById('tfName').value||'Penerima'; const bank=document.getElementById('tfBank').value;
+        document.getElementById('confirmContent').innerHTML=`<div class="details"><div class="detail-row"><span>Penerima</span><span>${this.escape(name)}</span></div><div class="detail-row"><span>Bank</span><span>${this.escape(bank)}</span></div><div class="detail-row"><span>Nominal</span><span>${fmt(amount)}</span></div><div class="detail-row"><span>Biaya admin</span><span>Rp 0</span></div></div><button class="primary-btn" style="margin-top:15px" onclick="app.processTransfer()">Konfirmasi dengan Face ID</button><button class="ghost-btn" style="margin-top:10px" onclick="app.closeSheets()">Batal</button>`;
+        this.openSheet('confirmModal');
+      },
+      processTransfer(){const amount=Number(onlyNum(document.getElementById('tfAmount').value)); const name=document.getElementById('tfName').value||'Penerima'; const note=document.getElementById('tfNote').value||'Transfer'; if(!amount){this.toast('Nominal kosong','Isi nominal transfer.'); return} if(amount>this.data.balance){this.toast('Saldo tidak cukup','Transaksi dibatalkan.'); return} this.data.balance=this.data.balance-amount; this.data.transactions.unshift({id:Date.now(),type:'out',icon:'⇄',title:'Transfer ke '+name,sub:note+' • Hari ini '+nowTime(),amount,date:'Hari ini'}); this.save(); this.closeSheets(); this.showReceipt('Transfer Berhasil',amount,[['Penerima',name],['Catatan',note],['Waktu',nowTime()],['Sisa saldo',fmt(this.data.balance)]])},
+      fakePay(title,amount){if(amount>this.data.balance){this.toast('Saldo tidak cukup','Pembayaran dibatalkan.'); return} this.data.balance=this.data.balance-amount; this.data.transactions.unshift({id:Date.now(),type:'out',icon:'▣',title,sub:'Pembayaran berhasil • Hari ini '+nowTime(),amount,date:'Hari ini'}); this.save(); this.showReceipt(title,amount,[['Status','Berhasil'],['Waktu',nowTime()],['Sisa saldo',fmt(this.data.balance)]])},
+      topup(title,amount){if(amount>this.data.balance){this.toast('Saldo tidak cukup','Top up dibatalkan.'); return} this.data.transactions.unshift({id:Date.now(),type:'out',icon:'＋',title:'Top Up '+title,sub:'Transaksi top up • Hari ini '+nowTime(),amount,date:'Hari ini'}); this.data.balance=this.data.balance-amount; this.save(); this.showReceipt('Top Up '+title,amount,[['Status','Berhasil'],['Waktu',nowTime()],['Sisa saldo',fmt(this.data.balance)]])},
+      showReceipt(title,amount,rows){document.getElementById('receiptAmount').textContent=fmt(amount); document.getElementById('receiptDetails').innerHTML=`<div class="detail-row"><span>Jenis</span><span>${this.escape(title)}</span></div>`+rows.map(r=>`<div class="detail-row"><span>${this.escape(r[0])}</span><span>${this.escape(r[1])}</span></div>`).join(''); this.openSheet('receiptModal')},
+      openSheet(id){document.getElementById(id).classList.add('active')},
+      closeSheets(){document.querySelectorAll('.modal').forEach(m=>m.classList.remove('active'))},
+      toast(title,msg){const t=document.getElementById('toast'); document.getElementById('toastTitle').textContent=title; document.getElementById('toastMsg').textContent=msg||''; t.classList.add('show'); clearTimeout(this.toastT); this.toastT=setTimeout(()=>t.classList.remove('show'),2600)},
+      copyAccount(){navigator.clipboard?.writeText(this.data.account); this.toast('Nomor rekening disalin',this.data.account)},
+      escape(s){return String(s??'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]))}
+    };
+
+    // PWA single-index helper. Manifest dan ikon sudah tertanam di <head>.
+    // Catatan teknis: agar install PWA aktif, buka file ini dari HTTPS/localhost. Browser tertentu tetap meminta service worker terpisah; file ini mencoba registrasi SW blob otomatis sebagai fallback single-file.
+    let baturBankInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', (event) => {
+      event.preventDefault();
+      baturBankInstallPrompt = event;
+    });
+    window.installBaturBank = async function(){
+      if (baturBankInstallPrompt) {
+        baturBankInstallPrompt.prompt();
+        await baturBankInstallPrompt.userChoice.catch(() => null);
+        baturBankInstallPrompt = null;
+        if (window.app) app.toast('PWA BaturBank', 'Permintaan install dibuka.');
+        return;
+      }
+      if (window.app) app.toast('PWA BaturBank', 'Gunakan menu browser: Add to Home screen.');
+    };
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+      window.addEventListener('load', () => {
+        const swCode = `
+          const CACHE='baturbank-single-cache-v1';
+          self.addEventListener('install',e=>{self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./']).catch(()=>null)));});
+          self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim());});
+          self.addEventListener('fetch',e=>{
+            if(e.request.method!=='GET') return;
+            e.respondWith(fetch(e.request).then(r=>{const copy=r.clone(); caches.open(CACHE).then(c=>c.put(e.request,copy)).catch(()=>{}); return r;}).catch(()=>caches.match(e.request).then(r=>r||caches.match('./'))));
+          });
+        `;
+        const swUrl = URL.createObjectURL(new Blob([swCode], {type:'text/javascript'}));
+        navigator.serviceWorker.register(swUrl, { scope: './' }).catch(() => console.warn('Single-file service worker tidak didukung browser ini. Manifest tetap aktif.'));
+      });
+    }
+    app.init();
+  </script>
+</body>
+</html>
